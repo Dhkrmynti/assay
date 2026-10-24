@@ -1,0 +1,102 @@
+<div class="shell">
+  <header class="top">
+    <a class="brand" href="#" id="home">{{MARK}}<span>ocula</span></a>
+    <div class="pulse"><i></i><span>Live on Pons</span><span class="sep">·</span><span>block <b id="nBlock">—</b></span><span class="sep">·</span><span><b id="nLaunch">—</b> launches today</span></div>
+    <div class="r">
+      <a class="ic" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Ocula on X" title="@oculaagent"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <button class="pill" type="button" id="holderBtn">Holder access</button>
+      <a class="pill solid" id="buyNova" aria-disabled="true">$OCULA · Soon</a>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Tools">
+    <button class="on" type="button" data-rail="chat" title="Agent"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Agent</span></button>
+    <button type="button" data-rail="scan" title="Scanner"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Scanner</span></button>
+    <button type="button" data-rail="radar" title="Launch Radar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 12l6-4" stroke="currentColor" stroke-width="1.6"/></svg><span>Radar</span></button>
+    <button type="button" data-rail="snipe" title="Sniper"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v5M12 16v5M3 12h5M16 12h5" stroke="currentColor" stroke-width="1.6"/></svg><span>Sniper</span></button>
+    <button type="button" data-rail="fees" title="Fee Claimer"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2" fill="currentColor"/><circle cx="6" cy="17" r="2" fill="currentColor"/><circle cx="18" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7c5 0 6 5 7 5M8 17c5 0 6-5 7-5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Fees</span></button>
+    <button type="button" data-rail="launch" title="Pons Launchpad"><svg viewBox="0 0 24 24"><path d="M12 3c3 2 5 6 4 11l-4 3-4-3c-1-5 1-9 4-11z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="1.6" fill="currentColor"/><path d="M9 18l-1 3M15 18l1 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Launch</span></button>
+    <button type="button" data-rail="kit" title="Launch Kit"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 10h14M5 15h9M5 20h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Kit</span></button>
+    <button type="button" data-rail="agent" title="Agent Studio"><svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v4M9 12h.01M15 12h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Studio</span></button>
+    <a class="about" href="#about" title="About Ocula"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>About</span></a>
+  </nav>
+
+  <div class="seg" role="tablist"><button class="on" type="button" data-seg="mind">Thinking</button><button type="button" data-seg="talk">Chat</button><button type="button" data-seg="find">Findings</button></div>
+
+  <section class="col mind" data-col="mind" aria-label="What Ocula is thinking">
+    <div class="ch"><span>Thinking</span><span class="state" id="mindState">reading</span></div>
+    <div class="stream" id="stream" aria-live="off"></div>
+  </section>
+
+  <section class="col talk" data-col="talk" aria-label="Talk to Ocula">
+    <div class="empty" id="empty">
+      <div class="orb" aria-hidden="true"><i></i><i></i><i></i>{{MARK}}</div>
+      <h1><span id="greet">Hello.</span> I've read <b id="nRead">—</b> launches on Pons today.</h1>
+      <p>Paste a contract address and I'll open the file on it. Or ask me what is worth a look right now.</p>
+    </div>
+    <div class="thread" id="thread" aria-live="polite"></div>
+    <div class="dock">
+      <div class="chips">
+        <button class="chip" type="button" data-ask="What's worth a look on Pons right now?">What's worth a look?</button>
+        <button class="chip" type="button" data-ask="Which new launches are traps right now, and why?">Show me the traps</button>
+        <button class="chip" type="button" data-ask="How does Ocula decide if a launch passes?">How do you decide?</button>
+        <button class="chip" type="button" data-rail="launch">Launch a token</button>
+      </div>
+      <form class="box" id="ask" autocomplete="off">
+        <textarea id="askIn" rows="1" placeholder="Ask Ocula, or paste a token CA…" aria-label="Message Ocula"></textarea>
+        <button class="send" id="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </form>
+      <p class="hint" id="hint">Ocula reads on-chain data only. It never asks for your keys.</p>
+    </div>
+  </section>
+
+  <section class="col find" data-col="find" aria-label="Findings">
+    <div class="ch"><span>Findings</span><span class="state"><b id="nPassF">0</b> cleared · <b id="nHeldF">0</b> held</span></div>
+    <div class="cards" id="cards"></div>
+  </section>
+</div>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="dhead"><span><b id="dTitle">Tools</b> · Ocula workspace</span><button type="button" class="ic" id="dClose" aria-label="Close tools">×</button></div>
+  <div class="dbody" id="app">{{WS}}</div>
+</div>
+
+<main class="about" id="about">
+  <section class="ab">
+    <div class="wrap">
+      <p class="kick">About the agent</p>
+      <h2>An agent that reads every launch,<br><span>so you only look at the ones that hold up.</span></h2>
+      <div class="how">
+        <div><b>01</b><h3>Watches the factory</h3><p>Every Pons launch on Robinhood Chain is caught the block it happens.</p></div>
+        <div><b>02</b><h3>Follows the money</h3><p>Did the dev sell the bag? Are wallets bundled by one hand? Where do the fees go?</p></div>
+        <div><b>03</b><h3>Measures the growth</h3><p>Not how many buyers, but how fast new ones keep arriving.</p></div>
+        <div><b>04</b><h3>Says what it found</h3><p>Cleared or held, with every reason, in plain words. A read, never advice.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="ab rules">
+    <div class="wrap">
+      <div class="rule"><h3>Your keys stay yours</h3><p>Keys and seeds never leave your browser. Ocula only relays transactions you signed.</p></div>
+      <div class="rule"><h3>Holders get the full agent</h3><p>Hold 0.1% of $OCULA and sign once to open every tool. The Pons Launchpad is free for everyone.</p></div>
+      <div class="rule"><h3>Every number is on-chain</h3><p>Each figure traces back to a transaction or contract call anyone can check.</p></div>
+    </div>
+  </section>
+  <footer>
+    <div class="wrap fr">
+      <a class="brand" href="#">{{MARK}}<span>ocula</span></a>
+      <span>The AI agent that reads every Pons launch on Robinhood Chain.</span>
+      <span class="links"><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X · @oculaagent</a><a href="#" data-rail="agent">Build your own agent</a></span>
+    </div>
+    <div class="wrap fr small"><span>© 2026 Ocula</span><span>Not financial advice. Ocula describes on-chain data only.</span></div>
+  </footer>
+</main>
+
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <button class="x" type="button" id="mClose" aria-label="Close">×</button>
+  <span class="mmark">{{MARK}}</span>
+  <h3 id="mTitle">Unlock the full agent</h3>
+  <p id="mText"></p>
+  <button class="pill solid lg" type="button" id="mSign" hidden>Connect wallet &amp; sign</button>
+  <p class="merr" id="mErr"></p>
+  <details id="mOwner"><summary>Owner? Use your studio key</summary><form id="ownerForm"><input id="ownerKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="pill solid" type="submit">Unlock</button></form></details>
+</div></div>
