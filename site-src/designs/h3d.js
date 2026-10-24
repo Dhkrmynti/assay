@@ -9,7 +9,7 @@ import * as THREE from "three";
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   const field = new THREE.Group(); scene.add(field);
   const L = 44, P = 180, W = 16, D = 13;
-  const SIG = new THREE.Color("#A8C8FF"), NOISE = new THREE.Color("#ECEDEF"), INT = new THREE.Color("#D98C7A");
+  const SIG = new THREE.Color("#F5F3EC"), NOISE = new THREE.Color("#A39E94"), INT = new THREE.Color("#D9826E");
   // each line: its data (signal strength, seed) and the geometry it drives
   const lines = [];
   for (let j = 0; j < L; j++) {
@@ -45,7 +45,7 @@ import * as THREE from "three";
     for (const o of lines) {
       o.amp += (o.ampTo - o.amp) * Math.min(1, dt * 1.5 || 1);
       const a = o.g.attributes.position.array, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
-      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 0.95 : o.kind === "int" ? 0.35 : 0.13) - o.m.opacity) * 0.05;
+      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.38 : 0.16) - o.m.opacity) * 0.05;
       for (let i = 0; i < P; i++) {
         const u = i / (P - 1);
         const base = Math.sin(u * 9 + t * 0.35 + o.seed) * 0.05 + Math.sin(u * 23 - t * 0.6 + o.seed * 2) * 0.03;
