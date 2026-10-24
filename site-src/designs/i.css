@@ -47,18 +47,18 @@ body.scrolled .nav{background:rgba(245,243,236,.86);backdrop-filter:blur(14px);-
 .nav nav a:hover{color:var(--text)}
 .nav .r{display:flex;justify-content:flex-end;gap:8px}
 
-/* hero: words on paper, the field on a black scope */
-.hero{min-height:100svh;display:flex;align-items:center;padding:120px 0 70px}
-.hgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:64px;align-items:center;width:100%}
+/* hero: words on paper, the field drawn straight onto the page */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:120px 0 70px;overflow:hidden}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 22%,rgba(245,243,236,.75) 46%,rgba(245,243,236,0) 72%),linear-gradient(0deg,var(--bg),rgba(245,243,236,0) 26%);pointer-events:none}
+.hgrid{position:relative;z-index:2;width:100%}
+.hl{max-width:600px}
 .hero h1{margin:0;font:400 clamp(44px,5.6vw,84px)/1 var(--sans);letter-spacing:-.055em;color:var(--faint)}
 .hero h1 span{color:var(--text)}
-.scope{position:relative;margin:0;aspect-ratio:1/1.08;border-radius:16px;background:#161514;overflow:hidden;box-shadow:0 40px 80px -40px rgba(22,21,20,.45)}
-.scope::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(245,243,236,.04) 1px,transparent 1px) 0 0/100% 10%,linear-gradient(90deg,rgba(245,243,236,.04) 1px,transparent 1px) 0 0/10% 100%;pointer-events:none}
-#field{position:absolute;inset:0;width:100%;height:100%;display:block}
-.sc{position:absolute;font:400 11px var(--mono);letter-spacing:.08em;color:#8F8A81;display:flex;align-items:center;gap:8px}
-.sc b{color:#F5F3EC;font-weight:500}
-.sc.tl{left:18px;top:16px}.sc.tr{right:18px;top:16px;color:#F5F3EC}.sc.bl{left:18px;bottom:16px}.sc.br{right:18px;bottom:16px}
-.sc.tr i{width:6px;height:6px;border-radius:50%;background:#F5F3EC;animation:rx 2.4s ease-in-out infinite}
+.fieldcap{position:absolute;z-index:2;right:32px;bottom:28px;display:flex;gap:22px}
+.sc{font:400 11px var(--mono);letter-spacing:.08em;color:var(--faint)}
+.sc b{color:var(--text);font-weight:500}
+.sc.bl.hot{color:var(--text)}
 .kick i{background:var(--ink)}
 /* the tape: newest launches running by */
 .tape{background:#161514;color:#F5F3EC;overflow:hidden;border-top:1px solid #161514;white-space:nowrap}
@@ -198,7 +198,9 @@ body.holder .ws .lock{display:none}
   .wrap{padding:0 20px}
   .nav nav{display:none}.nav .wrap{grid-template-columns:1fr auto}#holderBtn{display:none}
   .hero{padding-top:96px;min-height:0}
-  .hgrid{grid-template-columns:1fr;gap:40px}.scope{aspect-ratio:1/.8}
+  .hero{align-items:flex-end;padding-top:96px;min-height:92svh}
+  .hero::after{background:linear-gradient(0deg,var(--bg) 42%,rgba(245,243,236,.6) 70%,rgba(245,243,236,.15))}
+  .fieldcap{display:none}
   .box textarea{font-size:17px}
   .kick .bk{display:none}
   .row{grid-template-columns:minmax(0,1fr) 56px auto;gap:12px}
@@ -214,4 +216,3 @@ body.holder .ws .lock{display:none}
 
 /* nav over the black tools section */
 body.scrolled .nav{box-shadow:0 1px 0 var(--line)}
-.sc.bl.hot{color:#F5F3EC}.sc.bl.hot b{font-weight:600}

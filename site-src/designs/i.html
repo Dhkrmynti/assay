@@ -10,6 +10,8 @@
 
 <main>
   <section class="hero" id="top">
+    <canvas id="field" data-theme="light" aria-hidden="true"></canvas>
+    <div class="fieldcap"><span class="sc bl">One line per launch</span><span class="sc br"><b id="scSig">0</b> signal · <b id="scNoise">0</b> noise</span></div>
     <div class="wrap hgrid">
       <div class="hl">
         <p class="kick"><i></i>Receiving<span class="bk">&nbsp;· block <span id="nBlock">—</span></span>&nbsp;· <span id="nLaunch">—</span> launches today</p>
@@ -24,13 +26,6 @@
             <span class="asks"><button type="button" data-ask="What is a real signal on Pons right now?">What's a signal now?</button><button type="button" data-ask="Which new launches are noise or traps, and why?">What's noise?</button></span></div>
         </div>
       </div>
-      <figure class="scope" aria-label="Live field of Pons launches">
-        <canvas id="field" aria-hidden="true"></canvas>
-        <figcaption class="sc tl">CH·01 &nbsp;PONS / ROBINHOOD</figcaption>
-        <figcaption class="sc tr"><i></i>LIVE</figcaption>
-        <figcaption class="sc bl">One line per launch</figcaption>
-        <figcaption class="sc br"><b id="scSig">0</b> signal · <b id="scNoise">0</b> noise</figcaption>
-      </figure>
     </div>
   </section>
 

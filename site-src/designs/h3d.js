@@ -9,7 +9,8 @@ import * as THREE from "three";
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   const field = new THREE.Group(); scene.add(field);
   const L = 44, P = 180, W = 16, D = 13;
-  const SIG = new THREE.Color("#F5F3EC"), NOISE = new THREE.Color("#A39E94"), INT = new THREE.Color("#D9826E");
+  const light = cv.dataset.theme === "light";
+  const SIG = new THREE.Color(light ? "#161514" : "#F5F3EC"), NOISE = new THREE.Color(light ? "#6B675F" : "#A39E94"), INT = new THREE.Color(light ? "#B5432E" : "#D9826E");
   // each line: its data (signal strength, seed) and the geometry it drives
   const lines = [];
   for (let j = 0; j < L; j++) {
@@ -45,12 +46,12 @@ import * as THREE from "three";
     for (const o of lines) {
       o.amp += (o.ampTo - o.amp) * Math.min(1, dt * 1.5 || 1);
       const a = o.g.attributes.position.array, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
-      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.5 : inScope ? 0.3 : 0.16) - o.m.opacity) * 0.05;
+      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.55 : inScope ? 0.3 : light ? 0.34 : 0.16) - o.m.opacity) * 0.05;
       for (let i = 0; i < P; i++) {
         const u = i / (P - 1);
         const base = Math.sin(u * 9 + t * 0.35 + o.seed) * 0.05 + Math.sin(u * 23 - t * 0.6 + o.seed * 2) * 0.03;
         const bump = Math.exp(-Math.pow((u - o.peak) * 7, 2)) * (Math.sin(u * 60 - t * 1.4) * 0.35 + 0.65);
-        a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * (inScope ? 2.4 : 1.5) + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
+        a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * (inScope || light ? 2.2 : 1.5) + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
       }
       o.g.attributes.position.needsUpdate = true;
     }
