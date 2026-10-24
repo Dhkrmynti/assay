@@ -1,12 +1,16 @@
 TITLE = "Atlas"; BG = "#F5F3EC"; FG = "#161514"
-BODY = """<div class="copy" style="left:6vw;bottom:13vh"><p class="kick">Signal Agent · The Atlas</p><h1>Map the noise.<br><em>Mark the signal.</em></h1>
+HERO = """<div class="copy" style="left:6vw;bottom:13vh"><p class="kick">Signal Agent · The Atlas</p><h1>Map the noise.<br><em>Mark the signal.</em></h1>
 <p class="lead">Every launch is a new star on the map of Pons. Signal Agent charts them all and only names the ones that truly shine.</p>
 <div class="ask"><input placeholder="Ask Signal, or paste a token CA"><a href="/">Open →</a></div></div>
 <div class="legend"><span>Drag to turn the globe</span><span><b>Named</b> = signal</span></div><div id="labels"></div>"""
-CSS = """#labels{position:fixed;inset:0;z-index:3;pointer-events:none}
+CSS = """#labels{position:fixed;inset:0;z-index:0;pointer-events:none}
 .lb{position:absolute;transform:translate(10px,-50%);font:500 12px var(--mono);letter-spacing:.04em;white-space:nowrap;transition:opacity .3s}
 .lb.sig{font:600 13px var(--sans);letter-spacing:-.01em}.lb.sig::before{content:"";position:absolute;left:-14px;top:50%;width:10px;height:1px;background:currentColor}
-.lb.no{opacity:.45}"""
+.lb.no{opacity:.45}.lb.hot{font-size:16px}"""
+LINE = "rgba(22,21,20,.12)"; LINE2 = "rgba(22,21,20,.24)"; HOVER = "rgba(22,21,20,.04)"; INT = "#B5432E"
+VOCAB = dict(sig="Named", noise="Dust", int="Fallen", navband="The map", bandkick="Newest on the map", band="The newest <em>stars.</em>",
+  how="Map the noise. <em>Name the signal.</em>", steps=[("Chart", "Every Pons launch appears on the map the block it happens."), ("Measure", "Dev sells, bundles, fake X, slow buyers: every star is measured."), ("Name", "Only the ones that truly shine get a name, with every reason.")],
+  tools="Seven instruments <em>for the map.</em>", ask="Not sure where to start? Ask the map.", token="Own a piece <em>of the map.</em>", bigword="the map.")
 # ---- js ----
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -44,6 +48,7 @@ function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, 
 addEventListener("resize", size); size();
 const v = new THREE.Vector3(), n = new THREE.Vector3(), toCam = new THREE.Vector3();
 renderer.setAnimationLoop(() => {
+  ctl.autoRotateSpeed += (spin - ctl.autoRotateSpeed) * 0.05; { const d = cam.position.distanceTo(ctl.target); cam.position.sub(ctl.target).multiplyScalar(1 + ((dist - d) / d) * 0.05).add(ctl.target); }
   ctl.update();
   stars.forEach((s) => {
     s.m.getWorldPosition(v); n.copy(v).sub(globe.position).normalize(); toCam.copy(cam.position).sub(v).normalize();
@@ -53,3 +58,10 @@ renderer.setAnimationLoop(() => {
   });
   renderer.render(scene, cam);
 });
+
+// ---- scroll: the map zooms from overview to one named star ----
+let dist = 9.6, spin = 0.6;
+window.S3D = {
+  section(n) { if (n === "hero") { dist = 9.6; spin = 0.6; } },
+  step(i) { dist = [12.5, 8.4, 6.2][i]; spin = [2.2, 0.4, 0.05][i]; stars.forEach((s) => s.el.classList.toggle("hot", i === 2 && s.r.pass)); },
+};

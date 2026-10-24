@@ -1,9 +1,13 @@
 TITLE = "Lens"; BG = "#F5F3EC"; FG = "#161514"
-BODY = """<div class="copy" style="left:6vw;bottom:13vh"><p class="kick">Signal Agent · The Lens</p><h1>Everything is blurry.<br><em>Until it isn't.</em></h1>
+HERO = """<div class="copy" style="left:6vw;bottom:13vh"><p class="kick">Signal Agent · The Lens</p><h1>Everything is blurry.<br><em>Until it isn't.</em></h1>
 <p class="lead">Every Pons launch looks the same at first. Signal Agent is the lens: what holds up comes into focus, the rest stays a blur.</p>
 <div class="ask"><input placeholder="Ask Signal, or paste a token CA"><a href="/">Open →</a></div></div>
 <div class="legend"><span>Move your cursor: the lens follows</span><span><b>Sharp</b> = in focus</span></div>"""
 CSS = ".copy::before{content:\"\";position:absolute;inset:-40px -80px -40px -60px;background:radial-gradient(closest-side,rgba(245,243,236,.85),rgba(245,243,236,0));z-index:-1}"
+LINE = "rgba(22,21,20,.12)"; LINE2 = "rgba(22,21,20,.24)"; HOVER = "rgba(22,21,20,.04)"; INT = "#B5432E"
+VOCAB = dict(sig="In focus", noise="Out of focus", int="Distortion", navband="In focus", bandkick="Through the lens", band="What came into <em>focus.</em>",
+  how="From blur <em>to focus.</em>", steps=[("Gather", "Every Pons launch enters the frame, the block it happens."), ("Focus", "Dev sells, bundles, fake X, slow buyers: the checks pull the real ones into focus."), ("Read", "In focus or not, with every reason, in plain words.")],
+  tools="Seven instruments, <em>one lens.</em>", ask="Not sure where to start? Ask the lens.", token="Own <em>the lens.</em>", bigword="in focus.")
 # ---- js ----
 import * as THREE from "three";
 const cv = document.getElementById("c"), renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
@@ -31,12 +35,12 @@ function wall(rows, blur) {
   }
   const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const U = { uSharp: { value: null }, uBlur: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uT: { value: 0 }, uC: { value: new THREE.Vector2(0.6, 0.5) } };
+const U = { uMix: { value: 0 }, uSharp: { value: null }, uBlur: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uT: { value: 0 }, uC: { value: new THREE.Vector2(0.6, 0.5) } };
 const MAP = `uniform vec2 uRes; uniform float uT; vec2 wallUv(vec2 s){ float a=(uRes.x/uRes.y)/2.0; return vec2(s.x*a + uT*0.012, s.y); }`;
 // full-screen blurred wall
 const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms: U, depthWrite: false,
   vertexShader: `varying vec2 vS; void main(){ vS=position.xy*.5+.5; gl_Position=vec4(position.xy,.999,1.); }`,
-  fragmentShader: `uniform sampler2D uBlur; varying vec2 vS; ${MAP} void main(){ gl_FragColor=texture2D(uBlur,wallUv(vS)); }` }));
+  fragmentShader: `uniform sampler2D uBlur; uniform sampler2D uSharp; uniform float uMix; varying vec2 vS; ${MAP} void main(){ gl_FragColor=mix(texture2D(uBlur,wallUv(vS)),texture2D(uSharp,wallUv(vS)),uMix); }` }));
 bg.frustumCulled = false; scene.add(bg);
 // the lens: a biconvex disc that samples the sharp wall, magnified and bent at the edges
 const lens = new THREE.Group(); scene.add(lens);
@@ -62,7 +66,8 @@ U.uSharp.value = wall([], false); U.uBlur.value = wall([], true);
 const clock = new THREE.Clock(), v = new THREE.Vector3();
 renderer.setAnimationLoop(() => {
   const t = clock.getElapsedTime(); U.uT.value = t;
-  cur.x += (Math.max(-0.2, ptr.x) - cur.x) * 0.06; cur.y += (ptr.y - cur.y) * 0.06;
+  const fx = tg.follow ? Math.max(-0.2, ptr.x) : tg.x, fy = tg.follow ? ptr.y : tg.y; cur.x += (fx - cur.x) * 0.06; cur.y += (fy - cur.y) * 0.06;
+  U.uMix.value += (tg.mix - U.uMix.value) * 0.06; lens.scale.setScalar(lens.scale.x + (tg.scale - lens.scale.x) * 0.06);
   const vh = Math.tan((cam.fov * Math.PI) / 360) * cam.position.z, vw = vh * cam.aspect;
   lens.position.set(cur.x * vw * 0.7 + vw * 0.12, cur.y * vh * 0.55, 0);
   lens.rotation.set(Math.sin(t * 0.5) * 0.12 - cur.y * 0.25, Math.cos(t * 0.4) * 0.14 + cur.x * 0.3, 0);
@@ -70,3 +75,10 @@ renderer.setAnimationLoop(() => {
   v.copy(lens.position).project(cam); U.uC.value.set(v.x * 0.5 + 0.5, v.y * 0.5 + 0.5);
   renderer.render(scene, cam);
 });
+
+// ---- scroll: the lens explains itself ----
+const tg = { mix: 0, scale: 1, follow: 1, x: 0.25, y: 0.1 };
+window.S3D = {
+  section(n) { if (n === "hero") Object.assign(tg, { mix: 0, scale: 1, follow: 1 }); },
+  step(i) { tg.follow = 0; Object.assign(tg, [{ mix: 0, scale: 0.55, x: 0.75, y: -0.35 }, { mix: 0, scale: 1.05, x: 0.42, y: 0 }, { mix: 0.9, scale: 1.3, x: 0.42, y: 0 }][i]); },
+};

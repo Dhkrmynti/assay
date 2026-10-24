@@ -1,9 +1,13 @@
 TITLE = "Instrument"; BG = "#F5F3EC"; FG = "#161514"
-BODY = """<div class="copy" style="left:6vw;top:22vh"><p class="kick">Signal Agent · The Instrument</p><h1>Measured,<br><em>not guessed.</em></h1>
+HERO = """<div class="copy" style="left:6vw;top:22vh"><p class="kick">Signal Agent · The Instrument</p><h1>Measured,<br><em>not guessed.</em></h1>
 <p class="lead">Signal Agent is a precision instrument. Every launch moves the needle; only a real signal leaves a mark worth reading.</p>
 <div class="ask"><input placeholder="Ask Signal, or paste a token CA"><a href="/">Open →</a></div></div>
 <div class="legend"><span>Small tremor = noise</span><span><b>Big swing</b> = signal</span></div>"""
 CSS = ""
+LINE = "rgba(22,21,20,.12)"; LINE2 = "rgba(22,21,20,.24)"; HOVER = "rgba(22,21,20,.04)"; INT = "#B5432E"
+VOCAB = dict(sig="Mark", noise="Tremor", int="Spike", navband="Readings", bandkick="Today's readings", band="What moved <em>the needle.</em>",
+  how="Measured, <em>not guessed.</em>", steps=[("Sense", "Every Pons launch moves the needle the block it happens."), ("Measure", "Dev sells, bundles, fake X, slow buyers: every tremor is weighed."), ("Record", "Only a real signal leaves a mark, with every reason.")],
+  tools="Seven <em>gauges.</em>", ask="Not sure where to start? Ask the instrument.", token="Calibrate <em>with the token.</em>", bigword="the mark.")
 # ---- js ----
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -38,7 +42,7 @@ scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 0.6)); const sun = new T
 // what moves the needle: noise all the time, a big swing for every signal
 let queue = [], swing = 0, swingSig = false, lastX = -1, lastY = PH / 2;
 launches().then((rows) => { queue = rows.length ? rows : DEMO.slice(0, 8).map((s, i) => ({ symbol: s, pass: i % 3 === 0 })); });
-setInterval(() => { const r = queue.shift(); if (!r) return; queue.push(r); swing = 1; swingSig = !!r.pass; }, 2600);
+setInterval(() => { if (mode === 0) return; if (mode === 2) { swing = 1; swingSig = true; return; } const r = queue.shift(); if (!r) return; queue.push(r); swing = 1; swingSig = !!r.pass; }, 2600);
 const ptr = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
 addEventListener("pointermove", (e) => { ptr.x = e.clientX / innerWidth - 0.5; ptr.y = e.clientY / innerHeight - 0.5; }, { passive: true });
 function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); rig.position.x = w < 800 ? 0 : 2.9; rig.position.y = w < 800 ? -1.3 : -0.2; rig.scale.setScalar(w < 800 ? 0.8 : 0.9); }
@@ -64,3 +68,10 @@ renderer.setAnimationLoop(() => {
   lastX = X; lastY = Y; paper.needsUpdate = true;
   renderer.render(scene, cam);
 });
+
+// ---- scroll: tremor, then a reading, then the mark ----
+let mode = -1;
+window.S3D = {
+  section(n) { if (n !== "how") mode = -1; },
+  step(i) { if (i === mode) return; mode = i; if (i === 1) { swing = 1; swingSig = false; } if (i === 2) { swing = 1; swingSig = true; } },
+};
