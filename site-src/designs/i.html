@@ -1,10 +1,10 @@
 <header class="nav"><div class="wrap">
-  <a class="brand" href="#top" id="home"><svg class="glyph" viewBox="0 0 32 20" aria-hidden="true"><path d="M1 1h30M1 19h30" stroke="currentColor" stroke-width="1.4"/><path d="M1 10h6l2.5-5 4 10 4-13 4 13 3-5H31" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg><span>ocula</span></a>
-  <nav><a href="#band">Signal</a><a href="#how">How it works</a><a href="#tools">Tools</a><a href="#token">$OCULA</a></nav>
+  <a class="brand" href="#top" id="home"><svg class="glyph" viewBox="20 30 216 196" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>signal</b> agent</span></a>
+  <nav><a href="#band">Signal</a><a href="#how">How it works</a><a href="#tools">Tools</a><a href="#token">Token</a></nav>
   <div class="r">
-    <a class="ic" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Ocula on X"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <a class="ic" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Signal on X"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
     <button class="btn line" type="button" id="holderBtn">Holder access</button>
-    <a class="btn solid" id="buyNova" aria-disabled="true">$OCULA · Soon</a>
+    <a class="btn solid" id="buyNova" aria-disabled="true">Token · Soon</a>
   </div>
 </div></header>
 
@@ -13,14 +13,14 @@
     <div class="wrap hgrid">
       <div class="hl">
         <p class="kick"><i></i>Receiving<span class="bk">&nbsp;· block <span id="nBlock">—</span></span>&nbsp;· <span id="nLaunch">—</span> launches today</p>
-        <h1>Most launches are noise.<br><span>Ocula finds the signal.</span></h1>
+        <h1>Most launches are noise.<br><span>Signal Agent finds the signal.</span></h1>
         <div class="convo">
           <div class="thread" id="thread" aria-live="polite"></div>
           <form class="box" id="ask" autocomplete="off">
-            <textarea id="askIn" rows="1" placeholder="Ask Ocula, or paste a token CA" aria-label="Message Ocula"></textarea>
+            <textarea id="askIn" rows="1" placeholder="Ask Signal, or paste a token CA" aria-label="Message Signal"></textarea>
             <button class="send" id="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </form>
-          <div class="under"><span class="hint" id="hint">On-chain data only. Ocula never asks for your keys.</span>
+          <div class="under"><span class="hint" id="hint">On-chain data only. Signal never asks for your keys.</span>
             <span class="asks"><button type="button" data-ask="What is a real signal on Pons right now?">What's a signal now?</button><button type="button" data-ask="Which new launches are noise or traps, and why?">What's noise?</button></span></div>
         </div>
       </div>
@@ -68,15 +68,15 @@
         <a href="#app" data-open="launch" class="free"><span>Pons Launchpad</span><small>Launch from your own wallet. Always free.</small></a>
         <a href="#app" data-open="kit"><span>Launch Kit</span><small>Lore, bio, thread and launch post, written for you.</small></a>
         <a href="#app" data-open="agent"><span>Agent Studio</span><small>Design the AI agent of your own token.</small></a>
-        <a href="#top" class="ask free-none" id="askCell"><span>Ask Ocula →</span><small>Not sure where to start? Ask the receiver.</small></a>
+        <a href="#top" class="ask free-none" id="askCell"><span>Ask Signal →</span><small>Not sure where to start? Ask the receiver.</small></a>
       </div>
     </div>
   </section>
 
   <section class="token" id="token">
     <div class="rv wrap tk">
-      <div><p class="kick plain">$OCULA</p><h2>Hold the signal.</h2><p class="lead">Hold 0.1% of $OCULA supply and sign once with your wallet: every tool opens. Signing is free and sends nothing. The Pons Launchpad stays free for everyone.</p>
-        <div class="cta"><a class="btn solid lg" id="buy2" aria-disabled="true">$OCULA · Soon</a><button class="btn line lg" type="button" data-unlock>Holder access</button></div></div>
+      <div><p class="kick plain">Token</p><h2>Hold the signal.</h2><p class="lead">Hold 0.1% of the token supply and sign once with your wallet: every tool opens. Signing is free and sends nothing. The Pons Launchpad stays free for everyone.</p>
+        <div class="cta"><a class="btn solid lg" id="buy2" aria-disabled="true">Token · Soon</a><button class="btn line lg" type="button" data-unlock>Holder access</button></div></div>
       <dl class="facts"><div><dt>Chain</dt><dd>Robinhood Chain</dd></div><div><dt>Launched on</dt><dd>Pons</dd></div><div><dt>Unlock</dt><dd>0.1% of supply</dd></div><div><dt>Contract</dt><dd><button type="button" id="caCopy" class="ca">—</button></dd></div></dl>
     </div>
   </section>
@@ -84,10 +84,10 @@
 
 <footer class="inv">
   <div class="wrap fr">
-    <a class="brand" href="#top"><svg class="glyph" viewBox="0 0 32 20" aria-hidden="true"><path d="M1 1h30M1 19h30" stroke="currentColor" stroke-width="1.4"/><path d="M1 10h6l2.5-5 4 10 4-13 4 13 3-5H31" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg><span>ocula</span></a>
-    <span class="links"><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X</a><a href="#tools">Tools</a><a href="#token">$OCULA</a></span>
+    <a class="brand" href="#top"><svg class="glyph" viewBox="20 30 216 196" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>signal</b> agent</span></a>
+    <span class="links"><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X</a><a href="#tools">Tools</a><a href="#token">Token</a></span>
   </div>
-  <div class="wrap fr small"><span>© 2026 Ocula. Most launches are noise.</span><span>Not financial advice. On-chain data only.</span></div>
+  <div class="wrap fr small"><span>© 2026 Signal. Most launches are noise.</span><span>Not financial advice. On-chain data only.</span></div>
 </footer>
 
 <div class="drawer" id="drawer" hidden>

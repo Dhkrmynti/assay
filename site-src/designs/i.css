@@ -1,4 +1,4 @@
-/* ===== Ocula · Signal: most launches are noise, Ocula finds the signal. Swiss-minimal, one cold accent, calm motion. ===== */
+/* ===== Signal Agent: most launches are noise, it finds the signal. Swiss-minimal, one cold accent, calm motion. ===== */
 :root{
   --bg:#F5F3EC;--panel:#EEEBE2;--raise:#FCFBF7;--line:rgba(22,21,20,.1);--line2:rgba(22,21,20,.2);
   --text:#161514;--dim:#5E5A53;--faint:#9A958B;--sig:#161514;--sig-d:rgba(22,21,20,.05);--int:#B5432E;
@@ -40,7 +40,8 @@ h2{margin:0;font:400 clamp(30px,3.6vw,48px)/1.08 var(--sans);letter-spacing:-.04
 body.scrolled .nav{background:rgba(245,243,236,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
 .nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:64px}
 .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font:600 18px var(--sans);letter-spacing:-.03em}
-.glyph{width:26px;height:auto;color:var(--text)}
+.glyph{width:24px;height:auto;color:var(--text)}
+.brand span{font-weight:400}.brand span b{font-weight:600}
 .nav nav{display:flex;gap:30px}
 .nav nav a{text-decoration:none;font:400 13.5px var(--sans);color:var(--dim);transition:color .2s}
 .nav nav a:hover{color:var(--text)}

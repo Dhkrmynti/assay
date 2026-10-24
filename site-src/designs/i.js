@@ -1,4 +1,4 @@
-// ---------- Ocula · Signal ----------
+// ---------- Signal · Signal ----------
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const el = (id) => document.getElementById(id);
 const GLYPH = document.querySelector(".brand .glyph").outerHTML;
@@ -29,7 +29,7 @@ async function scanFlow(ca) {
   addUser(ca); const m = addAgent();
   try {
     const r = await fetch("/api/scan?ca=" + ca), j = await r.json();
-    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); refreshMe(); return; }
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock as a holder" }]); refreshMe(); return; }
     if (!r.ok) throw new Error(j.error || "Scan failed.");
     const t = j.facts?.token || {}, order = ["high", "watch", "ok", "info"], flags = (j.flags || []).slice().sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level)).slice(0, 4);
     const logo = String(t.logo || "").replace(/^ipfs:\/\//, "https://gateway.pinata.cloud/ipfs/");
@@ -38,14 +38,14 @@ async function scanFlow(ca) {
     const text = j.summary || (flags[0] ? `${flags[0].title}.` : "Here is what the chain shows.");
     fill(m, text, [{ scan: ca, label: "Full report" }, { snipe: ca, label: "Snipe it" }], card); refreshMe();
     chatLog.push({ role: "user", content: "Scan " + ca }, { role: "assistant", content: `${t.symbol}: ${text}` });
-  } catch (e) { fill(m, e.message || "Ocula could not read that token."); }
+  } catch (e) { fill(m, e.message || "Signal could not read that token."); }
 }
 async function chatFlow(text) {
   addUser(text); chatLog.push({ role: "user", content: text }); const m = addAgent();
   try {
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: chatLog }) }), j = await r.json();
-    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); chatLog.pop(); refreshMe(); return; }
-    if (!r.ok) throw new Error(j.error || "Ocula could not answer.");
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock as a holder" }]); chatLog.pop(); refreshMe(); return; }
+    if (!r.ok) throw new Error(j.error || "Signal could not answer.");
     fill(m, j.reply, j.actions || []); chatLog.push({ role: "assistant", content: j.reply }); refreshMe();
   } catch (e) { fill(m, e.message); chatLog.pop(); }
 }
@@ -72,7 +72,7 @@ const store = { set: (k, v) => { try { v == null ? localStorage.removeItem(k) : 
 document.querySelectorAll(".ws .tool[data-p]").forEach((t) => {
   if (t.dataset.p === "launch") return;
   const name = document.querySelector(`#tabs [data-t="${t.dataset.p}"] .tn`)?.textContent || "This tool";
-  t.insertAdjacentHTML("afterbegin", `<div class="lock"><div>${LOCK_SVG}<b>${hesc(name)} is for $OCULA holders</b><p>Hold at least 0.1% of $OCULA and unlock it with your wallet. The Pons Launchpad stays free for everyone.</p><button class="btn" type="button" data-unlock>Unlock</button></div></div>`);
+  t.insertAdjacentHTML("afterbegin", `<div class="lock"><div>${LOCK_SVG}<b>${hesc(name)} is for token holders</b><p>Hold at least 0.1% of the token and unlock it with your wallet. The Pons Launchpad stays free for everyone.</p><button class="btn" type="button" data-unlock>Unlock</button></div></div>`);
 });
 async function refreshMe() {
   try { me = await (await fetch("/api/me")).json(); } catch {}
@@ -80,14 +80,14 @@ async function refreshMe() {
   const hb = el("holderBtn");
   hb.textContent = me.holder ? (me.owner ? "Owner access" : "Holder · " + shortCa(me.address || "0x0000000000")) : "Holder access";
   hb.classList.toggle("on", !!me.holder);
-  el("hint").textContent = me.holder ? "Full access. Ask Ocula anything." : `${me.trialsLeft} free read${me.trialsLeft === 1 ? "" : "s"} left today. Hold $OCULA for the full receiver.`;
+  el("hint").textContent = me.holder ? "Full access. Ask Signal anything." : `${me.trialsLeft} free read${me.trialsLeft === 1 ? "" : "s"} left today. Hold the token for the full receiver.`;
 }
 const modal = el("modal");
 function openModal() {
   el("mErr").textContent = "";
   el("mText").textContent = me.launched
-    ? "Hold at least 0.1% of $OCULA supply. Connect the wallet that holds it and sign a short message. Signing is free and sends nothing."
-    : "Holder access opens when $OCULA launches. The Pons Launchpad is free for everyone, today.";
+    ? "Hold at least 0.1% of the token supply. Connect the wallet that holds it and sign a short message. Signing is free and sends nothing."
+    : "Holder access opens when the token launches. The Pons Launchpad is free for everyone, today.";
   el("mSign").hidden = !me.launched || !window.ethereum;
   if (me.launched && !window.ethereum) el("mErr").textContent = "No browser wallet found. Open this page in MetaMask, Rabby or another wallet browser.";
   if (me.holder) { el("mText").textContent = "You're unlocked. Every tool is open in this browser for 24 hours."; el("mSign").hidden = true; }
@@ -108,7 +108,7 @@ el("mSign").addEventListener("click", async () => {
   el("mErr").textContent = "";
   try {
     const [address] = await window.ethereum.request({ method: "eth_requestAccounts" });
-    const message = `Unlock Ocula\nWallet: ${address}\nIssued: ${Date.now()}`;
+    const message = `Unlock Signal Agent\nWallet: ${address}\nIssued: ${Date.now()}`;
     const signature = await window.ethereum.request({ method: "personal_sign", params: [message, address] });
     await unlockWith({ address, message, signature });
   } catch (e) { el("mErr").textContent = e.message || "Signing was cancelled."; }
@@ -116,10 +116,10 @@ el("mSign").addEventListener("click", async () => {
 el("ownerForm").addEventListener("submit", async (e) => { e.preventDefault(); el("mErr").textContent = ""; try { await unlockWith({ ownerKey: el("ownerKey").value.trim() }); el("ownerKey").value = ""; } catch (er) { el("mErr").textContent = er.message; } });
 refreshMe().then(() => { if (!me.holder && !TOOLS.includes(location.hash.slice(1))) document.querySelector('#tabs [data-t="launch"]')?.click(); });
 
-// buy buttons and the contract address once $OCULA is set on the server
+// buy buttons and the contract address once the token is set on the server
 fetch("/api/status").then((r) => r.json()).then((j) => {
   if (!j.novaToken) return;
-  for (const id of ["buyNova", "buy2"]) { const b = el(id); b.textContent = "Buy $OCULA"; b.removeAttribute("aria-disabled"); b.href = "https://ponsfamily.com/launchpad/" + j.novaToken; b.target = "_blank"; b.rel = "noopener"; }
+  for (const id of ["buyNova", "buy2"]) { const b = el(id); b.textContent = "Buy token"; b.removeAttribute("aria-disabled"); b.href = "https://ponsfamily.com/launchpad/" + j.novaToken; b.target = "_blank"; b.rel = "noopener"; }
   const c = el("caCopy"); c.textContent = shortCa(j.novaToken); c.title = "Copy " + j.novaToken;
   c.addEventListener("click", async () => { try { await navigator.clipboard.writeText(j.novaToken); c.textContent = "Copied"; setTimeout(() => (c.textContent = shortCa(j.novaToken)), 1400); } catch {} });
 }).catch(() => {});

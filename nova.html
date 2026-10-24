@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Ocula Studio</title>
+<title>Signal Agent Studio</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -78,27 +78,27 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "Geist Mono";color:v
 </head>
 <body>
 <div class="wrap">
-  <header><a class="brand" href="/"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>Ocula <span>STUDIO</span></a><span class="lbl" id="who"></span></header>
-  <h1>Ocula writes. <b>You post.</b></h1>
-  <p class="sub">Ocula reads the Pons radar and the chain, then drafts posts for X. Edit, copy or open it straight in X and post it yourself.</p>
+  <header><a class="brand" href="/"><svg viewBox="20 30 216 196" width="22" height="20" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>Signal <span>STUDIO</span></a><span class="lbl" id="who"></span></header>
+  <h1>Signal writes. <b>You post.</b></h1>
+  <p class="sub">Signal reads the Pons radar and the chain, then drafts posts for X. Edit, copy or open it straight in X and post it yourself.</p>
 
   <div class="panel" id="gate" hidden>
     <span class="lbl">Studio key</span>
-    <p class="note" style="margin:6px 0 12px">Only the owner can use the studio. The key is NOVA_ADMIN_KEY in ocula/.env.</p>
+    <p class="note" style="margin:6px 0 12px">Only the owner can use the studio. The key is NOVA_ADMIN_KEY in the server .env.</p>
     <form id="gateForm"><input id="gateKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="btn wide" style="margin-top:10px">Open studio</button></form>
     <p class="err" id="gateErr"></p>
   </div>
 
   <div class="panel" id="tokP" hidden style="margin-bottom:20px">
-    <div class="pbar" style="margin:0 0 6px"><span class="lbl">$OCULA token</span><span class="note" id="tokState">…</span></div>
-    <p class="note" style="margin:0 0 12px">Paste the $OCULA contract address once it is live. Saving it turns the header button into "Buy $OCULA" and lets wallets holding 0.1% of supply unlock every tool. Leave it empty and save to lock things again.</p>
-    <form id="tokForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="tokCa" placeholder="0x… $OCULA contract address" spellcheck="false" autocomplete="off" style="flex:1;min-width:260px;font-family:var(--mono)"><button class="btn">Save</button></form>
+    <div class="pbar" style="margin:0 0 6px"><span class="lbl">Token</span><span class="note" id="tokState">…</span></div>
+    <p class="note" style="margin:0 0 12px">Paste the token contract address once it is live. Saving it turns the header button into "Buy token" and lets wallets holding 0.1% of supply unlock every tool. Leave it empty and save to lock things again.</p>
+    <form id="tokForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="tokCa" placeholder="0x… token contract address" spellcheck="false" autocomplete="off" style="flex:1;min-width:260px;font-family:var(--mono)"><button class="btn">Save</button></form>
     <p class="note" id="tokInfo" style="margin-top:10px"></p><p class="err" id="tokErr"></p>
   </div>
 
   <div class="panel" id="burnP" hidden style="margin-bottom:20px">
     <div class="pbar" style="margin:0 0 6px"><span class="lbl">Buyback &amp; burn</span><span class="note" id="burnState">…</span></div>
-    <p class="note" style="margin:0 0 12px">Use a separate burn wallet, not your dev wallet: fund it with only the ETH you plan to burn. The key is encrypted on the server and can only buy $OCULA on the Pons curve straight to the dead address. Capped at <span id="burnCaps">…</span>.</p>
+    <p class="note" style="margin:0 0 12px">Use a separate burn wallet, not your dev wallet: fund it with only the ETH you plan to burn. The key is encrypted on the server and can only buy the token on the Pons curve straight to the dead address. Capped at <span id="burnCaps">…</span>.</p>
     <form id="burnKeyForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="burnKey" type="password" placeholder="Burn wallet private key" autocomplete="off" spellcheck="false" style="flex:1;min-width:260px;font-family:var(--mono)"><button class="btn ghost">Save key</button><button class="btn ghost" type="button" id="burnForget" hidden>Remove key</button></form>
     <form id="burnRun" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center"><span class="note">Burn $</span><input id="burnUsd" type="number" min="1" step="1" value="50" style="width:120px"><button class="btn" id="burnGo">Buy back &amp; burn</button><span class="note" id="burnEth"></span></form>
     <p class="note" id="burnMsg" style="margin-top:10px"></p><p class="err" id="burnErr"></p>
@@ -113,8 +113,8 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "Geist Mono";color:v
         <button type="button" data-t="warn">Dev warning<small>serial devs, high tax, fees elsewhere</small></button>
         <button type="button" data-t="grad">Graduating<small>curves close to or past graduation</small></button>
         <button type="button" data-t="daily">Daily report<small>radar numbers of the last 24h</small></button>
-        <button type="button" data-t="token">One token<small>Ocula's read of a CA</small></button>
-        <button type="button" data-t="promo">Promote a service<small>a Ocula tool</small></button>
+        <button type="button" data-t="token">One token<small>Signal's read of a CA</small></button>
+        <button type="button" data-t="promo">Promote a service<small>a Signal tool</small></button>
         <button type="button" data-t="custom" style="grid-column:span 2">Free topic<small>announcements, updates, anything you write down</small></button>
       </div>
       <form id="f" autocomplete="off">
@@ -137,7 +137,7 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "Geist Mono";color:v
     <div>
       <div class="panel inbox"><div class="pbar" style="margin:0 0 6px"><span class="lbl">Auto drafts <b id="newCount" style="color:var(--acc)"></b></span>
         <span class="stat"><i id="autoDot"></i><span id="autoStat">…</span><button class="btn sm ghost" type="button" id="checkNow">Check now</button></span></div>
-        <p class="note" style="margin:0 0 12px">Ocula watches every Pons launch and writes a draft only when something happens: a clean launch gains momentum, a curve nears or hits graduation, a dev starts serial launching, fresh launches pass every radar check, plus one daily report. Nothing is posted for you.</p>
+        <p class="note" style="margin:0 0 12px">Signal watches every Pons launch and writes a draft only when something happens: a clean launch gains momentum, a curve nears or hits graduation, a dev starts serial launching, fresh launches pass every radar check, plus one daily report. Nothing is posted for you.</p>
         <div class="acts" style="margin-bottom:12px"><button class="btn sm ghost on" type="button" data-show="new">New</button><button class="btn sm ghost" type="button" data-show="all">All</button></div>
         <div id="inbox"><p class="note">Loading…</p></div>
         <details id="autoSet"><summary>Auto draft settings</summary>
@@ -229,14 +229,14 @@ $("f").addEventListener("submit", async (e) => {
   const f = e.target, go = $("go");
   const body = { type, ca: f.ca.value.trim(), service: f.service.value, topic: f.topic.value, lang: f.lang.value, count: f.count.value, link: f.link.value.trim(), emoji: f.emoji.checked };
   store.set("nova.studio.link", body.link);
-  go.disabled = true; $("out").innerHTML = `<p class="load">Ocula is reading the chain and writing</p>`;
+  go.disabled = true; $("out").innerHTML = `<p class="load">Signal is reading the chain and writing</p>`;
   try {
     const r = await fetch("/api/studio", { method: "POST", headers: { "content-type": "application/json", "x-nova-key": key }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({ error: "Bad answer from the server." }));
     if (r.status === 401) { key = ""; store.set("nova.studio.key", ""); show(); $("gateErr").textContent = "Wrong studio key."; return; }
     if (!r.ok) throw new Error(j.error || "Something went wrong.");
     $("out").innerHTML = (j.posts.length ? j.posts.map(postCard).join("") : `<p class="note">No posts came back. Try again.</p>`)
-      + `<details><summary>Data Ocula used</summary><pre>${esc(JSON.stringify(j.data, null, 2))}</pre></details>`;
+      + `<details><summary>Data Signal used</summary><pre>${esc(JSON.stringify(j.data, null, 2))}</pre></details>`;
     wire($("out"));
   } catch (err) { $("out").innerHTML = `<p class="err">${esc(err.message)}</p>`; }
   finally { go.disabled = false; }
@@ -257,7 +257,7 @@ function drawInbox() {
   const a = autoState; if (!a) return;
   const list = a.drafts.filter((d) => view === "all" || d.status === "new"), nNew = a.drafts.filter((d) => d.status === "new").length;
   $("newCount").textContent = nNew ? `· ${nNew} new` : "";
-  document.title = (nNew ? `(${nNew}) ` : "") + "Ocula Studio";
+  document.title = (nNew ? `(${nNew}) ` : "") + "Signal Studio";
   $("autoDot").classList.toggle("on", !!a.watching);
   $("autoStat").textContent = !a.settings.enabled ? "off" : a.lastError ? "error: " + a.lastError : a.watching ? "watching · checked " + ago(a.lastTick) : "starting…";
   if (document.activeElement?.closest?.("#inbox")) return; // do not wipe a draft while it is being edited
@@ -265,8 +265,8 @@ function drawInbox() {
       <div class="ihead"><span><span class="tag ${d.status === "new" ? "new" : ""}">${esc(TYPE[d.type] || d.type)}</span> <span class="why">${esc(d.reason)}</span></span><span class="cnt">${ago(d.at)} · ${esc(d.status)}</span></div>
       ${d.posts.map((p, i) => postCard(p, d.id + "-" + i)).join("")}
       <div class="acts" style="margin-top:10px"><button class="btn sm ghost" type="button" data-st="posted">Mark posted</button><button class="btn sm ghost" type="button" data-st="dismissed">Dismiss</button></div>
-      <details><summary>Data Ocula used</summary><pre>${esc(JSON.stringify(d.data, null, 2))}</pre></details></div>`).join("")
-    : `<p class="note">${view === "new" ? "No new drafts. Ocula writes one when something happens on Pons." : "No drafts yet."}</p>`;
+      <details><summary>Data Signal used</summary><pre>${esc(JSON.stringify(d.data, null, 2))}</pre></details></div>`).join("")
+    : `<p class="note">${view === "new" ? "No new drafts. Signal writes one when something happens on Pons." : "No drafts yet."}</p>`;
   wire($("inbox"));
   $("inbox").querySelectorAll("[data-x]").forEach((x) => x.addEventListener("click", () => setStatus(x.closest(".item").dataset.id, "posted", true)));
   $("inbox").querySelectorAll("[data-st]").forEach((b) => b.addEventListener("click", () => setStatus(b.closest(".item").dataset.id, b.dataset.st)));
@@ -293,7 +293,7 @@ $("af").addEventListener("submit", async (e) => {
   setTimeout(() => ($("afMsg").textContent = ""), 2000);
 });
 setInterval(() => !document.hidden && loadAuto(), 20_000);
-// ---------- $OCULA token address ----------
+// ---------- Token address ----------
 function drawToken(j) {
   const i = j.info;
   $("tokState").textContent = j.token ? "live · holders can unlock" : "not set · tools locked for everyone but you";
@@ -316,7 +316,7 @@ function drawBurn(v) {
   $("burnForget").hidden = !v.address; $("burnGo").disabled = !v.address || !v.token;
   $("burnKey").placeholder = v.address ? "Saved. Paste a new key to replace it" : "Burn wallet private key";
   burnEth();
-  $("burnLog").innerHTML = (v.burned ? `<p class="note">Total $OCULA at the dead address: <b>${n(v.burned, 0)}</b></p>` : "") + v.log.map((x) => `<p class="note">${new Date(x.at).toLocaleString()} · $${x.usd} (${n(x.eth, 5)} ETH) → <b>${n(x.tokens, 0)} $OCULA burned</b> · <a href="${SCAN + x.tx}" target="_blank" rel="noopener">tx</a></p>`).join("");
+  $("burnLog").innerHTML = (v.burned ? `<p class="note">Total tokens at the dead address: <b>${n(v.burned, 0)}</b></p>` : "") + v.log.map((x) => `<p class="note">${new Date(x.at).toLocaleString()} · $${x.usd} (${n(x.eth, 5)} ETH) → <b>${n(x.tokens, 0)} tokens burned</b> · <a href="${SCAN + x.tx}" target="_blank" rel="noopener">tx</a></p>`).join("");
 }
 function burnEth() { const u = Number($("burnUsd").value); $("burnEth").textContent = burnV?.ethUsd && u > 0 ? `≈ ${(u / burnV.ethUsd).toFixed(5)} ETH at $${Math.round(burnV.ethUsd)}` : ""; }
 $("burnUsd").addEventListener("input", burnEth);
@@ -329,9 +329,9 @@ $("burnKeyForm").addEventListener("submit", async (e) => {
 $("burnForget").addEventListener("click", async () => { if (!confirm("Remove the burn wallet key from the server?")) return; try { drawBurn(await api("/api/studio/burn", { privateKey: "" })); $("burnMsg").textContent = "Key removed."; } catch (err) { $("burnErr").textContent = err.message; } });
 $("burnRun").addEventListener("submit", async (e) => {
   e.preventDefault(); const usd = Number($("burnUsd").value); $("burnErr").textContent = ""; $("burnMsg").textContent = "";
-  if (!confirm(`Buy back $${usd} of $OCULA and burn it?`)) return;
+  if (!confirm(`Buy back $${usd} of the token and burn it?`)) return;
   $("burnGo").disabled = true; $("burnMsg").textContent = "Buying and burning…";
-  try { const v = await api("/api/studio/burn", { usd }); drawBurn(v); $("burnMsg").innerHTML = `Done: ${Number(v.done.tokens).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OCULA burned for $${v.done.usd}. <a href="${SCAN + v.done.tx}" target="_blank" rel="noopener">View tx</a>`; }
+  try { const v = await api("/api/studio/burn", { usd }); drawBurn(v); $("burnMsg").innerHTML = `Done: ${Number(v.done.tokens).toLocaleString("en-US", { maximumFractionDigits: 0 })} tokens burned for $${v.done.usd}. <a href="${SCAN + v.done.tx}" target="_blank" rel="noopener">View tx</a>`; }
   catch (err) { $("burnMsg").textContent = ""; $("burnErr").textContent = err.message; }
   $("burnGo").disabled = !burnV?.address;
 });

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 256"><title>c-filter lockup</title><g><g stroke="#161514" stroke-linecap="round" fill="none">
+<path d="M30 86h62M30 128h62M30 170h62" stroke-width="10"/>
+<path d="M150 128h76" stroke-width="24"/>
+</g>
+<rect x="110" y="36" width="22" height="74" rx="4" fill="#161514"/><rect x="110" y="146" width="22" height="74" rx="4" fill="#161514"/></g><text x="292" y="168" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="140" letter-spacing="-7" fill="#161514">signal</text></svg>

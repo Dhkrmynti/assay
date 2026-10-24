@@ -3,215 +3,240 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ocula — the AI agent that reads Pons</title>
-<meta name="description" content="Ocula is the AI agent that reads every Pons launch on Robinhood Chain.">
+<title>Signal Agent — most launches are noise</title>
+<meta name="description" content="Signal Agent reads every Pons launch on Robinhood Chain. Most launches are noise; it finds the signal.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://oculaagent.com/">
-<meta property="og:title" content="Ocula">
-<meta property="og:description" content="The AI agent that reads every Pons launch on Robinhood Chain.">
+<meta property="og:title" content="Signal Agent">
+<meta property="og:description" content="Most launches are noise. Signal Agent finds the signal.">
 <meta property="og:image" content="https://oculaagent.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@oculaagent">
 <meta name="twitter:creator" content="@oculaagent">
 <meta name="twitter:image" content="https://oculaagent.com/og.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ===== Ocula as an agent you talk to — after Manus / Perplexity: broken white, near-black, one serif voice ===== */
+/* ===== Signal Agent: most launches are noise, it finds the signal. Swiss-minimal, one cold accent, calm motion. ===== */
 :root{
-  --bg:#F5F3EC;--surface:#FCFBF7;--sunk:#EEEBE2;--ink:#161514;--ink-2:#45423C;--mute:#86827A;--line:#E2DED3;--line-2:#D2CDC1;
-  --black:#161514;--cream:#F5F3EC;--high:#C8432F;--watch:#B7791F;--okc:#2F7A4A;
-  --serif:"Libre Baskerville",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;
-  --ease:cubic-bezier(.16,1,.3,1);
+  --bg:#F5F3EC;--panel:#EEEBE2;--raise:#FCFBF7;--line:rgba(22,21,20,.1);--line2:rgba(22,21,20,.2);
+  --text:#161514;--dim:#5E5A53;--faint:#9A958B;--sig:#161514;--sig-d:rgba(22,21,20,.05);--int:#B5432E;
+  --ink:#161514;--paper:#F5F3EC;
+  --sans:"Inter Tight",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;--serif:var(--sans);
+  --ease:cubic-bezier(.22,1,.36,1);
 }
+/* inverted sections: black ground, broken-white ink */
+.inv{--bg:#161514;--panel:#1C1B19;--raise:#22201E;--line:rgba(245,243,236,.1);--line2:rgba(245,243,236,.18);--text:#F5F3EC;--dim:#A39E94;--faint:#6B675F;--sig:#F5F3EC;--sig-d:rgba(245,243,236,.06);background:var(--bg);color:var(--text)}
 *{box-sizing:border-box}
-html{background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-::selection{background:var(--ink);color:var(--cream)}
-input,textarea{caret-color:var(--ink)}
-.term ::selection{background:#F5F3EC;color:#161514}
-:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
+html{background:var(--bg);color-scheme:light;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--ink);color:var(--paper)}
+input,textarea{caret-color:var(--sig)}
 a{color:inherit}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 14px;border-radius:9px;background:var(--black);color:var(--cream);border:1px solid var(--black);font:500 14px var(--sans);text-decoration:none;cursor:pointer;transition:background .2s,transform .2s}
-.btn:hover{background:#2c2a27}
-.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
-.btn.ghost:hover{background:var(--sunk)}
-.btn.lg{height:44px;padding:0 20px;font-size:15px;border-radius:11px}
-.btn svg{width:16px;height:16px}
-.btn.buy[aria-disabled="true"]{background:transparent;color:var(--mute);border-color:var(--line-2);cursor:default}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1.5px solid var(--sig);outline-offset:3px;border-radius:4px}
+[hidden]{display:none!important}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+.kick{display:flex;align-items:center;gap:10px;margin:0 0 28px;font:400 12px var(--mono);letter-spacing:.06em;color:var(--dim)}
+.kick i{width:6px;height:6px;border-radius:50%;background:var(--sig);animation:rx 2.4s ease-in-out infinite}
+@keyframes rx{50%{opacity:.25}}
+.kick.plain{margin-bottom:18px;text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--faint)}
+h2{margin:0;font:400 clamp(30px,3.6vw,48px)/1.08 var(--sans);letter-spacing:-.04em}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 15px;border-radius:6px;border:1px solid var(--line2);background:transparent;color:var(--text);font:500 13px var(--sans);text-decoration:none;cursor:pointer;transition:background .25s,border-color .25s,color .25s}
+.btn.line:hover{border-color:var(--dim)}
+.btn.solid{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.solid:hover{background:#2c2a27}
+.btn.solid[aria-disabled="true"]{background:transparent;color:var(--faint);border-color:var(--line2);cursor:default}
+.btn.lg{height:44px;padding:0 22px;font-size:14px}
+#holderBtn.on{border-color:var(--sig);color:var(--sig)}
+.ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:6px;border:1px solid var(--line2);background:transparent;color:var(--dim);cursor:pointer;text-decoration:none;font-size:20px;line-height:1}
+.ic:hover{color:var(--text)}
 
 /* nav */
-.nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);transition:box-shadow .3s}
-body.scrolled .nav{box-shadow:0 1px 0 var(--line)}
-.nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:60px}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font:600 17px var(--sans);letter-spacing:-.01em}
-.brand svg{width:26px;height:auto;margin-right:2px}
-.nav nav{display:flex;gap:4px}
-.nav nav a{padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--ink-2);font:500 14px var(--sans);transition:background .2s,color .2s}
-.nav nav a:hover{background:var(--sunk);color:var(--ink)}
+.nav{position:fixed;inset:0 0 auto;z-index:30;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+body.scrolled .nav{background:rgba(245,243,236,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:64px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font:600 18px var(--sans);letter-spacing:-.03em}
+.glyph{width:24px;height:auto;color:var(--text)}
+.brand span{font-weight:400}.brand span b{font-weight:600}
+.nav nav{display:flex;gap:30px}
+.nav nav a{text-decoration:none;font:400 13.5px var(--sans);color:var(--dim);transition:color .2s}
+.nav nav a:hover{color:var(--text)}
 .nav .r{display:flex;justify-content:flex-end;gap:8px}
 
-/* hero: the agent itself */
-.hero{min-height:calc(100svh - 60px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0 70px}
-.col{width:min(768px,100%);margin:0 auto}
-.live{display:inline-flex;align-items:center;gap:8px;margin:0 auto 26px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font:500 13px var(--sans);color:var(--ink-2);text-decoration:none;transition:border-color .2s}
-.live:hover{border-color:var(--line-2)}
-.live i{width:7px;height:7px;border-radius:50%;background:var(--okc);box-shadow:0 0 0 3px color-mix(in srgb,var(--okc) 18%,transparent);animation:pulse 2.2s infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--okc) 0%,transparent)}}
-.hero h1{margin:0 0 26px;text-align:center;font:400 clamp(28px,3.2vw,38px)/1.4 var(--serif);letter-spacing:-.01em}
-.thread{display:grid;gap:18px;margin:0 0 22px}
+/* hero: words on paper, the field on a black scope */
+.hero{min-height:100svh;display:flex;align-items:center;padding:120px 0 70px}
+.hgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:64px;align-items:center;width:100%}
+.hero h1{margin:0;font:400 clamp(44px,5.6vw,84px)/1 var(--sans);letter-spacing:-.055em;color:var(--faint)}
+.hero h1 span{color:var(--text)}
+.scope{position:relative;margin:0;aspect-ratio:1/1.08;border-radius:16px;background:#161514;overflow:hidden;box-shadow:0 40px 80px -40px rgba(22,21,20,.45)}
+.scope::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(245,243,236,.04) 1px,transparent 1px) 0 0/100% 10%,linear-gradient(90deg,rgba(245,243,236,.04) 1px,transparent 1px) 0 0/10% 100%;pointer-events:none}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sc{position:absolute;font:400 11px var(--mono);letter-spacing:.08em;color:#8F8A81;display:flex;align-items:center;gap:8px}
+.sc b{color:#F5F3EC;font-weight:500}
+.sc.tl{left:18px;top:16px}.sc.tr{right:18px;top:16px;color:#F5F3EC}.sc.bl{left:18px;bottom:16px}.sc.br{right:18px;bottom:16px}
+.sc.tr i{width:6px;height:6px;border-radius:50%;background:#F5F3EC;animation:rx 2.4s ease-in-out infinite}
+.kick i{background:var(--ink)}
+/* the tape: newest launches running by */
+.tape{background:#161514;color:#F5F3EC;overflow:hidden;border-top:1px solid #161514;white-space:nowrap}
+.tt{display:inline-flex;gap:48px;padding:13px 0;font:400 12.5px var(--mono);letter-spacing:.02em;animation:tape 60s linear infinite}
+.tt span{color:#8F8A81}.tt b{color:#F5F3EC;font-weight:500}.tt em{font-style:normal;color:#F5F3EC;border:1px solid rgba(245,243,236,.4);border-radius:3px;padding:1px 6px;margin-left:8px;font-size:10.5px;letter-spacing:.1em}
+.tt i{font-style:normal;color:#D9826E;margin-left:8px;font-size:10.5px;letter-spacing:.1em}
+.tape:hover .tt{animation-play-state:paused}
+@keyframes tape{to{transform:translateX(-50%)}}
+.convo{width:100%;max-width:560px;margin-top:48px}
+.thread{display:grid;gap:18px;max-height:44svh;overflow-y:auto;margin-bottom:18px;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
 .thread:empty{display:none}
-.msg{display:grid;gap:8px;animation:msgin .5s var(--ease)}
-@keyframes msgin{from{opacity:0;transform:translateY(8px)}}
+.msg{display:grid;gap:10px;animation:up .5s var(--ease)}
+@keyframes up{from{opacity:0;transform:translateY(8px)}}
 .msg.u{justify-items:end}
-.msg.u .t{background:var(--sunk);border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:80%;white-space:pre-wrap;word-break:break-word}
-.msg.a{grid-template-columns:28px 1fr;align-items:start;column-gap:12px}
-.msg.a .av{width:28px;height:28px;border-radius:50%;background:var(--black);color:var(--cream);display:grid;place-items:center}
-.msg.a .av svg{width:16px;height:auto}
-.msg.a .t{color:var(--ink);padding-top:3px;white-space:pre-wrap}
+.msg.u .t{border:1px solid var(--line2);border-radius:10px;padding:9px 14px;max-width:85%;white-space:pre-wrap;word-break:break-word;color:var(--dim)}
+.msg.a{grid-template-columns:18px 1fr;column-gap:14px}
+.msg.a .av{width:18px;height:18px;margin-top:5px;color:var(--sig)}
+.msg.a .av svg{width:18px;height:auto}
+.msg.a .t{white-space:pre-wrap}
 .msg.a .acts{grid-column:2;display:flex;gap:8px;flex-wrap:wrap}
-.typing{display:inline-flex;gap:4px;padding-top:10px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--mute);animation:dot 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes dot{50%{opacity:.25}}
-.rep{grid-column:2;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.msg.a .acts .btn{height:30px;font-size:12.5px}
+.typing{display:inline-flex;gap:5px;padding-top:9px}.typing i{width:5px;height:5px;border-radius:50%;background:var(--sig);animation:rx 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+.rep{grid-column:2;border:1px solid var(--line2);border-radius:10px;padding:14px 16px;display:grid;gap:10px;background:var(--raise)}
 .rep .hd{display:flex;align-items:center;gap:10px}
-.rep .hd img{width:34px;height:34px;border-radius:8px;object-fit:cover;background:var(--sunk)}
-.rep .hd b{font:600 16px var(--sans)}.rep .hd span{color:var(--mute);font:13px var(--mono)}
+.rep .hd img{width:30px;height:30px;border-radius:6px;object-fit:cover}
+.rep .hd b{font:600 14.5px var(--sans)}.rep .hd span{color:var(--faint);font:12px var(--mono)}
+.rep .rk{margin-left:auto;font:400 11.5px var(--mono);padding:3px 9px;border-radius:4px;border:1px solid currentColor}
+.rep .rk.low{color:var(--sig)}.rep .rk.medium{color:#D2B57A}.rep .rk.high{color:var(--int)}
 .rep ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.rep li{display:grid;grid-template-columns:10px 1fr;gap:10px;align-items:baseline;font-size:14.5px}
-.rep li i{width:8px;height:8px;border-radius:50%;background:var(--mute);transform:translateY(-1px)}
-.rep li.high i{background:var(--high)}.rep li.watch i{background:var(--watch)}.rep li.ok i{background:var(--okc)}
-.rep p{margin:0;color:var(--ink-2);font-size:14.5px}
-.box{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px 14px 10px 18px;box-shadow:0 1px 2px rgba(22,21,20,.04),0 12px 30px -18px rgba(22,21,20,.18);transition:border-color .2s,box-shadow .2s}
-.box:focus-within{border-color:var(--line-2);box-shadow:0 1px 2px rgba(22,21,20,.05),0 16px 40px -18px rgba(22,21,20,.25)}
-.box textarea{width:100%;border:0;outline:0;resize:none;background:transparent;font:16px/1.5 var(--sans);color:var(--ink);min-height:52px;max-height:200px}
-.box textarea::placeholder{color:var(--mute)}
-.box .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
-.box .hint{color:var(--mute);font-size:13px}
-.send{width:36px;height:36px;border-radius:50%;border:0;background:var(--black);color:var(--cream);display:grid;place-items:center;cursor:pointer;transition:opacity .2s,transform .2s}
+.rep li{display:grid;grid-template-columns:8px 1fr;gap:10px;align-items:baseline;font-size:14px;color:var(--dim)}
+.rep li b{color:var(--text);font-weight:500}
+.rep li i{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.rep li.high i{background:var(--int)}.rep li.ok i{background:var(--sig)}
+.box{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line2);padding:6px 0 10px;transition:border-color .3s}
+.box:focus-within{border-color:var(--sig)}
+.box textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:300 20px/1.45 var(--sans);letter-spacing:-.01em;max-height:160px;padding:4px 0}
+.box textarea::placeholder{color:var(--faint)}
+.send{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:transparent;color:var(--text);display:grid;place-items:center;cursor:pointer;transition:all .25s}
+.send:not(:disabled):hover{background:var(--text);color:var(--bg)}
 .send:disabled{opacity:.3;cursor:default}
-.send:not(:disabled):hover{transform:scale(1.05)}
 .send svg{width:16px;height:16px}
-.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
-.chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-2);font:500 13.5px var(--sans);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
-.chip:hover{background:var(--surface);border-color:var(--line-2);color:var(--ink)}
-.chip svg{width:15px;height:15px}
+.under{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--faint)}
+.asks{display:flex;gap:18px}
+.asks button{border:0;background:none;padding:0;color:var(--dim);font-size:12.5px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:4px}
+.asks button:hover{color:var(--text);text-decoration-color:var(--sig)}
 
-/* sections */
-.sec{padding:120px 0 0}
-.sh{max-width:640px;margin:0 0 44px}
-.sh h2{margin:0;font:400 clamp(30px,3.6vw,46px)/1.2 var(--serif);letter-spacing:-.015em}
-.sh p{margin:14px 0 0;color:var(--ink-2);font-size:17px}
-.center{text-align:center;margin-left:auto;margin-right:auto}
+/* live band */
+section{position:relative}
+.band{padding:140px 0 0}
+.bh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:40px}
+.tally{margin:0;font:400 13px var(--mono);color:var(--dim)}
+.tally b{color:var(--text);font-weight:500}.tally b.s{color:var(--sig)}.tally span{color:var(--faint);margin:0 4px}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:150px 64px minmax(0,1fr) 220px 90px;align-items:center;gap:24px;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;cursor:pointer;transition:background .3s}
+.row:hover{background:var(--raise)}
+.row .sym{font:500 15px var(--sans);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .age{font:12px var(--mono);color:var(--faint)}
+.row svg{width:100%;height:28px;display:block}
+.row svg path{fill:none;stroke-width:1.2;stroke:var(--faint)}
+.row.sig svg path{stroke:var(--sig);stroke-width:1.5}
+.row .why{font-size:13px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .st{justify-self:end;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.row.sig .st{color:var(--sig)}.row.int .st{color:var(--int)}
+.row.sig .sym{color:var(--text)}.row:not(.sig) .sym{color:var(--dim)}
+.row.fresh{animation:fresh 1.6s var(--ease)}
+@keyframes fresh{from{background:var(--sig-d)}}
+.fine{margin:22px 0 0;font-size:13px;color:var(--faint);max-width:70ch}
 
-/* watch Ocula work: pinned, steps on the left, its real reading on the right */
-.work{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center;min-height:100svh;padding-top:80px;padding-bottom:80px}
-.steps{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:4px}
-.steps li{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:14px;color:var(--mute);transition:background .4s,color .4s}
-.steps li .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font:500 13px var(--sans);transition:background .4s,color .4s,border-color .4s}
-.steps li b{display:block;font:600 16px var(--sans);color:inherit}
-.steps li span{font-size:14.5px}
-.steps li.on{background:var(--surface);color:var(--ink)}
-.steps li.on .n{background:var(--black);border-color:var(--black);color:var(--cream)}
-.steps li.on span{color:var(--ink-2)}
-.term{background:var(--black);color:var(--cream);border-radius:20px;padding:22px 24px;min-height:360px;box-shadow:0 30px 60px -30px rgba(22,21,20,.45);display:flex;flex-direction:column}
-.term .top{display:flex;justify-content:space-between;align-items:center;color:#9d988e;font-size:13px;margin-bottom:18px}
-.term .top b{color:var(--cream);font-weight:600}
-.term .lines{display:grid;gap:12px;font:14px/1.55 var(--mono)}
-.term .ln{display:grid;grid-template-columns:22px 1fr;gap:10px;opacity:.28;transition:opacity .5s}
-.term .ln.on{opacity:1}
-.term .ln i{font-style:normal;color:#9d988e}
-.term .ln em{font-style:normal;color:#e9a08f}.term .ln u{text-decoration:none;color:#9fd3a8}
-.term .verdict{margin-top:auto;padding-top:18px;border-top:1px solid rgba(245,243,236,.12);display:flex;justify-content:space-between;align-items:center;font:600 15px var(--sans)}
+/* how */
+.how{padding:150px 0 0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-top:64px}
+.steps svg{width:100%;height:40px;color:var(--sig);margin-bottom:26px}
+.steps b{display:block;font:500 15px var(--sans);letter-spacing:-.01em}
+.steps p{margin:8px 0 0;color:var(--dim);font-size:15px}
 
-/* what Ocula read today: real launches as a gallery */
-.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.case{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:12px;text-decoration:none;transition:transform .5s var(--ease),border-color .3s,box-shadow .3s}
-.case:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 18px 40px -26px rgba(22,21,20,.3)}
-.case .q{align-self:start;justify-self:end;background:var(--sunk);border-radius:14px 14px 4px 14px;padding:8px 12px;font-size:14px;max-width:85%}
-.case .a{display:grid;grid-template-columns:24px 1fr;gap:10px;font-size:14.5px;color:var(--ink-2)}
-.case .a .av{width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--cream);display:grid;place-items:center}.case .a .av svg{width:14px;height:auto}
-.case .a b{color:var(--ink)}
-.case .tag{justify-self:start;align-self:end;display:inline-flex;align-items:center;justify-content:center;height:24px;line-height:1;font:500 12px/1 var(--sans);padding:0 10px;border-radius:999px;background:var(--sunk);color:var(--ink-2)}
-.case .tag.ok{background:color-mix(in srgb,var(--okc) 12%,transparent);color:var(--okc)}.case .tag.held{background:color-mix(in srgb,var(--high) 10%,transparent);color:var(--high)}
-.case.big{grid-column:span 2}
+/* tools */
+.tools{margin-top:150px;padding:130px 0 140px}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:56px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.tgrid a{display:grid;align-content:space-between;gap:40px;min-height:170px;padding:22px 22px 24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-decoration:none;transition:background .3s}
+.tgrid a:hover{background:var(--panel)}
+.tgrid span{font:500 17px var(--sans);letter-spacing:-.02em}
+.tgrid small{font-size:13.5px;color:var(--dim);line-height:1.5}
+.tgrid a.free span::after{content:"Free";margin-left:10px;font:400 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--sig);vertical-align:2px}
+body:not(.holder) .tgrid a:not(.free):not(.ask) span::after{content:"Holders";margin-left:10px;font:400 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);vertical-align:2px}
 
-/* tools window sits dark on the light page */
-.ws{--ws-r:18px}
+/* token */
+.token{padding:140px 0 0}
+.tk{display:grid;grid-template-columns:1.1fr .9fr;gap:80px;align-items:end}
+.lead{margin:22px 0 0;color:var(--dim);font-size:17px;max-width:46ch}
+.cta{display:flex;gap:10px;margin-top:34px;flex-wrap:wrap}
+.facts{margin:0;border-top:1px solid var(--line)}
+.facts div{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.facts dt{color:var(--faint);font-size:14px}.facts dd{margin:0;font-size:14px}
+.ca{border:0;background:none;padding:0;font:13px var(--mono);color:var(--text);cursor:pointer}
+.ca:hover{color:var(--sig)}
 
-/* flow */
-.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative}
-.flow svg.line{position:absolute;left:0;right:0;top:22px;width:100%;height:4px;overflow:visible}
-.flow .track{stroke:var(--line-2);stroke-width:2}.flow .drawn{stroke:var(--ink);stroke-width:2}
-.fstep{position:relative;display:grid;gap:10px;text-decoration:none}
-.fstep .dot{width:44px;height:44px;border-radius:50%;background:var(--bg);border:1px solid var(--line-2);display:grid;place-items:center;font:500 14px var(--sans);transition:background .4s,color .4s,border-color .4s}
-.fstep.on .dot{background:var(--black);border-color:var(--black);color:var(--cream)}
-.fstep b{font:400 22px var(--serif)}
-.fstep span{color:var(--ink-2);font-size:14.5px}
-.fstep .viz{max-width:160px;color:var(--ink);opacity:.5;transition:opacity .4s}.fstep.on .viz{opacity:1}
+footer{margin-top:160px}
+.fr{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding-top:28px;padding-bottom:28px;font-size:13.5px;color:var(--dim)}
+.fr .links{display:flex;gap:26px}.fr .links a{text-decoration:none}.fr .links a:hover{color:var(--text)}
+.fr.small{border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
 
-/* safety */
-.safe{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
-.sf{padding:26px 26px 26px 0}.sf+.sf{padding-left:26px;border-left:1px solid var(--line)}
-.sf .viz{max-width:200px;color:var(--ink);margin-bottom:6px}
-.sf b{display:block;font:400 22px/1.3 var(--serif)}
-.sf p{margin:8px 0 0;color:var(--ink-2);font-size:15px}
-
-/* close */
-.close{padding:140px 0 120px;text-align:center}
-.close h2{margin:0 0 26px;font:400 clamp(32px,4vw,52px)/1.2 var(--serif)}
-footer{border-top:1px solid var(--line)}
-.fgrid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:40px;padding-top:56px;padding-bottom:48px}
-.fbrand p{margin:14px 0 16px;color:var(--ink-2);max-width:32ch;font-size:15px}
-.fstat{display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-size:13px}
-.fstat i{width:7px;height:7px;border-radius:50%;background:var(--okc)}
-.fcol{display:grid;gap:10px;align-content:start}
-.fcol b{font:600 13px var(--sans);color:var(--ink);margin-bottom:4px}
-.fcol a{color:var(--ink-2);text-decoration:none;font-size:14.5px;transition:color .2s}
-.fcol a:hover{color:var(--ink)}
-.fbottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:18px;padding-bottom:26px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}
-@media (max-width:900px){.fgrid{grid-template-columns:1fr 1fr;gap:30px}.fbrand{grid-column:1/-1}}
-
-@media (max-width:900px){
-  .nav nav{display:none}.nav .wrap{grid-template-columns:1fr auto}
-  .work{grid-template-columns:1fr;gap:28px;min-height:0;padding-top:20px;padding-bottom:20px}
-  .gal{grid-template-columns:1fr}.case.big{grid-column:auto}
-  .flow{grid-template-columns:1fr;gap:22px}.flow svg.line{display:none}.fstep{grid-template-columns:44px 1fr;column-gap:14px;row-gap:2px;align-items:center}.fstep span:not(.dot){grid-column:2}.fstep .viz{display:none}
-  .safe{grid-template-columns:1fr}.sf+.sf{padding-left:0;border-left:0;border-top:1px solid var(--line)}
-  .sec{padding-top:90px}
-}
-@media (prefers-reduced-motion:reduce){.msg,.live i{animation:none}}
-
-/* holder access */
-.modal{position:fixed;inset:0;z-index:60;background:rgba(22,21,20,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
-.modal[hidden]{display:none}
-.sheet{position:relative;width:min(460px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:grid;gap:14px;box-shadow:0 30px 80px -30px rgba(22,21,20,.5)}
-.sheet h3{margin:0;font:400 28px var(--serif)}
-.sheet p{margin:0;color:var(--ink-2);font-size:15.5px}
-.sheet .mmark svg{width:42px;height:auto}
-.sheet .x{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:26px;color:var(--mute);cursor:pointer}
-.merr{color:var(--high)!important;font-size:14px!important}.merr:empty{display:none}
-#mOwner summary{cursor:pointer;color:var(--mute);font-size:13.5px}
-#ownerForm{display:flex;gap:8px;margin-top:10px}
-#ownerForm input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font:14px var(--sans)}
-.nav .r{gap:8px}
-#holderBtn.on{border-color:var(--okc);color:var(--okc)}
+/* tools drawer */
+.drawer{position:fixed;inset:0;z-index:50;background:rgba(12,11,10,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;justify-content:flex-end;animation:fd .3s ease}
+@keyframes fd{from{opacity:0}}
+.drawer>*{width:min(1240px,100%)}
+.dhead{position:absolute;right:0;top:0;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px 0 26px;background:#1C1B19;color:#F5F3EC;border-left:1px solid var(--line);border-bottom:1px solid var(--line);font-size:14px}
+.dhead b{font-weight:500}
+.dbody{margin-top:60px;height:calc(100svh - 60px);overflow-y:auto;background:#1C1B19;border-left:1px solid var(--line);padding:18px;animation:sl .5s var(--ease)}
+@keyframes sl{from{transform:translateX(30px);opacity:0}}
+.dbody .ws{--ws-r:10px;box-shadow:none}
+body.drawer-open{overflow:hidden}
 .ws .tool{position:relative}
-[hidden]{display:none!important}
-.ws .lock{position:absolute;inset:0;z-index:5;display:grid;place-items:start center;padding-top:110px!important;text-align:center;padding:30px;background:rgba(22,21,20,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.ws .lock{position:absolute;inset:0;z-index:5;display:grid;place-items:start center;padding:110px 30px 30px;text-align:center;background:rgba(22,21,20,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .ws .lock div{display:grid;gap:12px;justify-items:center;max-width:380px}
-.ws .lock svg{width:34px;height:34px;color:#F5F3EC}
-.ws .lock b{font:400 24px var(--serif);color:#F5F3EC}
-.ws .lock p{margin:0;color:#b9b4aa;font-size:14.5px}
+.ws .lock svg{width:26px;height:26px;color:#F5F3EC}
+.ws .lock b{font:400 22px var(--sans);letter-spacing:-.03em;color:#F5F3EC}
+.ws .lock p{margin:0;color:#A39E94;font-size:14.5px}
+.ws .lock .btn{height:38px;padding:0 20px;border-radius:6px;background:#F5F3EC;color:#161514;border:1px solid #F5F3EC;font:500 14px var(--sans)}
 body.holder .ws .lock{display:none}
-body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-block;width:11px;height:11px;margin-left:7px;vertical-align:-1px;background:currentColor;opacity:.55;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat}
-@media (max-width:900px){#holderBtn{display:none}}
-.rep .rk{margin-left:auto;font:600 13px var(--sans);padding:5px 11px;border-radius:999px;white-space:nowrap}
-.rep .rk.low{background:rgba(47,122,74,.12);color:var(--okc)}.rep .rk.medium{background:rgba(183,121,31,.14);color:var(--watch)}.rep .rk.high{background:rgba(200,67,47,.12);color:var(--high)}
 
-/* X link in the nav */
-.nav .xlink{width:40px;padding-left:0;padding-right:0}
+/* modal */
+.modal{position:fixed;inset:0;z-index:70;background:rgba(12,11,10,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;place-items:center;padding:20px}
+.sheet{position:relative;width:min(440px,100%);background:var(--raise);border:1px solid var(--line2);border-radius:12px;padding:32px;display:grid;gap:14px}
+.sheet h3{margin:0;font:400 26px var(--sans);letter-spacing:-.03em}
+.sheet p{margin:0;color:var(--dim)}
+.sheet .x{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:24px;color:var(--faint);cursor:pointer}
+.merr{color:var(--int)!important;font-size:14px}.merr:empty{display:none}
+#mOwner summary{cursor:pointer;color:var(--faint);font-size:13px}
+#ownerForm{display:flex;gap:8px;margin-top:10px}
+#ownerForm input{flex:1;min-width:0;height:36px;border-radius:6px;border:1px solid var(--line2);background:var(--raise);color:var(--text);padding:0 12px;font:14px var(--sans)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:1000px){
+  .wrap{padding:0 20px}
+  .nav nav{display:none}.nav .wrap{grid-template-columns:1fr auto}#holderBtn{display:none}
+  .hero{padding-top:96px;min-height:0}
+  .hgrid{grid-template-columns:1fr;gap:40px}.scope{aspect-ratio:1/.8}
+  .box textarea{font-size:17px}
+  .kick .bk{display:none}
+  .row{grid-template-columns:minmax(0,1fr) 56px auto;gap:12px}
+  .row .why,.row .age{display:none}
+  .steps{grid-template-columns:1fr;gap:40px}
+  .tgrid{grid-template-columns:1fr 1fr}.tgrid a{min-height:150px}
+  .tk{grid-template-columns:1fr;gap:50px}
+  .band,.how,.token{padding-top:110px}.tools{margin-top:110px;padding:100px 0}
+}
+@media (max-width:520px){.tgrid{grid-template-columns:1fr}.tgrid a{min-height:0;gap:14px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.rv{opacity:1;transform:none}}
+.tgrid a.ask{background:var(--sig-d)}.tgrid a.ask span{color:var(--sig)}
+
+/* nav over the black tools section */
+body.scrolled .nav{box-shadow:0 1px 0 var(--line)}
+.sc.bl.hot{color:#F5F3EC}.sc.bl.hot b{font-weight:600}
 
 /* ===== workspace window: the same tools in every design, always a dark instrument ===== */
 .ws{--bg:#161514;--text:#F5F3EC;--mid:#aaa59c;--dim:#7a766f;--line:rgba(245,243,236,.09);--line2:rgba(245,243,236,.16);--panel:rgba(28,27,25,.9);
@@ -522,63 +547,101 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
 <body>
 
 <header class="nav"><div class="wrap">
-  <a class="brand" href="#top"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>ocula</a>
-  <nav><a href="#work">How Ocula works</a><a href="#app">Tools</a><a href="#flow">Launch flow</a><a href="#safety">Safety</a></nav>
-  <div class="r"><a class="btn ghost xlink" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Ocula on X" title="@oculaagent on X"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><button class="btn ghost" type="button" id="holderBtn">Holder access</button><a class="btn buy" id="buyNova" aria-disabled="true">$OCULA · Soon</a></div>
+  <a class="brand" href="#top" id="home"><svg class="glyph" viewBox="20 30 216 196" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>signal</b> agent</span></a>
+  <nav><a href="#band">Signal</a><a href="#how">How it works</a><a href="#tools">Tools</a><a href="#token">Token</a></nav>
+  <div class="r">
+    <a class="ic" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Signal on X"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <button class="btn line" type="button" id="holderBtn">Holder access</button>
+    <a class="btn solid" id="buyNova" aria-disabled="true">Token · Soon</a>
+  </div>
 </div></header>
 
 <main>
   <section class="hero" id="top">
-    <div class="col">
-      <div style="text-align:center"><a class="live" href="#app" data-open="radar"><i></i><span>Reading Pons now · <span id="nLaunch">—</span> launches today</span></a></div>
-      <h1>What should Ocula read for you?</h1>
-      <div class="thread" id="thread" aria-live="polite"></div>
-      <form class="box" id="ask" autocomplete="off">
-        <textarea id="askIn" rows="2" placeholder="Paste a token CA, or ask Ocula anything…" aria-label="Message Ocula"></textarea>
-        <div class="bar"><span class="hint" id="hint">Ocula reads Pons on Robinhood Chain. It never asks for your keys.</span><button class="send" id="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-      </form>
-      <div class="chips">
-        <button class="chip" type="button" data-ask="What's launching on Pons right now?"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 12l5-3" stroke="currentColor" stroke-width="1.8"/></svg>What's launching now?</button>
-        <button class="chip" type="button" data-tool="scan"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.8"/></svg>Scan a token</button>
-        <button class="chip" type="button" data-tool="snipe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5" stroke="currentColor" stroke-width="1.8"/></svg>Snipe a launch</button>
-        <button class="chip" type="button" data-tool="fees"><svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="2" fill="currentColor"/><circle cx="5" cy="17" r="2" fill="currentColor"/><circle cx="19" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 7c6 0 7 5 9 5M7 17c6 0 7-5 9-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Claim my fees</button>
-        <button class="chip" type="button" data-tool="launch"><svg viewBox="0 0 24 24"><path d="M4 20c8 0 12-5 16-16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 4v16h16" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Launch a token</button>
-        <button class="chip" type="button" data-tool="kit"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 10h14M5 15h9M5 20h6" stroke="currentColor" stroke-width="1.8"/></svg>Write a launch kit</button>
+    <div class="wrap hgrid">
+      <div class="hl">
+        <p class="kick"><i></i>Receiving<span class="bk">&nbsp;· block <span id="nBlock">—</span></span>&nbsp;· <span id="nLaunch">—</span> launches today</p>
+        <h1>Most launches are noise.<br><span>Signal Agent finds the signal.</span></h1>
+        <div class="convo">
+          <div class="thread" id="thread" aria-live="polite"></div>
+          <form class="box" id="ask" autocomplete="off">
+            <textarea id="askIn" rows="1" placeholder="Ask Signal, or paste a token CA" aria-label="Message Signal"></textarea>
+            <button class="send" id="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </form>
+          <div class="under"><span class="hint" id="hint">On-chain data only. Signal never asks for your keys.</span>
+            <span class="asks"><button type="button" data-ask="What is a real signal on Pons right now?">What's a signal now?</button><button type="button" data-ask="Which new launches are noise or traps, and why?">What's noise?</button></span></div>
+        </div>
       </div>
+      <figure class="scope" aria-label="Live field of Pons launches">
+        <canvas id="field" aria-hidden="true"></canvas>
+        <figcaption class="sc tl">CH·01 &nbsp;PONS / ROBINHOOD</figcaption>
+        <figcaption class="sc tr"><i></i>LIVE</figcaption>
+        <figcaption class="sc bl">One line per launch</figcaption>
+        <figcaption class="sc br"><b id="scSig">0</b> signal · <b id="scNoise">0</b> noise</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section id="work">
-    <div class="wrap work" id="workPin">
-      <div>
-        <div class="sh" style="margin:0"><h2>Ocula reads every launch before you do.</h2><p>Each new Pons token goes through the same four steps, in seconds, on-chain.</p></div>
-        <ol class="steps" id="steps">
-          <li><span class="n">1</span><div><b>Catches the launch</b><span>The moment the factory emits it.</span></div></li>
-          <li><span class="n">2</span><div><b>Checks the deployer</b><span>Has the dev sold? Other launches, where the fees go.</span></div></li>
-          <li><span class="n">3</span><div><b>Reads the token</b><span>Creator tax, socials, and whether people are really buying.</span></div></li>
-          <li><span class="n">4</span><div><b>Gives a verdict</b><span>Cleared, held, or picked for the sniper.</span></div></li>
-        </ol>
-      </div>
-      <div class="term" id="term">
-        <div class="top"><span><b>Ocula</b> · reading the newest launch</span><span id="termAge">live</span></div>
-        <div class="lines" id="termLines"></div>
-        <div class="verdict"><span id="termVerdict">…</span><a class="btn ghost" style="color:var(--cream);border-color:rgba(245,243,236,.25)" href="#app" id="termScan">Full report</a></div>
-      </div>
-    </div>
-  </section>
+  <div class="tape" aria-label="Newest launches"><div class="tt" id="tape"></div></div>
 
-  <section class="sec" id="today">
+  <section class="band" id="band">
     <div class="wrap">
-      <div class="sh"><h2>Today on Pons, as Ocula saw it.</h2><p>Real launches from the last hour, and what Ocula made of them.</p></div>
-      <div class="gal" id="gal"></div>
+      <div class="rv bh"><div><p class="kick plain">Live band</p><h2>Every launch, received.</h2></div><p class="tally"><b id="tRx">0</b> received <span>·</span> <b class="s" id="tSig">0</b> signal <span>·</span> <b id="tNoise">0</b> noise</p></div>
+      <div class="rv rows" id="rows"></div>
+      <p class="fine">Signal means every check passed: the dev still holds, tax is fair, socials are set, and new buyers keep arriving. Not advice.</p>
     </div>
   </section>
 
-  <section class="sec" id="app">
+  <section class="how" id="how">
     <div class="wrap">
-      <div class="sh"><h2>Everything Ocula can do, in one place.</h2><p>The Pons Launchpad is free for everyone. Every other tool opens for $OCULA holders. Keys and seeds always stay in your browser.</p></div>
-      <div class="ws">
-  <div class="ws-bar"><span>Ocula <b>Workspace</b></span><span class="t" id="wsTitle">Scanner</span><span class="r"><i class="dot"></i>Live · Robinhood Chain</span></div>
+      <p class="rv kick plain">How it works</p>
+      <h2 class="rv">Receive. Filter. Report.</h2>
+      <div class="rv steps">
+        <div><svg viewBox="0 0 120 40" aria-hidden="true"><path d="M0 20h20l4-12 6 24 6-30 6 34 6-26 5 18 4-8h63" fill="none" stroke="currentColor" stroke-width="1.2"/></svg><b>01 · Receive</b><p>Every Pons launch on Robinhood Chain, the block it happens.</p></div>
+        <div><svg viewBox="0 0 120 40" aria-hidden="true"><path d="M0 20c10-8 14 8 22 0s12-10 18 0 10 8 16 0" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".35"/><path d="M56 20h12M76 20c8-14 14-14 22 0s14 14 22 0" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M66 12v16" stroke="currentColor" stroke-width="1.2"/></svg><b>02 · Filter</b><p>Did the dev dump? Bundled wallets? A fake X? Are buyers still arriving?</p></div>
+        <div><svg viewBox="0 0 120 40" aria-hidden="true"><path d="M0 20h120" stroke="currentColor" stroke-width="1.2" opacity=".25"/><path d="M40 20c6-16 14-16 20 0s14 16 20 0" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="60" cy="20" r="2.4" fill="currentColor"/></svg><b>03 · Report</b><p>Signal or noise, with every reason, in plain words.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tools inv" id="tools">
+    <div class="wrap">
+      <p class="rv kick plain">Tools</p>
+      <h2 class="rv">One receiver. Seven instruments.</h2>
+      <div class="rv tgrid">
+        <a href="#app" data-open="scan"><span>Scanner</span><small>A full report on any token: rug risk, bundles, X check.</small></a>
+        <a href="#app" data-open="radar"><span>Launch Radar</span><small>Every new launch, filtered live.</small></a>
+        <a href="#app" data-open="snipe"><span>Sniper</span><small>Manual, or let the agent buy the signal.</small></a>
+        <a href="#app" data-open="fees"><span>Fee Claimer</span><small>Creator fees from one wallet or 200 accounts.</small></a>
+        <a href="#app" data-open="launch" class="free"><span>Pons Launchpad</span><small>Launch from your own wallet. Always free.</small></a>
+        <a href="#app" data-open="kit"><span>Launch Kit</span><small>Lore, bio, thread and launch post, written for you.</small></a>
+        <a href="#app" data-open="agent"><span>Agent Studio</span><small>Design the AI agent of your own token.</small></a>
+        <a href="#top" class="ask free-none" id="askCell"><span>Ask Signal →</span><small>Not sure where to start? Ask the receiver.</small></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="token" id="token">
+    <div class="rv wrap tk">
+      <div><p class="kick plain">Token</p><h2>Hold the signal.</h2><p class="lead">Hold 0.1% of the token supply and sign once with your wallet: every tool opens. Signing is free and sends nothing. The Pons Launchpad stays free for everyone.</p>
+        <div class="cta"><a class="btn solid lg" id="buy2" aria-disabled="true">Token · Soon</a><button class="btn line lg" type="button" data-unlock>Holder access</button></div></div>
+      <dl class="facts"><div><dt>Chain</dt><dd>Robinhood Chain</dd></div><div><dt>Launched on</dt><dd>Pons</dd></div><div><dt>Unlock</dt><dd>0.1% of supply</dd></div><div><dt>Contract</dt><dd><button type="button" id="caCopy" class="ca">—</button></dd></div></dl>
+    </div>
+  </section>
+</main>
+
+<footer class="inv">
+  <div class="wrap fr">
+    <a class="brand" href="#top"><svg class="glyph" viewBox="20 30 216 196" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>signal</b> agent</span></a>
+    <span class="links"><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X</a><a href="#tools">Tools</a><a href="#token">Token</a></span>
+  </div>
+  <div class="wrap fr small"><span>© 2026 Signal. Most launches are noise.</span><span>Not financial advice. On-chain data only.</span></div>
+</footer>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="dhead"><span><b id="dTitle">Tools</b></span><button type="button" class="ic" id="dClose" aria-label="Close tools">×</button></div>
+  <div class="dbody" id="app"><div class="ws">
+  <div class="ws-bar"><span>Signal <b>Workspace</b></span><span class="t" id="wsTitle">Scanner</span><span class="r"><i class="dot"></i>Live · Robinhood Chain</span></div>
   <div class="ws-body">
     <div class="tabs" role="tablist" id="tabs">
       <button role="tab" data-t="scan"><span class="ti">01</span><span class="tn">Scanner</span><span class="td">Token report</span></button>
@@ -589,7 +652,7 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
       <button role="tab" data-t="launch"><span class="ti">05</span><span class="tn">Pons Launchpad</span><span class="td">Always free</span></button>
       <button role="tab" data-t="kit"><span class="ti">06</span><span class="tn">Launch Kit</span><span class="td">AI copywriter</span></button>
       <button role="tab" data-t="agent"><span class="ti">07</span><span class="tn">Agent Studio</span><span class="td">Design your AI</span></button>
-      <div class="tside">KEYS HELD · 0<br>SEEDS SAVED · 0<br>MODEL · OCULA</div>
+      <div class="tside">KEYS HELD · 0<br>SEEDS SAVED · 0<br>MODEL · SIGNAL</div>
     </div>
     <div class="panes">
 <div class="tool panel hud" data-p="launch">
@@ -618,7 +681,7 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
               <label>Discord<input name="discord" placeholder="https://discord.gg/…"></label>
             </div>
             <label class="full">Dev buy (optional, ETH)<span class="inrow" style="margin:6px 0 0"><input name="devBuy" inputmode="decimal" placeholder="0.0 (ETH)"><button class="btn sm ghost" type="button" id="lpMax">MAX</button></span><span id="lpDevHint" class="note" style="margin:6px 0 0"></span></label>
-            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Ocula sniper wallet.</small>
+            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Signal sniper wallet.</small>
               <span class="inrow" style="margin:6px 0 0"><input name="exempt" placeholder="0x…, 0x…" spellcheck="false"><button class="btn sm ghost" type="button" id="lpAddSniper">Add my sniper wallet</button></span></label>
           </form>
           <aside class="lpside">
@@ -645,7 +708,7 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
 
       <div class="tool panel hud rv" data-p="scan">
         <form class="inrow" id="scanForm"><input id="scanCa" placeholder="Paste a Pons token address (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm" id="scanGo">Scan</button></form>
-        <div id="scanOut"><p class="empty">Paste any Pons token CA. Ocula checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
+        <div id="scanOut"><p class="empty">Paste any Pons token CA. Signal checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
       </div>
 
       <div class="tool panel hud" data-p="radar">
@@ -661,12 +724,12 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
         </div>
         <div class="snmode" id="snModeSw">
           <button type="button" data-mode="manual">Manual snipe<small>Your filters below catch every new launch in its first seconds</small></button>
-          <button type="button" data-mode="agent">Agent snipe<small>Ocula's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
+          <button type="button" data-mode="agent">Agent snipe<small>Signal's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
         </div>
         <div id="snAgentBox" class="agbox" hidden>
-          <div class="agtop"><div><span class="lbl">Minimum Ocula score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
+          <div class="agtop"><div><span class="lbl">Minimum Signal score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
             <div class="agval"><b id="snMinVal">75</b><span>/100</span></div></div>
-          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Ocula score">
+          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Signal score">
           <div class="agticks"><span>50 · more buys</span><span>95 · only the best</span></div>
           <p class="agnote">Buy size, budget, take profit, stop loss, max positions, tax limits and blocked devs/keywords from Settings still apply. Each token is bought once.</p>
         </div>
@@ -677,9 +740,9 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
           <div id="mbMsg" class="note" style="margin-top:8px"></div>
         </div>
 
-        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Ocula picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
-          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Ocula's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
-          <div class="picks" id="pkList"><p class="note">Loading Ocula picks…</p></div></div>
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Signal picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
+          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Signal's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
+          <div class="picks" id="pkList"><p class="note">Loading Signal picks…</p></div></div>
 
         <div class="snsec"><h4>Open positions</h4><div id="snPos"><p class="note">No positions.</p></div></div>
 
@@ -717,17 +780,17 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
             <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="snSave">Save settings</button><button class="btn ghost" type="button" id="snNewWallet">Make a new wallet</button><button class="btn ghost" type="button" id="snExport">Export key</button><button class="btn ghost" type="button" id="snWithdraw">Withdraw ETH</button><button class="btn ghost" type="button" id="snForget">Remove key</button></div>
           </form>
         </div>
-        <p class="note">Same engine as the Ocula sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Ocula only relays the signed transactions. Keep the tab open while it runs.</p>
+        <p class="note">Same engine as the Signal sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Signal only relays the signed transactions. Keep the tab open while it runs.</p>
       </div>
 
       <div class="tool panel hud" data-p="fees">
         <div class="fmode"><button type="button" data-m="one" class="on">One wallet</button><button type="button" data-m="seed">Many accounts (seed phrase)</button></div>
         <div id="feeOne">
           <form class="inrow" id="feeForm"><input id="feeWallet" placeholder="Your creator wallet (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm ghost" type="button" id="feeConnect">Connect wallet</button><button class="btn sm" id="feeGo">Check</button></form>
-          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Ocula never sees your key.</p></div>
+          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Signal never sees your key.</p></div>
         </div>
         <div id="feeSeed" hidden>
-          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Ocula only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
+          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Signal only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
           <div class="bar2" style="margin-top:14px"><span class="lbl">Seed phrase</span><span style="display:flex;gap:14px;align-items:center"><label class="tog"><input type="checkbox" id="showWords"> show words</label><select id="wordCount" class="selsm"><option value="12">12 words</option><option value="24">24 words</option></select></span></div>
           <div class="words" id="words"></div>
           <p class="note" style="margin:8px 0 0">Tip: paste the whole phrase into the first box, it fills every box.</p>
@@ -756,10 +819,10 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
       <div class="tool panel hud" data-p="agent">
         <div class="studio">
           <form id="agentForm" class="grid2" style="grid-template-columns:1fr">
-            <label>Agent name<input name="name" maxlength="40" placeholder="Ocula" value="Ocula"></label>
+            <label>Agent name<input name="name" maxlength="40" placeholder="Signal" value="Signal"></label>
             <label>Persona<textarea name="persona" maxlength="600" rows="6">An android AI agent that reads Robinhood Chain for its holders. Calm, sharp, a little dry. Short sentences. Always points to on-chain facts, never hypes.</textarea></label>
             <p class="note" style="margin:0">Design your token's AI agent and talk to it. When you like it, we launch it with the fee engine, site and admin panel.</p>
-            <a class="btn sm ghost" href="#contact">Launch it with Ocula <span class="ar">→</span></a>
+            <a class="btn sm ghost" href="#contact">Launch it with Signal <span class="ar">→</span></a>
           </form>
           <div class="chat">
             <div class="msgs" id="msgs"><div class="m a">Write a persona on the left, then say hi.</div></div>
@@ -771,74 +834,19 @@ body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-bl
     </div>
   </div>
 </div>
+</div>
+</div>
 
-    </div>
-  </section>
-
-  <section class="sec" id="flow">
-    <div class="wrap">
-      <div class="sh"><h2>From idea to fees.</h2><p>Launching your own token? Ocula covers every step.</p></div>
-      <div class="flow" id="flowRow">
-        <svg class="line" viewBox="0 0 1000 4" preserveAspectRatio="none" aria-hidden="true"><path class="track" d="M22 2H978"/><path class="drawn" id="drawn" d="M22 2H978" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/></svg>
-        <a class="fstep" href="#app" data-open="kit"><span class="dot">1</span><b>Write</b><span>Launch Kit writes the lore, bio and posts.</span><div class="viz v-kit"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><rect class="s o4" x="70" y="34" width="160" height="132" rx="8"/>
-<rect class="f ln" x="88" y="58" width="96" height="9" rx="4.5"/><rect class="f o4 ln" x="88" y="82" width="124" height="6" rx="3"/><rect class="f o4 ln" x="88" y="98" width="110" height="6" rx="3"/><rect class="f o4 ln" x="88" y="114" width="118" height="6" rx="3"/><rect class="f o2" x="88" y="140" width="40" height="10" rx="5"/></svg></div></a>
-        <a class="fstep" href="#app" data-open="launch"><span class="dot">2</span><b>Launch</b><span>Pons Launchpad, from your own wallet.</span><div class="viz v-launch"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><path class="s o2" d="M40 170H260M40 170V30"/><path class="s o2" d="M40 38H260" stroke-dasharray="3 5"/>
-<path class="s curve" d="M40 168C120 166 180 140 244 38" style="stroke-width:2.2"/><circle class="s grad" cx="244" cy="38" r="12"/><circle class="f grad" cx="244" cy="38" r="5"/></svg></div></a>
-        <a class="fstep" href="#app" data-open="snipe"><span class="dot">3</span><b>Snipe</b><span>Buy first at 0% snipe tax.</span><div class="viz v-snipe"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="f o4" cx="150" cy="100" r="7"/><circle class="s hit" cx="150" cy="100" r="16"/>
-<g class="ret"><circle class="s" cx="150" cy="100" r="40"/><path class="s" d="M150 48v22M150 130v22M98 100h22M180 100h22"/></g></svg></div></a>
-        <a class="fstep" href="#app" data-open="radar"><span class="dot">4</span><b>Watch</b><span>Scanner and Radar on your token.</span><div class="viz v-radar"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="s o2" cx="150" cy="100" r="84"/><circle class="s o2" cx="150" cy="100" r="56"/><circle class="s o2" cx="150" cy="100" r="28"/><path class="s o2" d="M66 100h168M150 16v168"/></svg><div class="sweep"></div><div class="blips" data-blips></div></div></a>
-        <a class="fstep" href="#app" data-open="fees"><span class="dot">5</span><b>Claim</b><span>Creator fees, one wallet or a hundred.</span><div class="viz v-fees"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="f acc" cx="40" cy="40" r="5" style="animation-delay:0.0s"/><path class="s o4 flow" d="M46 40C 170 40 180 100 236 100"/><circle class="f acc" cx="62" cy="40" r="5" style="animation-delay:0.2s"/><path class="s o4 flow" d="M68 40C 170 40 180 100 236 100"/><circle class="f acc" cx="84" cy="40" r="5" style="animation-delay:0.4s"/><path class="s o4 flow" d="M90 40C 170 40 180 100 236 100"/><circle class="f acc" cx="40" cy="80" r="5" style="animation-delay:0.6s"/><path class="s o4 flow" d="M46 80C 170 80 180 100 236 100"/><circle class="f acc" cx="62" cy="80" r="5" style="animation-delay:0.8s"/><path class="s o4 flow" d="M68 80C 170 80 180 100 236 100"/><circle class="f acc" cx="84" cy="80" r="5" style="animation-delay:1.0s"/><path class="s o4 flow" d="M90 80C 170 80 180 100 236 100"/><circle class="f acc" cx="40" cy="120" r="5" style="animation-delay:1.2s"/><path class="s o4 flow" d="M46 120C 170 120 180 100 236 100"/><circle class="f acc" cx="62" cy="120" r="5" style="animation-delay:1.4s"/><path class="s o4 flow" d="M68 120C 170 120 180 100 236 100"/><circle class="f acc" cx="84" cy="120" r="5" style="animation-delay:1.6s"/><path class="s o4 flow" d="M90 120C 170 120 180 100 236 100"/>
-<circle class="s" cx="250" cy="100" r="18"/><circle class="f" cx="250" cy="100" r="7"/></svg></div></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" id="safety">
-    <div class="wrap">
-      <div class="sh"><h2>Built so you never have to trust it blindly.</h2></div>
-      <div class="safe">
-        <div class="sf"><div class="viz v-key"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="s o4" cx="130" cy="100" r="22"/><path class="s o4" d="M152 100h70M200 100v16M214 100v12"/><path class="s cross" d="M90 160L210 40" style="stroke-width:2.4"/></svg></div><b>Ocula never holds your keys.</b><p>Keys and seeds stay in your browser. Ocula only relays transactions you already signed.</p></div>
-        <div class="sf"><div class="viz v-clamp"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><path class="s o2" d="M50 100H250"/><path class="s" d="M90 76v48M86 76h8M86 124h8M210 76v48M206 76h8M206 124h8" style="stroke-width:2"/>
-<g class="val"><circle class="f" cx="150" cy="100" r="9"/></g></svg></div><b>The AI works inside limits.</b><p>Decisions stay inside limits written in code. Anything outside them is clamped.</p></div>
-        <div class="sf"><div class="viz v-trace"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><rect class="s o4" x="40" y="80" width="56" height="40" rx="6"/><rect class="s o4" x="122" y="80" width="56" height="40" rx="6"/><rect class="s" x="204" y="80" width="56" height="40" rx="6"/>
-<path class="s tx" d="M96 100h26M178 100h26"/><circle class="f node" cx="68" cy="100" r="4"/><circle class="f node" cx="150" cy="100" r="4"/><circle class="f node" cx="232" cy="100" r="4"/></svg></div><b>Every number is on-chain.</b><p>Each figure traces back to a transaction or contract call anyone can check.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="close" id="contact">
-    <div class="wrap">
-      <h2>Want your own Ocula?</h2>
-      <p style="color:var(--ink-2);margin:-10px auto 26px;max-width:46ch">We build AI agent tokens with their own site, chat and fee engine, like $UNIT.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn lg" href="https://x.com/oculaagent" target="_blank" rel="noopener">Message us on X</a><a class="btn lg ghost" href="#top" id="backChat">Ask Ocula first</a></div>
-    </div>
-  </section>
-</main>
 <div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <button class="x" type="button" id="mClose" aria-label="Close">×</button>
-  <span class="mmark"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg></span>
-  <h3 id="mTitle">Unlock Ocula</h3>
+  <h3 id="mTitle">Holder access</h3>
   <p id="mText"></p>
-  <button class="btn lg" type="button" id="mSign" hidden>Connect wallet &amp; sign</button>
+  <button class="btn solid lg" type="button" id="mSign" hidden>Connect wallet &amp; sign</button>
   <p class="merr" id="mErr"></p>
-  <details id="mOwner"><summary>Owner? Use your studio key</summary><form id="ownerForm"><input id="ownerKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="btn" type="submit">Unlock</button></form></details>
+  <details id="mOwner"><summary>Owner? Use your studio key</summary><form id="ownerForm"><input id="ownerKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="btn solid" type="submit">Unlock</button></form></details>
 </div></div>
-<footer>
-  <div class="wrap fgrid">
-    <div class="fbrand">
-      <a class="brand" href="#top"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>ocula</a>
-      <p>The AI agent that reads every Pons launch on Robinhood Chain.</p>
-      <span class="fstat"><i></i>Online · block <span id="nBlock">—</span></span>
-    </div>
-    <div class="fcol"><b>Tools</b><a href="#app" data-open="scan">Scanner</a><a href="#app" data-open="radar">Launch Radar</a><a href="#app" data-open="snipe">Sniper</a><a href="#app" data-open="fees">Fee Claimer</a><a href="#app" data-open="launch">Pons Launchpad</a><a href="#app" data-open="kit">Launch Kit</a><a href="#app" data-open="agent">Agent Studio</a></div>
-    <div class="fcol"><b>Ocula</b><a href="#work">How Ocula works</a><a href="#flow">Launch flow</a><a href="#safety">Safety</a><a href="#contact">Build your own agent</a></div>
-    <div class="fcol"><b>Community</b><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X · @oculaagent</a></div>
-  </div>
-  <div class="wrap fbottom"><span>© 2026 Ocula</span><span>Not financial advice. Reports describe on-chain data only.</span></div>
-</footer>
 
-<script src="/vendor/gsap.min.js"></script>
-<script src="/vendor/ScrollTrigger.min.js"></script>
+<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.min.js"}}</script>
 <script type="module">
 // holder pass: sent with every request to this site (the server decides what it unlocks)
 (() => {
@@ -938,105 +946,106 @@ addEventListener("keydown", (e) => { if (e.key === "/" && g("cmdIn") && !/INPUT|
 // workspace title follows the open tool
 const wsT = () => { const b = document.querySelector("#tabs button.on"); if (b && g("wsTitle")) g("wsTitle").textContent = b.querySelector(".tn")?.textContent || b.textContent; };
 new MutationObserver(wsT).observe(g("tabs"), { attributes: true, subtree: true, attributeFilter: ["class"] });
-// ---------- Ocula as an agent you talk to ----------
+// ---------- Signal · Signal ----------
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const el = (id) => document.getElementById(id);
-const MARK = document.querySelector(".brand svg").outerHTML;
+const GLYPH = document.querySelector(".brand .glyph").outerHTML;
 const CA_RE = /^0x[0-9a-fA-F]{40}$/;
 const shortCa = (a) => a.slice(0, 6) + "…" + a.slice(-4);
-const ago = (s) => (s < 60 ? Math.max(1, Math.round(s)) + "s" : s < 3600 ? Math.round(s / 60) + "m" : Math.round(s / 3600) + "h");
+const ageOf = (s) => (s < 60 ? Math.max(1, Math.round(s)) + "s" : s < 3600 ? Math.round(s / 60) + "m" : Math.round(s / 3600) + "h");
+const trim2 = (t) => String(t).replace(/(\d+\.\d{2})\d+/g, "$1");
+const TOOLS = ["scan", "radar", "snipe", "fees", "launch", "kit", "agent"];
 
-// ---------- the chat ----------
+// ---------- conversation ----------
 const thread = el("thread"), input = el("askIn"), send = el("send"), chatLog = [];
-const grow = () => { input.style.height = "auto"; input.style.height = Math.min(200, input.scrollHeight) + "px"; send.disabled = !input.value.trim(); };
+const grow = () => { input.style.height = "auto"; input.style.height = Math.min(160, input.scrollHeight) + "px"; send.disabled = !input.value.trim(); };
 input.addEventListener("input", grow);
 input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); el("ask").requestSubmit(); } });
+const scrollThread = () => thread.scrollTo({ top: thread.scrollHeight, behavior: REDUCE ? "auto" : "smooth" });
 function addUser(text) { thread.insertAdjacentHTML("beforeend", `<div class="msg u"><div class="t">${hesc(text)}</div></div>`); }
-function addNova() {
-  thread.insertAdjacentHTML("beforeend", `<div class="msg a"><span class="av">${MARK}</span><div class="t"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
-  const m = thread.lastElementChild; m.scrollIntoView({ block: "nearest", behavior: REDUCE ? "auto" : "smooth" }); return m;
-}
-const actBtn = (a) => a.unlock ? `<button class="btn" type="button" data-unlock>${hesc(a.label)}</button>` : a.scan ? `<a class="btn ghost" href="#app" data-scan="${hesc(a.scan)}">${hesc(a.label)}</a>`
-  : a.snipe ? `<a class="btn ghost" href="#app" data-open="snipe" data-snipe-ca="${hesc(a.snipe)}">${hesc(a.label)}</a>`
-  : `<a class="btn ghost" href="#app" data-open="${hesc(a.tool)}">${hesc(a.label)}</a>`;
+function addAgent() { thread.insertAdjacentHTML("beforeend", `<div class="msg a"><span class="av">${GLYPH}</span><div class="t"><span class="typing"><i></i><i></i><i></i></span></div></div>`); scrollThread(); return thread.lastElementChild; }
+const actBtn = (a) => a.unlock ? `<button class="btn solid" type="button" data-unlock>${hesc(a.label)}</button>` : a.scan ? `<a class="btn line" href="#app" data-scan="${hesc(a.scan)}">${hesc(a.label)}</a>`
+  : a.snipe ? `<a class="btn line" href="#app" data-open="snipe" data-snipe-ca="${hesc(a.snipe)}">${hesc(a.label)}</a>`
+  : `<a class="btn line" href="#app" data-open="${hesc(a.tool)}">${hesc(a.label)}</a>`;
 function fill(m, text, actions = [], extra = "") {
   m.querySelector(".t").textContent = text;
   if (extra) m.insertAdjacentHTML("beforeend", extra);
   if (actions.length) m.insertAdjacentHTML("beforeend", `<div class="acts">${actions.map(actBtn).join("")}</div>`);
+  scrollThread();
 }
 async function scanFlow(ca) {
-  addUser(ca); const m = addNova();
+  addUser(ca); const m = addAgent();
   try {
     const r = await fetch("/api/scan?ca=" + ca), j = await r.json();
-    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); refreshMe(); return; }
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock as a holder" }]); refreshMe(); return; }
     if (!r.ok) throw new Error(j.error || "Scan failed.");
-    const t = j.facts?.token || {}, flags = (j.flags || []).slice().sort((a, b) => ["high", "watch", "ok", "info"].indexOf(a.level) - ["high", "watch", "ok", "info"].indexOf(b.level)).slice(0, 4);
+    const t = j.facts?.token || {}, order = ["high", "watch", "ok", "info"], flags = (j.flags || []).slice().sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level)).slice(0, 4);
     const logo = String(t.logo || "").replace(/^ipfs:\/\//, "https://gateway.pinata.cloud/ipfs/");
-    const card = `<div class="rep"><div class="hd">${/^https:\/\//.test(logo) ? `<img src="${hesc(logo)}" alt="" onerror="this.remove()">` : ""}<div><b>${hesc(t.name || "Token")} · $${hesc(t.symbol || "?")}</b><br><span>${shortCa(ca)}</span></div>${j.risk ? `<span class="rk ${j.risk.level}">${j.risk.score}% rug risk</span>` : ""}</div>
-      <ul>${flags.map((f) => `<li class="${hesc(f.level)}"><i></i><span><b>${hesc(f.title)}</b> — ${hesc(f.detail)}</span></li>`).join("")}</ul></div>`;
+    const card = `<div class="rep"><div class="hd">${/^https:\/\//.test(logo) ? `<img src="${hesc(logo)}" alt="" onerror="this.remove()">` : ""}<div><b>${hesc(t.name || "Token")} · $${hesc(t.symbol || "?")}</b><br><span>${shortCa(ca)}</span></div>${j.risk ? `<span class="rk ${j.risk.level}">risk ${j.risk.score}</span>` : ""}</div>
+      <ul>${flags.map((f) => `<li class="${hesc(f.level)}"><i></i><span><b>${hesc(f.title)}</b> · ${hesc(f.detail)}</span></li>`).join("")}</ul></div>`;
     const text = j.summary || (flags[0] ? `${flags[0].title}.` : "Here is what the chain shows.");
     fill(m, text, [{ scan: ca, label: "Full report" }, { snipe: ca, label: "Snipe it" }], card); refreshMe();
     chatLog.push({ role: "user", content: "Scan " + ca }, { role: "assistant", content: `${t.symbol}: ${text}` });
-  } catch (e) { fill(m, e.message || "Ocula could not read that token."); }
+  } catch (e) { fill(m, e.message || "Signal could not read that token."); }
 }
 async function chatFlow(text) {
-  addUser(text); chatLog.push({ role: "user", content: text }); const m = addNova();
+  addUser(text); chatLog.push({ role: "user", content: text }); const m = addAgent();
   try {
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: chatLog }) }), j = await r.json();
-    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); chatLog.pop(); refreshMe(); return; }
-    if (!r.ok) throw new Error(j.error || "Ocula could not answer.");
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock as a holder" }]); chatLog.pop(); refreshMe(); return; }
+    if (!r.ok) throw new Error(j.error || "Signal could not answer.");
     fill(m, j.reply, j.actions || []); chatLog.push({ role: "assistant", content: j.reply }); refreshMe();
   } catch (e) { fill(m, e.message); chatLog.pop(); }
 }
-el("ask").addEventListener("submit", (e) => {
-  e.preventDefault(); const v = input.value.trim(); if (!v) return;
-  input.value = ""; grow();
-  CA_RE.test(v) ? scanFlow(v) : chatFlow(v);
-});
-document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
-  if (c.dataset.ask) { input.value = c.dataset.ask; grow(); el("ask").requestSubmit(); return; }
-  if (c.dataset.tool === "scan") { input.placeholder = "Paste the token CA (0x…) and press Enter"; input.focus(); return; }
-  document.querySelector(`#tabs [data-t="${c.dataset.tool}"]`)?.click(); el("app").scrollIntoView({ behavior: REDUCE ? "auto" : "smooth" });
-}));
-// "Snipe it" fills the sniper's manual buy with the token
+el("ask").addEventListener("submit", (e) => { e.preventDefault(); const v = input.value.trim(); if (!v) return; input.value = ""; grow(); CA_RE.test(v) ? scanFlow(v) : chatFlow(v); });
+document.querySelectorAll("[data-ask]").forEach((c) => c.addEventListener("click", () => { input.value = c.dataset.ask; grow(); el("ask").requestSubmit(); }));
 document.addEventListener("click", (e) => { const a = e.target.closest("[data-snipe-ca]"); if (a) setTimeout(() => { const mb = el("mbToken"); if (mb) mb.value = a.dataset.snipeCa; }, 50); });
-el("backChat").addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: 0, behavior: REDUCE ? "auto" : "smooth" }); setTimeout(() => input.focus(), 500); });
+function toChat(fn) { scrollTo({ top: 0, behavior: REDUCE ? "auto" : "smooth" }); setTimeout(fn, REDUCE ? 0 : 450); }
+
+// ---------- tools open in a drawer ----------
+const drawer = el("drawer");
+function showDrawer() { if (!drawer.hidden) return; drawer.hidden = false; document.body.classList.add("drawer-open"); }
+function closeDrawer() { if (drawer.hidden) return; drawer.hidden = true; document.body.classList.remove("drawer-open"); }
+document.addEventListener("click", (e) => { if (e.target.closest('[data-open],[data-scan],a[href="#app"]') && !e.target.closest(".drawer")) showDrawer(); }, true);
+el("dClose").addEventListener("click", closeDrawer);
+drawer.addEventListener("click", (e) => { if (e.target === drawer) closeDrawer(); });
+new MutationObserver(() => { const b = document.querySelector("#tabs button.on"); if (b) el("dTitle").textContent = b.querySelector(".tn")?.textContent || "Tools"; }).observe(el("tabs"), { attributes: true, subtree: true, attributeFilter: ["class"] });
+if (TOOLS.includes(location.hash.slice(1)) || new URLSearchParams(location.search).get("ca")) showDrawer();
+el("home").addEventListener("click", (e) => { e.preventDefault(); closeDrawer(); toChat(() => input.focus()); });
 
 // ---------- holder access ----------
 const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z"/></svg>';
 let me = { holder: false, launched: false, trialsLeft: 3 };
-const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
-// a lock over every tool but the launchpad
+const store = { set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
 document.querySelectorAll(".ws .tool[data-p]").forEach((t) => {
   if (t.dataset.p === "launch") return;
   const name = document.querySelector(`#tabs [data-t="${t.dataset.p}"] .tn`)?.textContent || "This tool";
-  t.insertAdjacentHTML("afterbegin", `<div class="lock"><div>${LOCK_SVG}<b>${hesc(name)} is for $OCULA holders</b><p>Hold at least 0.1% of $OCULA and unlock it with your wallet. The Pons Launchpad stays free for everyone.</p><button class="btn" type="button" data-unlock style="background:#F5F3EC;color:#161514;border-color:#F5F3EC">Unlock</button></div></div>`);
+  t.insertAdjacentHTML("afterbegin", `<div class="lock"><div>${LOCK_SVG}<b>${hesc(name)} is for token holders</b><p>Hold at least 0.1% of the token and unlock it with your wallet. The Pons Launchpad stays free for everyone.</p><button class="btn" type="button" data-unlock>Unlock</button></div></div>`);
 });
-document.querySelectorAll("#tabs button[data-t]").forEach((b) => b.dataset.t !== "launch" && b.classList.add("lockd"));
 async function refreshMe() {
   try { me = await (await fetch("/api/me")).json(); } catch {}
   document.body.classList.toggle("holder", !!me.holder);
   const hb = el("holderBtn");
   hb.textContent = me.holder ? (me.owner ? "Owner access" : "Holder · " + shortCa(me.address || "0x0000000000")) : "Holder access";
   hb.classList.toggle("on", !!me.holder);
-  el("hint").textContent = me.holder ? "Holder access · ask Ocula anything." : `${me.trialsLeft} free read${me.trialsLeft === 1 ? "" : "s"} left today · hold $OCULA for unlimited.`;
+  el("hint").textContent = me.holder ? "Full access. Ask Signal anything." : `${me.trialsLeft} free read${me.trialsLeft === 1 ? "" : "s"} left today. Hold the token for the full receiver.`;
 }
 const modal = el("modal");
 function openModal() {
   el("mErr").textContent = "";
   el("mText").textContent = me.launched
-    ? "Hold at least 0.1% of $OCULA supply. Connect the wallet that holds it and sign a short message. Signing is free and sends nothing."
-    : "Holder access opens when $OCULA launches. Until then the tools stay locked. The Pons Launchpad is free for everyone, today.";
+    ? "Hold at least 0.1% of the token supply. Connect the wallet that holds it and sign a short message. Signing is free and sends nothing."
+    : "Holder access opens when the token launches. The Pons Launchpad is free for everyone, today.";
   el("mSign").hidden = !me.launched || !window.ethereum;
   if (me.launched && !window.ethereum) el("mErr").textContent = "No browser wallet found. Open this page in MetaMask, Rabby or another wallet browser.";
-  if (me.holder) { el("mText").textContent = "You're unlocked. Every Ocula tool is open in this browser for 24 hours."; el("mSign").hidden = true; }
+  if (me.holder) { el("mText").textContent = "You're unlocked. Every tool is open in this browser for 24 hours."; el("mSign").hidden = true; }
   modal.hidden = false;
 }
 const closeModal = () => (modal.hidden = true);
 el("holderBtn").addEventListener("click", openModal);
 el("mClose").addEventListener("click", closeModal);
 modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+addEventListener("keydown", (e) => { if (e.key === "Escape") { modal.hidden ? closeDrawer() : closeModal(); } });
 document.addEventListener("click", (e) => { if (e.target.closest("[data-unlock]")) { e.preventDefault(); openModal(); } });
 async function unlockWith(body) {
   const r = await fetch("/api/auth", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }), j = await r.json().catch(() => ({}));
@@ -1047,81 +1056,127 @@ el("mSign").addEventListener("click", async () => {
   el("mErr").textContent = "";
   try {
     const [address] = await window.ethereum.request({ method: "eth_requestAccounts" });
-    const message = `Unlock Ocula\nWallet: ${address}\nIssued: ${Date.now()}`;
+    const message = `Unlock Signal Agent\nWallet: ${address}\nIssued: ${Date.now()}`;
     const signature = await window.ethereum.request({ method: "personal_sign", params: [message, address] });
     await unlockWith({ address, message, signature });
   } catch (e) { el("mErr").textContent = e.message || "Signing was cancelled."; }
 });
 el("ownerForm").addEventListener("submit", async (e) => { e.preventDefault(); el("mErr").textContent = ""; try { await unlockWith({ ownerKey: el("ownerKey").value.trim() }); el("ownerKey").value = ""; } catch (er) { el("mErr").textContent = er.message; } });
-refreshMe().then(() => { if (!me.holder && !location.hash) document.querySelector('#tabs [data-t="launch"]')?.click(); });
+refreshMe().then(() => { if (!me.holder && !TOOLS.includes(location.hash.slice(1))) document.querySelector('#tabs [data-t="launch"]')?.click(); });
 
-// header button: "Buy $OCULA" once the token address is configured on the server
+// buy buttons and the contract address once the token is set on the server
 fetch("/api/status").then((r) => r.json()).then((j) => {
-  const b = el("buyNova"); if (!j.novaToken || !b) return;
-  b.textContent = "Buy $OCULA"; b.removeAttribute("aria-disabled");
-  b.href = "https://ponsfamily.com/launchpad/" + j.novaToken; b.target = "_blank"; b.rel = "noopener";
+  if (!j.novaToken) return;
+  for (const id of ["buyNova", "buy2"]) { const b = el(id); b.textContent = "Buy token"; b.removeAttribute("aria-disabled"); b.href = "https://ponsfamily.com/launchpad/" + j.novaToken; b.target = "_blank"; b.rel = "noopener"; }
+  const c = el("caCopy"); c.textContent = shortCa(j.novaToken); c.title = "Copy " + j.novaToken;
+  c.addEventListener("click", async () => { try { await navigator.clipboard.writeText(j.novaToken); c.textContent = "Copied"; setTimeout(() => (c.textContent = shortCa(j.novaToken)), 1400); } catch {} });
 }).catch(() => {});
 
-// ---------- live data: the work panel and today's gallery ----------
-let live = { rows: [], picks: new Set() }, workStep = -1;
-function verdictOf(r) {
-  const picked = live.picks.has(r.token.toLowerCase());
-  return picked ? { tag: "picked", cls: "ok", text: "Picked for the sniper" } : r.pass ? { tag: "Cleared", cls: "ok", text: "Cleared every check" } : { tag: "Held", cls: "held", text: "Held · " + r.checks.filter((c) => !c.ok).map((c) => c.text).join(", ") };
+// ---------- the live band: every launch as a line, signal bright, noise faint ----------
+function wave(r) {
+  // a deterministic shape per token: noise is jagged and flat, signal is a clean rising pulse
+  let h = parseInt(r.token.slice(2, 10), 16); const rnd = () => ((h = (h * 1103515245 + 12345) >>> 0) / 4294967296);
+  const W = 200, pts = [];
+  for (let i = 0; i <= 40; i++) {
+    const x = (i / 40) * W, u = i / 40;
+    const y = r.pass ? 14 - Math.sin(u * Math.PI * 3) * Math.exp(-Math.pow((u - 0.6) * 3.2, 2)) * 11 : 14 + (rnd() - 0.5) * (r.devRugged ? 9 : 4);
+    pts.push(`${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`);
+  }
+  return `<svg viewBox="0 0 200 28" preserveAspectRatio="none" aria-hidden="true"><path d="${pts.join("")}"/></svg>`;
 }
-function paintWork() {
-  const r = live.rows[0]; if (!r) return;
-  const v = verdictOf(r), dev = r.devLaunches24h;
-  const lines = [
-    `New launch <b>$${hesc(r.symbol)}</b> · ${ago(r.ageSec)} ago · ${shortCa(r.token)}`,
-    r.devRugged ? `<em>Dev dumped: sold ${r.devSoldPct}%, holds ${r.devHoldPct}%</em>` : r.devSold ? `Dev sold ${r.devSoldPct}%, still holds ${r.devHoldPct}%` : dev ? `<em>Deployer launched ${dev} other token${dev > 1 ? "s" : ""} in 24h</em>` : `<u>Dev has not sold · first launch in 24h</u>`,
-    `${r.feesToDev ? "Creator fees go to the deployer" : "<em>Creator fees go to another wallet</em>"}`,
-    `Creator tax ${r.taxPct}% · ${r.socials ? `<u>${r.socials} social link${r.socials > 1 ? "s" : ""}</u>` : "<em>no socials</em>"} · curve ${r.progressPct.toFixed(1)}%`,
-  ];
-  el("termLines").innerHTML = lines.map((l, i) => `<div class="ln${i <= workStep || workStep < 0 && REDUCE ? " on" : ""}"><i>${i + 1}</i><span>${l}</span></div>`).join("");
-  el("termVerdict").textContent = workStep >= 3 || REDUCE ? v.text : "Reading…";
-  el("termAge").textContent = "block " + Number(r.block).toLocaleString("en-US");
-  el("termScan").dataset.scan = r.token;
-}
-function setWork(s) {
-  if (s === workStep) return; workStep = s;
-  document.querySelectorAll("#steps li").forEach((li, i) => li.classList.toggle("on", i === s));
-  paintWork();
-}
-function paintGallery() {
-  el("gal").innerHTML = live.rows.slice(0, 6).map((r, i) => {
-    const v = verdictOf(r);
-    return `<a class="case${i === 0 ? " big" : ""}" href="#app" data-scan="${r.token}"><span class="q">What about $${hesc(r.symbol)}?</span>
-      <div class="a"><span class="av">${MARK}</span><span><b>${hesc(v.text)}.</b> Tax ${r.taxPct}%, ${r.socials} social link${r.socials === 1 ? "" : "s"}, curve ${r.progressPct.toFixed(1)}%, launched ${ago(r.ageSec)} ago.</span></div>
-      <span class="tag ${v.cls}">${hesc(v.tag)}</span></a>`;
+const rowsEl = el("rows"), shown = new Set();
+function paintBand(rows) {
+  const fresh = new Set(rows.filter((r) => !shown.has(r.token)).map((r) => r.token));
+  const first = !shown.size;
+  rowsEl.innerHTML = rows.slice(0, 14).map((r) => {
+    const bad = r.checks.filter((c) => !c.ok), why = r.pass ? (r.checks.find((c) => /grow/.test(c.text))?.text || "every check passed") : bad[0]?.text || "";
+    const cls = r.pass ? "sig" : r.devRugged ? "int" : "";
+    return `<button class="row ${cls}${!first && fresh.has(r.token) ? " fresh" : ""}" type="button" data-row="${r.token}"><span class="sym">$${hesc(r.symbol)}</span><span class="age">${ageOf(r.ageSec)}</span>${wave(r)}<span class="why">${hesc(trim2(why))}</span><span class="st">${r.pass ? "Signal" : r.devRugged ? "Interference" : "Noise"}</span></button>`;
   }).join("");
+  rows.forEach((r) => shown.add(r.token));
+  const sig = rows.filter((r) => r.pass).length;
+  el("tRx").textContent = rows.length; el("tSig").textContent = sig; el("tNoise").textContent = rows.length - sig;
 }
-async function loadLive() {
-  try {
-    const [rd, pk] = await Promise.all([fetch("/api/radar").then((r) => r.json()), fetch("/api/picks?peek=1").then((r) => r.json()).catch(() => ({ picks: [] }))]);
-    live = { rows: rd.rows || [], picks: new Set((pk.picks || []).map((p) => p.token.toLowerCase())) };
-    paintWork(); paintGallery(); ScrollTrigger.refresh();
-  } catch {}
+rowsEl.addEventListener("click", (e) => { const r = e.target.closest("[data-row]"); if (r) toChat(() => scanFlow(r.dataset.row)); });
+async function pull() {
+  try { const j = await (await fetch("/api/radar")).json(); const rows = j.rows || []; paintBand(rows); window.field?.set(rows); } catch {}
 }
-loadLive(); setInterval(() => !document.hidden && loadLive(), 15000);
+pull(); setInterval(() => !document.hidden && pull(), 12000);
 
-// ---------- motion: calm, like the references; one pinned moment ----------
-gsap.registerPlugin(ScrollTrigger);
-const mm = gsap.matchMedia();
-mm.add("(prefers-reduced-motion: no-preference)", () => {
-  gsap.from([".live", ".hero h1", ".box", ".chips"], { y: 18, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.09 });
-  ScrollTrigger.batch(".sh, .case, .sf, #app .ws, .term", { start: "top 88%", once: true, onEnter: (els) => gsap.fromTo(els, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
-});
-mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
-  // the reading happens while you scroll: four steps, four lines, then the verdict
-  ScrollTrigger.create({ trigger: "#workPin", start: "top top", end: "+=180%", pin: true, onUpdate: (st) => setWork(Math.min(3, Math.floor(st.progress * 4.4))) });
-  const steps = [...document.querySelectorAll(".fstep")];
-  gsap.to("#drawn", { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: "#flowRow", start: "top 75%", end: "bottom 55%", scrub: 1, onUpdate: (st) => steps.forEach((s, i) => s.classList.toggle("on", st.progress >= i / (steps.length - 1) - 0.02)) } });
-});
-mm.add("(max-width: 900px), (prefers-reduced-motion: reduce)", () => {
-  setWork(3); document.querySelectorAll(".fstep").forEach((s) => s.classList.add("on"));
-});
-addEventListener("load", () => ScrollTrigger.refresh());
-document.fonts?.ready.then(() => ScrollTrigger.refresh());
+el("askCell").addEventListener("click", (e) => { e.preventDefault(); toChat(() => input.focus()); });
+
+// ---------- light concept: the tape and the scope counters ----------
+const _paintBand = paintBand;
+paintBand = function (rows) {
+  _paintBand(rows);
+  const sig = rows.filter((r) => r.pass).length; el("scSig").textContent = sig; el("scNoise").textContent = rows.length - sig;
+  const top = rows.find((r) => r.pass), cap = document.querySelector(".sc.bl");
+  cap.innerHTML = top ? `Signal · <b>$${hesc(top.symbol)}</b> · ${ageOf(top.ageSec)}` : "One line per launch";
+  cap.classList.toggle("hot", !!top);
+  const items = rows.slice(0, 16).map((r) => `<span><b>$${hesc(r.symbol)}</b> ${ageOf(r.ageSec)}${r.pass ? "<em>SIGNAL</em>" : r.devRugged ? "<i>INTERFERENCE</i>" : ""}</span>`).join("");
+  if (items) el("tape").innerHTML = items + items;
+};
+
+// ---------- the field: a calm 3D landscape of lines, one per launch. Noise stays flat and faint; signal rises in the cold accent ----------
+import * as THREE from "three";
+(() => {
+  const cv = document.getElementById("field"); if (!cv) return;
+  let renderer; try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); } catch { cv.remove(); return; }
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches, inScope = !!cv.closest(".scope");
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  const field = new THREE.Group(); scene.add(field);
+  const L = 44, P = 180, W = 16, D = 13;
+  const SIG = new THREE.Color("#F5F3EC"), NOISE = new THREE.Color("#A39E94"), INT = new THREE.Color("#D9826E");
+  // each line: its data (signal strength, seed) and the geometry it drives
+  const lines = [];
+  for (let j = 0; j < L; j++) {
+    const g = new THREE.BufferGeometry(), pos = new Float32Array(P * 3);
+    for (let i = 0; i < P; i++) pos[i * 3] = (i / (P - 1) - 0.5) * W;
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const m = new THREE.LineBasicMaterial({ color: NOISE.clone(), transparent: true, opacity: 0.12 });
+    const line = new THREE.Line(g, m); line.position.z = (j / (L - 1) - 0.5) * D; field.add(line);
+    lines.push({ line, g, m, seed: Math.random() * 100, amp: 0, ampTo: 0.08, peak: 0.55 + Math.random() * 0.3, kind: "noise" });
+  }
+  window.field = {
+    set(rows) {
+      // newest launches sit closest to the viewer
+      lines.forEach((o, j) => {
+        const r = rows[L - 1 - j];
+        o.kind = !r ? "noise" : r.pass ? "sig" : r.devRugged ? "int" : "noise";
+        o.ampTo = o.kind === "sig" ? 1 : o.kind === "int" ? 0.28 : 0.1;
+        if (r) o.seed = parseInt(r.token.slice(2, 8), 16) % 1000 / 10;
+      });
+      if (still) frame(0);
+    },
+  };
+  const look = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
+  addEventListener("pointermove", (e) => { look.x = e.clientX / innerWidth - 0.5; look.y = e.clientY / innerHeight - 0.5; }, { passive: true });
+  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 8.2, 17); cam.lookAt(0, -0.4, 0.6); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
+  new ResizeObserver(size).observe(cv); size();
+  let visible = true; new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(cv);
+  const clock = new THREE.Clock();
+  function frame(dt) {
+    const t = clock.elapsedTime;
+    cur.x += (look.x - cur.x) * 0.03; cur.y += (look.y - cur.y) * 0.03;
+    field.rotation.y = -0.18 + cur.x * 0.12; field.rotation.x = cur.y * 0.05;
+    for (const o of lines) {
+      o.amp += (o.ampTo - o.amp) * Math.min(1, dt * 1.5 || 1);
+      const a = o.g.attributes.position.array, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
+      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.5 : inScope ? 0.3 : 0.16) - o.m.opacity) * 0.05;
+      for (let i = 0; i < P; i++) {
+        const u = i / (P - 1);
+        const base = Math.sin(u * 9 + t * 0.35 + o.seed) * 0.05 + Math.sin(u * 23 - t * 0.6 + o.seed * 2) * 0.03;
+        const bump = Math.exp(-Math.pow((u - o.peak) * 7, 2)) * (Math.sin(u * 60 - t * 1.4) * 0.35 + 0.65);
+        a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * (inScope ? 2.4 : 1.5) + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
+      }
+      o.g.attributes.position.needsUpdate = true;
+    }
+    renderer.render(scene, cam);
+  }
+  if (still) { frame(0); return; }
+  renderer.setAnimationLoop(() => { const dt = Math.min(0.05, clock.getDelta()); if (visible && !document.hidden) frame(dt); });
+})();
 
 // ---------- tools ----------
 const $ = (id) => document.getElementById(id);
@@ -1155,7 +1210,7 @@ $("tabs").addEventListener("click", (e) => { const b = e.target.closest("button"
 document.addEventListener("click", (e) => { const a = e.target.closest("[data-open]"); if (a) { e.preventDefault(); openTab(a.dataset.open, true); } });
 
 // scanner
-const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "Ocula is writing the summary"];
+const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "Signal is writing the summary"];
 async function runScan(ca) {
   ca = ca.trim(); $("scanCa").value = ca;
   if (!/^0x[0-9a-fA-F]{40}$/.test(ca)) { $("scanOut").innerHTML = `<p class="err">Paste a token contract address (0x… 42 characters).</p>`; return; }
@@ -1197,7 +1252,7 @@ function renderScan(r) {
     <div><h3>${esc(t.name)}<span>$${esc(t.symbol)}</span></h3><div class="ca">${esc(t.address)} · ${fmt(t.ageHours, 1)}h old</div></div>
     <div class="links">${socials}<a class="chipl" href="${EXPLORER}token/${esc(t.address)}" target="_blank" rel="noopener">explorer</a><a class="chipl" href="https://ponsfamily.com/launchpad/${esc(t.address)}" target="_blank" rel="noopener">pons</a></div></div>
   ${riskBlock(r)}
-  <span class="lbl">Ocula's read</span>
+  <span class="lbl">Signal's read</span>
   <p class="read">${r.summary ? esc(r.summary) : `<span style="color:var(--dim);font-weight:500">${esc(r.summaryError || "")}</span>`}</p>
   <div class="flags">${r.flags.map((x) => `<div class="fl"><span class="lv ${esc(x.level)}">${esc(x.level)}</span><div><b>${esc(x.title)}</b><span class="d">${esc(x.detail)}</span></div></div>`).join("")}</div>
   <div class="nums">
@@ -1305,7 +1360,7 @@ $("feeConnect").addEventListener("click", async () => { try { checkFees(await co
 $("kitForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target)); $("kitGo").disabled = true;
-  $("kitOut").innerHTML = loading("Ocula is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
+  $("kitOut").innerHTML = loading("Signal is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
   try {
     const k = await api("/api/kit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f) });
     const card = (title, body, copy) => `<div class="kc"><h5>${title}</h5><button class="cp" type="button" data-copy="${esc(copy)}">Copy</button>${body}</div>`;
@@ -1347,7 +1402,7 @@ const startTab = (location.hash || "").slice(1);
 if (qca) { openTab("scan", false, true); runScan(qca); } else openTab(VISOR[startTab] ? startTab : "scan", false, true);
 if (qca || VISOR[startTab]) setTimeout(() => $("app").scrollIntoView({ block: "start" }), 300);
 
-// ---------- sniper: the same engine as the Ocula sniper bot, the private key stays in this browser ----------
+// ---------- sniper: the same engine as the Signal sniper bot, the private key stays in this browser ----------
 const PONS_FACTORY = "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e";
 const SK = { key: "nova.sniper.key", cfg: "nova.sniper.cfg2", pos: "nova.sniper.pos2", hist: "nova.sniper.hist" };
 const sstore = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
@@ -1448,7 +1503,7 @@ async function snReject(l) {
   const dev = l.deployer.toLowerCase();
   if (l.pairToken !== Eth.ZeroAddress) return { reason: "not paired with ETH", symbol: "?" };
   if (lower(snCfg.blockedDeployers).includes(dev)) return { reason: "deployer is blocked", symbol: "?" };
-  // an agent pick is chosen by Ocula instead of by field 6, the launch age and the keyword list
+  // an agent pick is chosen by Signal instead of by field 6, the launch age and the keyword list
   if (!l.agent && snCfg.allowedDeployers.length && !lower(snCfg.allowedDeployers).includes(dev)) return { reason: "deployer not in field 6", symbol: "?" };
   const t = new Eth.Contract(l.token, SN_ABI.token, snP), c = new Eth.Contract(l.curve, SN_ABI.curve, snP);
   const [name, symbol, tax, snipe, grad, lb, head] = await Promise.all([t.name(), t.symbol(), c.creatorTaxBps(), c.currentSnipeTaxBps(snW.address), c.graduated(), l.agent ? null : snP.getBlock(l.block), l.agent ? null : snP.getBlock("latest")]);
@@ -1572,7 +1627,7 @@ async function snLoop() {
   } catch (e) { snLog("rpc: " + snShort(e), "bad"); }
   snTimer = setTimeout(snLoop, 700);
 }
-// ---------- agent snipe: buy what Ocula's AI picks from the radar ----------
+// ---------- agent snipe: buy what Signal's AI picks from the radar ----------
 let snPicks = [], snPicksAt = 0, snPicksErr = "", snPicksInfo = null;
 const snTried = new Set();
 async function snFetchPicks(refresh) {
@@ -1585,23 +1640,23 @@ async function snAgentTick() {
   for (const p of snPicks) {
     if (p.score < snCfg.agentMinScore || snTried.has(p.token) || snHistory.some((h) => h.token === p.token) || snPositions.some((x) => x.token === p.token)) continue;
     snTried.add(p.token);
-    snLog(`AGENT Ocula picked $${p.symbol} (score ${p.score}): ${p.reason}`, "ok");
+    snLog(`AGENT Signal picked $${p.symbol} (score ${p.score}): ${p.reason}`, "ok");
     snSnipe({ token: p.token, curve: p.curve, deployer: p.deployer, pairToken: Eth.ZeroAddress, agent: true });
   }
 }
 function snDrawPicks() {
   const min = snCfg.agentMinScore;
   $("pkStat").textContent = snPicksErr ? snPicksErr : snPicksAt ? `updated ${new Date(snPicksAt).toLocaleTimeString("en-GB")}` : "";
-  $("pkList").innerHTML = snPicks.length ? snPicks.map((p) => `<div class="pick"><div class="ring" style="--v:${p.score};--c:${p.score >= 80 ? "var(--ok)" : p.score >= 70 ? "var(--acc)" : "var(--mid)"}" title="Ocula score ${p.score}/100"><b>${p.score}</b></div>
+  $("pkList").innerHTML = snPicks.length ? snPicks.map((p) => `<div class="pick"><div class="ring" style="--v:${p.score};--c:${p.score >= 80 ? "var(--ok)" : p.score >= 70 ? "var(--acc)" : "var(--mid)"}" title="Signal score ${p.score}/100"><b>${p.score}</b></div>
       <div><div class="nm"><a href="#" data-scan="${p.token}">$${esc(p.symbol)}</a> <span style="color:var(--dim);font-weight:400">${esc(p.name)}</span>${p.score >= min ? ' <span class="pill2 dry" style="padding:2px 8px;font-size:11px">agent buys</span>' : ""}</div>
       <div class="rs">${esc(p.reason)}</div><div class="mt">${Math.round(p.ageSec / 60)}m old · curve ${p.progressPct.toFixed(1)}% · ${fmt(p.curveETH, 4)} ETH · tax ${p.taxPct}% · ${p.token.slice(0, 8)}…</div></div>
       <button class="btn sm ghost" type="button" data-pkbuy="${p.token}">Manual buy</button></div>`).join("")
-    : `<p class="note">${!snPicksAt ? "Loading Ocula picks…" : snPicksInfo?.checkedLastHour ? `Ocula scored ${snPicksInfo.checkedLastHour} fresh launch${snPicksInfo.checkedLastHour > 1 ? "es" : ""} in the last hour; the best got ${snPicksInfo.bestLastHour}/100, under the ${snPicksInfo.minScore} needed to be a pick. It checks again every 15 seconds.` : "Ocula is scoring the newest launches that passed the radar checks. Picks show here as soon as one scores high enough."}</p>`;
-  if (snPicks.length && snPicksInfo?.checkedLastHour) $("pkList").insertAdjacentHTML("beforeend", `<p class="note" style="margin:4px 0 0">Ocula scored ${snPicksInfo.checkedLastHour} fresh launches in the last hour; ${snPicks.length} made the cut.</p>`);
+    : `<p class="note">${!snPicksAt ? "Loading Signal picks…" : snPicksInfo?.checkedLastHour ? `Signal scored ${snPicksInfo.checkedLastHour} fresh launch${snPicksInfo.checkedLastHour > 1 ? "es" : ""} in the last hour; the best got ${snPicksInfo.bestLastHour}/100, under the ${snPicksInfo.minScore} needed to be a pick. It checks again every 15 seconds.` : "Signal is scoring the newest launches that passed the radar checks. Picks show here as soon as one scores high enough."}</p>`;
+  if (snPicks.length && snPicksInfo?.checkedLastHour) $("pkList").insertAdjacentHTML("beforeend", `<p class="note" style="margin:4px 0 0">Signal scored ${snPicksInfo.checkedLastHour} fresh launches in the last hour; ${snPicks.length} made the cut.</p>`);
 }
 $("pkRefresh").addEventListener("click", async () => {
   const b = $("pkRefresh"), before = JSON.stringify(snPicks.map((p) => [p.token, p.score]));
-  b.disabled = true; b.textContent = "Ocula is checking…";
+  b.disabled = true; b.textContent = "Signal is checking…";
   await snBoot(); await snFetchPicks(true);
   const same = before === JSON.stringify(snPicks.map((p) => [p.token, p.score]));
   b.disabled = false; b.textContent = "Refresh";
@@ -1634,7 +1689,7 @@ async function snStart(mode) {
   if (mode === "live" && !confirm(`LIVE buys for real: ${snCfg.buyEth} ETH per token, up to ${snCfg.maxTotalSpendEth} ETH. Keep this tab open. Start?`)) return;
   snMode = mode; snSpent = 0n; snNext = 0; snWaiting = []; snTried.clear(); snPicksAt = 0;
   $("snState").textContent = mode === "live" ? "LIVE: real buys & sells" : "Dry run: no transactions"; $("snState").className = "pill2 " + mode;
-  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · ${snCfg.mode === "agent" ? `AGENT mode: buys Ocula picks scoring ${snCfg.agentMinScore}+` : "manual mode: your filters"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
+  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · ${snCfg.mode === "agent" ? `AGENT mode: buys Signal picks scoring ${snCfg.agentMinScore}+` : "manual mode: your filters"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
   window.nova?.say(mode === "live" ? "LIVE" : "DRY RUN");
   snLoop();
 }
@@ -1896,7 +1951,7 @@ $("lpMax").addEventListener("click", async () => {
 });
 $("lpAddSniper").addEventListener("click", async () => {
   let k = null; try { k = localStorage.getItem("nova.sniper.key"); } catch {}
-  if (!k) return lpMsg("No Ocula sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
+  if (!k) return lpMsg("No Signal sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
   const E2 = await getEthers(), a = new E2.Wallet(k).address, inp = lpF().exempt;
   if (!inp.value.toLowerCase().includes(a.toLowerCase())) inp.value = [inp.value.trim(), a].filter(Boolean).join(", ");
 });

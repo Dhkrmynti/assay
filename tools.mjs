@@ -180,7 +180,7 @@ export function createTools(provider) {
     return c;
   }
 
-  /** The newest launches with the same checks the Ocula sniper filter uses. */
+  /** The newest launches with the same checks the Signal sniper filter uses. */
   async function radar(limit = 24) {
     await waitReady();
     const head = indexedTo, list = recent.slice(-limit).reverse();

@@ -31,8 +31,8 @@ export async function ask(system, messages, { json = false, maxTokens = 500, tem
         body: JSON.stringify({ model: OLLAMA_MODEL, stream: false, ...(json ? { format: "json" } : {}), messages: [{ role: "system", content: sys }, ...messages], options: { temperature, num_predict: maxTokens } }),
         signal: AbortSignal.timeout(120_000),
       });
-    } catch { throw new AiOffline("Ocula's AI core is offline right now."); }
-    if (!res.ok) throw new AiOffline("Ocula's AI core is offline right now.");
+    } catch { throw new AiOffline("Signal's AI core is offline right now."); }
+    if (!res.ok) throw new AiOffline("Signal's AI core is offline right now.");
     out = String((await res.json())?.message?.content || "");
   }
   out = out.trim();

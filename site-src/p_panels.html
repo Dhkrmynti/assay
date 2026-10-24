@@ -24,7 +24,7 @@
               <label>Discord<input name="discord" placeholder="https://discord.gg/…"></label>
             </div>
             <label class="full">Dev buy (optional, ETH)<span class="inrow" style="margin:6px 0 0"><input name="devBuy" inputmode="decimal" placeholder="0.0 (ETH)"><button class="btn sm ghost" type="button" id="lpMax">MAX</button></span><span id="lpDevHint" class="note" style="margin:6px 0 0"></span></label>
-            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Ocula sniper wallet.</small>
+            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Signal sniper wallet.</small>
               <span class="inrow" style="margin:6px 0 0"><input name="exempt" placeholder="0x…, 0x…" spellcheck="false"><button class="btn sm ghost" type="button" id="lpAddSniper">Add my sniper wallet</button></span></label>
           </form>
           <aside class="lpside">
@@ -51,7 +51,7 @@
 
       <div class="tool panel hud rv" data-p="scan">
         <form class="inrow" id="scanForm"><input id="scanCa" placeholder="Paste a Pons token address (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm" id="scanGo">Scan</button></form>
-        <div id="scanOut"><p class="empty">Paste any Pons token CA. Ocula checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
+        <div id="scanOut"><p class="empty">Paste any Pons token CA. Signal checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
       </div>
 
       <div class="tool panel hud" data-p="radar">
@@ -67,12 +67,12 @@
         </div>
         <div class="snmode" id="snModeSw">
           <button type="button" data-mode="manual">Manual snipe<small>Your filters below catch every new launch in its first seconds</small></button>
-          <button type="button" data-mode="agent">Agent snipe<small>Ocula's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
+          <button type="button" data-mode="agent">Agent snipe<small>Signal's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
         </div>
         <div id="snAgentBox" class="agbox" hidden>
-          <div class="agtop"><div><span class="lbl">Minimum Ocula score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
+          <div class="agtop"><div><span class="lbl">Minimum Signal score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
             <div class="agval"><b id="snMinVal">75</b><span>/100</span></div></div>
-          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Ocula score">
+          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Signal score">
           <div class="agticks"><span>50 · more buys</span><span>95 · only the best</span></div>
           <p class="agnote">Buy size, budget, take profit, stop loss, max positions, tax limits and blocked devs/keywords from Settings still apply. Each token is bought once.</p>
         </div>
@@ -83,9 +83,9 @@
           <div id="mbMsg" class="note" style="margin-top:8px"></div>
         </div>
 
-        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Ocula picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
-          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Ocula's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
-          <div class="picks" id="pkList"><p class="note">Loading Ocula picks…</p></div></div>
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Signal picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
+          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Signal's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
+          <div class="picks" id="pkList"><p class="note">Loading Signal picks…</p></div></div>
 
         <div class="snsec"><h4>Open positions</h4><div id="snPos"><p class="note">No positions.</p></div></div>
 
@@ -123,17 +123,17 @@
             <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="snSave">Save settings</button><button class="btn ghost" type="button" id="snNewWallet">Make a new wallet</button><button class="btn ghost" type="button" id="snExport">Export key</button><button class="btn ghost" type="button" id="snWithdraw">Withdraw ETH</button><button class="btn ghost" type="button" id="snForget">Remove key</button></div>
           </form>
         </div>
-        <p class="note">Same engine as the Ocula sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Ocula only relays the signed transactions. Keep the tab open while it runs.</p>
+        <p class="note">Same engine as the Signal sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Signal only relays the signed transactions. Keep the tab open while it runs.</p>
       </div>
 
       <div class="tool panel hud" data-p="fees">
         <div class="fmode"><button type="button" data-m="one" class="on">One wallet</button><button type="button" data-m="seed">Many accounts (seed phrase)</button></div>
         <div id="feeOne">
           <form class="inrow" id="feeForm"><input id="feeWallet" placeholder="Your creator wallet (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm ghost" type="button" id="feeConnect">Connect wallet</button><button class="btn sm" id="feeGo">Check</button></form>
-          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Ocula never sees your key.</p></div>
+          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Signal never sees your key.</p></div>
         </div>
         <div id="feeSeed" hidden>
-          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Ocula only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
+          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Signal only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
           <div class="bar2" style="margin-top:14px"><span class="lbl">Seed phrase</span><span style="display:flex;gap:14px;align-items:center"><label class="tog"><input type="checkbox" id="showWords"> show words</label><select id="wordCount" class="selsm"><option value="12">12 words</option><option value="24">24 words</option></select></span></div>
           <div class="words" id="words"></div>
           <p class="note" style="margin:8px 0 0">Tip: paste the whole phrase into the first box, it fills every box.</p>
@@ -162,10 +162,10 @@
       <div class="tool panel hud" data-p="agent">
         <div class="studio">
           <form id="agentForm" class="grid2" style="grid-template-columns:1fr">
-            <label>Agent name<input name="name" maxlength="40" placeholder="Ocula" value="Ocula"></label>
+            <label>Agent name<input name="name" maxlength="40" placeholder="Signal" value="Signal"></label>
             <label>Persona<textarea name="persona" maxlength="600" rows="6">An android AI agent that reads Robinhood Chain for its holders. Calm, sharp, a little dry. Short sentences. Always points to on-chain facts, never hypes.</textarea></label>
             <p class="note" style="margin:0">Design your token's AI agent and talk to it. When you like it, we launch it with the fee engine, site and admin panel.</p>
-            <a class="btn sm ghost" href="#contact">Launch it with Ocula <span class="ar">→</span></a>
+            <a class="btn sm ghost" href="#contact">Launch it with Signal <span class="ar">→</span></a>
           </form>
           <div class="chat">
             <div class="msgs" id="msgs"><div class="m a">Write a persona on the left, then say hi.</div></div>

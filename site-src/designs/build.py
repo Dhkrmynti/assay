@@ -83,17 +83,17 @@ def build(v, title, wm_fill):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
-<meta name="description" content="Ocula is the AI agent that reads every Pons launch on Robinhood Chain.">
+<meta name="description" content="Signal Agent reads every Pons launch on Robinhood Chain. Most launches are noise; it finds the signal.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://oculaagent.com/">
-<meta property="og:title" content="Ocula">
-<meta property="og:description" content="The AI agent that reads every Pons launch on Robinhood Chain.">
+<meta property="og:title" content="Signal Agent">
+<meta property="og:description" content="Most launches are noise. Signal Agent finds the signal.">
 <meta property="og:image" content="https://oculaagent.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@oculaagent">
 <meta name="twitter:creator" content="@oculaagent">
 <meta name="twitter:image" content="https://oculaagent.com/og.png">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon.ico" sizes="48x48">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?{FONTS}&display=swap" rel="stylesheet">
 <style>
@@ -110,12 +110,12 @@ def build(v, title, wm_fill):
 </html>
 """
     open(D + f"design-{v}.html", "w").write(page)
-    if v == "e": open(D + "index.html", "w").write(page)  # the agent design is the live home page
-    if v == "i": open(D + "preview.html", "w").write(page)  # Signal, light (broken white + black), shown at /preview
+
+    if v == "i": open(D + "preview.html", "w").write(page); open(D + "index.html", "w").write(page)  # Signal Agent is the live home page
     # syntax check of the module script
     mod = page[page.index('<script type="module">') + len('<script type="module">'):page.rindex("</script>")]
     open(H + f"check-{v}.mjs", "w").write(mod)
     print("built design-" + v, len(page))
 
-for v, title, fill in [("a", "NOVA · Monolith", "#e8e7e3"), ("b", "NOVA Labs", "#F3F0E7"), ("c", "NOVA · Ceramic", "#efeeea"), ("d", "NOVA Departures", "#F3F0E7"), ("e", "Ocula — the AI agent that reads Pons", "#161514"), ("f", "Ocula — every launch gets a file", "#161514"), ("g", "Ocula — the AI agent that reads every Pons launch", "#F5F3EC"), ("h", "Ocula — most launches are noise", "#ECEDEF"), ("i", "Ocula — most launches are noise", "#161514")]:
+for v, title, fill in [("a", "NOVA · Monolith", "#e8e7e3"), ("b", "NOVA Labs", "#F3F0E7"), ("c", "NOVA · Ceramic", "#efeeea"), ("d", "NOVA Departures", "#F3F0E7"), ("e", "Ocula — the AI agent that reads Pons", "#161514"), ("f", "Ocula — every launch gets a file", "#161514"), ("g", "Ocula — the AI agent that reads every Pons launch", "#F5F3EC"), ("h", "Ocula — most launches are noise", "#ECEDEF"), ("i", "Signal Agent — most launches are noise", "#161514")]:
     if os.path.exists(H + v + ".html") and (len(sys.argv) < 2 or v in sys.argv[1:]): build(v, title, fill)

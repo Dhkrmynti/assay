@@ -30,7 +30,7 @@ $("tabs").addEventListener("click", (e) => { const b = e.target.closest("button"
 document.addEventListener("click", (e) => { const a = e.target.closest("[data-open]"); if (a) { e.preventDefault(); openTab(a.dataset.open, true); } });
 
 // scanner
-const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "Ocula is writing the summary"];
+const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "Signal is writing the summary"];
 async function runScan(ca) {
   ca = ca.trim(); $("scanCa").value = ca;
   if (!/^0x[0-9a-fA-F]{40}$/.test(ca)) { $("scanOut").innerHTML = `<p class="err">Paste a token contract address (0x… 42 characters).</p>`; return; }
@@ -72,7 +72,7 @@ function renderScan(r) {
     <div><h3>${esc(t.name)}<span>$${esc(t.symbol)}</span></h3><div class="ca">${esc(t.address)} · ${fmt(t.ageHours, 1)}h old</div></div>
     <div class="links">${socials}<a class="chipl" href="${EXPLORER}token/${esc(t.address)}" target="_blank" rel="noopener">explorer</a><a class="chipl" href="https://ponsfamily.com/launchpad/${esc(t.address)}" target="_blank" rel="noopener">pons</a></div></div>
   ${riskBlock(r)}
-  <span class="lbl">Ocula's read</span>
+  <span class="lbl">Signal's read</span>
   <p class="read">${r.summary ? esc(r.summary) : `<span style="color:var(--dim);font-weight:500">${esc(r.summaryError || "")}</span>`}</p>
   <div class="flags">${r.flags.map((x) => `<div class="fl"><span class="lv ${esc(x.level)}">${esc(x.level)}</span><div><b>${esc(x.title)}</b><span class="d">${esc(x.detail)}</span></div></div>`).join("")}</div>
   <div class="nums">
@@ -180,7 +180,7 @@ $("feeConnect").addEventListener("click", async () => { try { checkFees(await co
 $("kitForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target)); $("kitGo").disabled = true;
-  $("kitOut").innerHTML = loading("Ocula is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
+  $("kitOut").innerHTML = loading("Signal is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
   try {
     const k = await api("/api/kit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f) });
     const card = (title, body, copy) => `<div class="kc"><h5>${title}</h5><button class="cp" type="button" data-copy="${esc(copy)}">Copy</button>${body}</div>`;
@@ -222,7 +222,7 @@ const startTab = (location.hash || "").slice(1);
 if (qca) { openTab("scan", false, true); runScan(qca); } else openTab(VISOR[startTab] ? startTab : "scan", false, true);
 if (qca || VISOR[startTab]) setTimeout(() => $("app").scrollIntoView({ block: "start" }), 300);
 
-// ---------- sniper: the same engine as the Ocula sniper bot, the private key stays in this browser ----------
+// ---------- sniper: the same engine as the Signal sniper bot, the private key stays in this browser ----------
 const PONS_FACTORY = "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e";
 const SK = { key: "nova.sniper.key", cfg: "nova.sniper.cfg2", pos: "nova.sniper.pos2", hist: "nova.sniper.hist" };
 const sstore = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
@@ -323,7 +323,7 @@ async function snReject(l) {
   const dev = l.deployer.toLowerCase();
   if (l.pairToken !== Eth.ZeroAddress) return { reason: "not paired with ETH", symbol: "?" };
   if (lower(snCfg.blockedDeployers).includes(dev)) return { reason: "deployer is blocked", symbol: "?" };
-  // an agent pick is chosen by Ocula instead of by field 6, the launch age and the keyword list
+  // an agent pick is chosen by Signal instead of by field 6, the launch age and the keyword list
   if (!l.agent && snCfg.allowedDeployers.length && !lower(snCfg.allowedDeployers).includes(dev)) return { reason: "deployer not in field 6", symbol: "?" };
   const t = new Eth.Contract(l.token, SN_ABI.token, snP), c = new Eth.Contract(l.curve, SN_ABI.curve, snP);
   const [name, symbol, tax, snipe, grad, lb, head] = await Promise.all([t.name(), t.symbol(), c.creatorTaxBps(), c.currentSnipeTaxBps(snW.address), c.graduated(), l.agent ? null : snP.getBlock(l.block), l.agent ? null : snP.getBlock("latest")]);
@@ -447,7 +447,7 @@ async function snLoop() {
   } catch (e) { snLog("rpc: " + snShort(e), "bad"); }
   snTimer = setTimeout(snLoop, 700);
 }
-// ---------- agent snipe: buy what Ocula's AI picks from the radar ----------
+// ---------- agent snipe: buy what Signal's AI picks from the radar ----------
 let snPicks = [], snPicksAt = 0, snPicksErr = "", snPicksInfo = null;
 const snTried = new Set();
 async function snFetchPicks(refresh) {
@@ -460,23 +460,23 @@ async function snAgentTick() {
   for (const p of snPicks) {
     if (p.score < snCfg.agentMinScore || snTried.has(p.token) || snHistory.some((h) => h.token === p.token) || snPositions.some((x) => x.token === p.token)) continue;
     snTried.add(p.token);
-    snLog(`AGENT Ocula picked $${p.symbol} (score ${p.score}): ${p.reason}`, "ok");
+    snLog(`AGENT Signal picked $${p.symbol} (score ${p.score}): ${p.reason}`, "ok");
     snSnipe({ token: p.token, curve: p.curve, deployer: p.deployer, pairToken: Eth.ZeroAddress, agent: true });
   }
 }
 function snDrawPicks() {
   const min = snCfg.agentMinScore;
   $("pkStat").textContent = snPicksErr ? snPicksErr : snPicksAt ? `updated ${new Date(snPicksAt).toLocaleTimeString("en-GB")}` : "";
-  $("pkList").innerHTML = snPicks.length ? snPicks.map((p) => `<div class="pick"><div class="ring" style="--v:${p.score};--c:${p.score >= 80 ? "var(--ok)" : p.score >= 70 ? "var(--acc)" : "var(--mid)"}" title="Ocula score ${p.score}/100"><b>${p.score}</b></div>
+  $("pkList").innerHTML = snPicks.length ? snPicks.map((p) => `<div class="pick"><div class="ring" style="--v:${p.score};--c:${p.score >= 80 ? "var(--ok)" : p.score >= 70 ? "var(--acc)" : "var(--mid)"}" title="Signal score ${p.score}/100"><b>${p.score}</b></div>
       <div><div class="nm"><a href="#" data-scan="${p.token}">$${esc(p.symbol)}</a> <span style="color:var(--dim);font-weight:400">${esc(p.name)}</span>${p.score >= min ? ' <span class="pill2 dry" style="padding:2px 8px;font-size:11px">agent buys</span>' : ""}</div>
       <div class="rs">${esc(p.reason)}</div><div class="mt">${Math.round(p.ageSec / 60)}m old · curve ${p.progressPct.toFixed(1)}% · ${fmt(p.curveETH, 4)} ETH · tax ${p.taxPct}% · ${p.token.slice(0, 8)}…</div></div>
       <button class="btn sm ghost" type="button" data-pkbuy="${p.token}">Manual buy</button></div>`).join("")
-    : `<p class="note">${!snPicksAt ? "Loading Ocula picks…" : snPicksInfo?.checkedLastHour ? `Ocula scored ${snPicksInfo.checkedLastHour} fresh launch${snPicksInfo.checkedLastHour > 1 ? "es" : ""} in the last hour; the best got ${snPicksInfo.bestLastHour}/100, under the ${snPicksInfo.minScore} needed to be a pick. It checks again every 15 seconds.` : "Ocula is scoring the newest launches that passed the radar checks. Picks show here as soon as one scores high enough."}</p>`;
-  if (snPicks.length && snPicksInfo?.checkedLastHour) $("pkList").insertAdjacentHTML("beforeend", `<p class="note" style="margin:4px 0 0">Ocula scored ${snPicksInfo.checkedLastHour} fresh launches in the last hour; ${snPicks.length} made the cut.</p>`);
+    : `<p class="note">${!snPicksAt ? "Loading Signal picks…" : snPicksInfo?.checkedLastHour ? `Signal scored ${snPicksInfo.checkedLastHour} fresh launch${snPicksInfo.checkedLastHour > 1 ? "es" : ""} in the last hour; the best got ${snPicksInfo.bestLastHour}/100, under the ${snPicksInfo.minScore} needed to be a pick. It checks again every 15 seconds.` : "Signal is scoring the newest launches that passed the radar checks. Picks show here as soon as one scores high enough."}</p>`;
+  if (snPicks.length && snPicksInfo?.checkedLastHour) $("pkList").insertAdjacentHTML("beforeend", `<p class="note" style="margin:4px 0 0">Signal scored ${snPicksInfo.checkedLastHour} fresh launches in the last hour; ${snPicks.length} made the cut.</p>`);
 }
 $("pkRefresh").addEventListener("click", async () => {
   const b = $("pkRefresh"), before = JSON.stringify(snPicks.map((p) => [p.token, p.score]));
-  b.disabled = true; b.textContent = "Ocula is checking…";
+  b.disabled = true; b.textContent = "Signal is checking…";
   await snBoot(); await snFetchPicks(true);
   const same = before === JSON.stringify(snPicks.map((p) => [p.token, p.score]));
   b.disabled = false; b.textContent = "Refresh";
@@ -509,7 +509,7 @@ async function snStart(mode) {
   if (mode === "live" && !confirm(`LIVE buys for real: ${snCfg.buyEth} ETH per token, up to ${snCfg.maxTotalSpendEth} ETH. Keep this tab open. Start?`)) return;
   snMode = mode; snSpent = 0n; snNext = 0; snWaiting = []; snTried.clear(); snPicksAt = 0;
   $("snState").textContent = mode === "live" ? "LIVE: real buys & sells" : "Dry run: no transactions"; $("snState").className = "pill2 " + mode;
-  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · ${snCfg.mode === "agent" ? `AGENT mode: buys Ocula picks scoring ${snCfg.agentMinScore}+` : "manual mode: your filters"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
+  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · ${snCfg.mode === "agent" ? `AGENT mode: buys Signal picks scoring ${snCfg.agentMinScore}+` : "manual mode: your filters"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
   window.nova?.say(mode === "live" ? "LIVE" : "DRY RUN");
   snLoop();
 }
@@ -771,7 +771,7 @@ $("lpMax").addEventListener("click", async () => {
 });
 $("lpAddSniper").addEventListener("click", async () => {
   let k = null; try { k = localStorage.getItem("nova.sniper.key"); } catch {}
-  if (!k) return lpMsg("No Ocula sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
+  if (!k) return lpMsg("No Signal sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
   const E2 = await getEthers(), a = new E2.Wallet(k).address, inp = lpF().exempt;
   if (!inp.value.toLowerCase().includes(a.toLowerCase())) inp.value = [inp.value.trim(), a].filter(Boolean).join(", ");
 });

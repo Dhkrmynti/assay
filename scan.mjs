@@ -1,4 +1,4 @@
-// Ocula Token Scanner: reads a Pons v2 token straight from Robinhood Chain and turns it into facts and flags.
+// Signal Token Scanner: reads a Pons v2 token straight from Robinhood Chain and turns it into facts and flags.
 // Every number and flag here is computed by code from on-chain data. The AI only writes the summary on top.
 import { ethers } from "ethers";
 
@@ -271,7 +271,7 @@ async function xUp(get) {
 async function xCheck(link) {
   const m = String(link).match(/(?:x|twitter)\.com\/(?:#!\/)?@?([A-Za-z0-9_]{1,15})(?:\/status(?:es)?\/(\d+))?/i) || String(link).match(/^@?([A-Za-z0-9_]{1,15})$/);
   if (!m) return { linked: !!link };
-  const get = async (path) => { const r = await fetch("https://api.fxtwitter.com/" + path, { signal: AbortSignal.timeout(7000), headers: { "user-agent": "OculaScanner/1.0" } }); return r.ok ? r.json() : null; };
+  const get = async (path) => { const r = await fetch("https://api.fxtwitter.com/" + path, { signal: AbortSignal.timeout(7000), headers: { "user-agent": "SignalAgentScanner/1.0" } }); return r.ok ? r.json() : null; };
   try {
     const [u, t] = await Promise.all([get(m[1]), m[2] ? get("status/" + m[2]) : null]);
     const user = u?.user, tw = t?.tweet;
