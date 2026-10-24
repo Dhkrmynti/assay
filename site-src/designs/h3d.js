@@ -1,6 +1,9 @@
 
 // ---------- the field: a calm 3D landscape of lines, one per launch. Noise stays flat and faint; signal rises in the cold accent ----------
 import * as THREE from "three";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 (() => {
   const cv = document.getElementById("field"); if (!cv) return;
   let renderer; try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); } catch { cv.remove(); return; }
@@ -14,12 +17,13 @@ import * as THREE from "three";
   // each line: its data (signal strength, seed) and the geometry it drives
   const lines = [];
   for (let j = 0; j < L; j++) {
-    const g = new THREE.BufferGeometry(), pos = new Float32Array(P * 3);
+    // fat lines (Line2): WebGL draws plain lines 1px wide, these take a width in pixels
+    const pos = new Float32Array(P * 3);
     for (let i = 0; i < P; i++) pos[i * 3] = (i / (P - 1) - 0.5) * W;
-    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    const m = new THREE.LineBasicMaterial({ color: NOISE.clone(), transparent: true, opacity: 0.12 });
-    const line = new THREE.Line(g, m); line.position.z = (j / (L - 1) - 0.5) * D; field.add(line);
-    lines.push({ line, g, m, seed: Math.random() * 100, amp: 0, ampTo: 0.08, peak: 0.55 + Math.random() * 0.3, kind: "noise" });
+    const g = new LineGeometry(); g.setPositions(pos);
+    const m = new LineMaterial({ color: NOISE.clone(), transparent: true, opacity: 0.12, linewidth: 1 });
+    const line = new Line2(g, m); line.position.z = (j / (L - 1) - 0.5) * D; field.add(line);
+    lines.push({ line, g, m, pos, seg: g.attributes.instanceStart.data, seed: Math.random() * 100, amp: 0, ampTo: 0.08, peak: 0.55 + Math.random() * 0.3, kind: "noise" });
   }
   window.field = {
     set(rows) {
@@ -35,7 +39,7 @@ import * as THREE from "three";
   };
   const look = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
   addEventListener("pointermove", (e) => { look.x = e.clientX / innerWidth - 0.5; look.y = e.clientY / innerHeight - 0.5; }, { passive: true });
-  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 8.2, 17); cam.lookAt(0, -0.4, 0.6); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
+  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); lines.forEach((o) => o.m.resolution.set(w, h)); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 8.2, 17); cam.lookAt(0, -0.4, 0.6); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
   new ResizeObserver(size).observe(cv); size();
   let visible = true; new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(cv);
   const clock = new THREE.Clock();
@@ -45,7 +49,7 @@ import * as THREE from "three";
     field.rotation.y = -0.18 + cur.x * 0.12; field.rotation.x = cur.y * 0.05;
     for (const o of lines) {
       o.amp += (o.ampTo - o.amp) * Math.min(1, dt * 1.5 || 1);
-      const a = o.g.attributes.position.array, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
+      const a = o.pos, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
       o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.55 : inScope ? 0.3 : light ? 0.34 : 0.16) - o.m.opacity) * 0.05;
       for (let i = 0; i < P; i++) {
         const u = i / (P - 1);
@@ -53,7 +57,11 @@ import * as THREE from "three";
         const bump = Math.exp(-Math.pow((u - o.peak) * 7, 2)) * (Math.sin(u * 60 - t * 1.4) * 0.35 + 0.65);
         a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * (inScope || light ? 2.2 : 1.5) + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
       }
-      o.g.attributes.position.needsUpdate = true;
+      // copy the points into the line's segment buffer: [start xyz, end xyz] per segment
+      const sa = o.seg.array;
+      for (let i = 0; i < P - 1; i++) { sa.set(a.subarray(i * 3, i * 3 + 6), i * 6); }
+      o.seg.needsUpdate = true;
+      o.m.linewidth += ((o.kind === "sig" ? 4 : o.kind === "int" ? 1.8 : 1.15) - o.m.linewidth) * 0.08;
     }
     renderer.render(scene, cam);
   }
