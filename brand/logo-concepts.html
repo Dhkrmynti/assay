@@ -1,0 +1,78 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>NOVA logo concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#040404;color:#f2f1ee;font-family:"Inter Tight",sans-serif;padding:40px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:1200px;margin:0 auto}
+.c{border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:28px;background:#080808}
+.c h3{margin:0 0 4px;font:500 12px "JetBrains Mono";letter-spacing:.16em;color:#f0b04a}
+.c p{margin:0 0 20px;color:#8a8a87;font:500 13px "JetBrains Mono"}
+.row{display:flex;align-items:center;gap:28px}
+.mark{width:150px;height:150px;flex:none}
+.lock{display:flex;align-items:center;gap:14px}
+.lock svg{width:44px;height:44px}
+.word{font:900 34px "Inter Tight";letter-spacing:.02em}.word span{color:#666663;font-weight:700}
+.small{display:flex;gap:12px;margin-top:18px;align-items:center}
+.small svg{width:32px;height:32px}.small svg.s{width:20px;height:20px}
+.light{background:#f2f1ee;border-radius:6px;padding:8px}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="amb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#e89a2c"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+
+  <!-- A: visor — the robot's helmet seen front-on, two eyes in the visor -->
+  <symbol id="A" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="24" fill="#0b0b0b"/>
+    <path d="M50 16c-19 0-32 13-32 31v14c0 13 10 23 23 23h18c13 0 23-10 23-23V47c0-18-13-31-32-31z" fill="#161616" stroke="#2a2a2a" stroke-width="1.5"/>
+    <rect x="24" y="42" width="52" height="18" rx="9" fill="#050505"/>
+    <rect x="31" y="47.5" width="14" height="7" rx="3.5" fill="url(#amb)" filter="url(#glow)"/>
+    <rect x="55" y="47.5" width="14" height="7" rx="3.5" fill="url(#amb)" filter="url(#glow)"/>
+  </symbol>
+
+  <!-- B: nova star — a four-point burst (a "nova") with a visor bar through it -->
+  <symbol id="B" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="24" fill="#0b0b0b"/>
+    <path d="M50 12C53 36 64 47 88 50 64 53 53 64 50 88 47 64 36 53 12 50 36 47 47 36 50 12z" fill="url(#amb)"/>
+    <rect x="22" y="45" width="56" height="10" rx="5" fill="#0b0b0b"/>
+    <rect x="30" y="47.5" width="40" height="5" rx="2.5" fill="#ffe2a3" filter="url(#glow)"/>
+  </symbol>
+
+  <!-- C: N monogram — two pillars joined by a diagonal visor slit -->
+  <symbol id="C" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="24" fill="#0b0b0b"/>
+    <rect x="22" y="22" width="14" height="56" rx="4" fill="#f2f1ee"/>
+    <rect x="64" y="22" width="14" height="56" rx="4" fill="#f2f1ee"/>
+    <path d="M30 24l40 52" stroke="url(#amb)" stroke-width="13" stroke-linecap="round" filter="url(#glow)"/>
+  </symbol>
+
+  <!-- D: orbit eye — the O of NOVA as a ring with a single scanning visor -->
+  <symbol id="D" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="24" fill="#0b0b0b"/>
+    <circle cx="50" cy="50" r="30" fill="none" stroke="#f2f1ee" stroke-width="9"/>
+    <rect x="28" y="44" width="44" height="12" rx="6" fill="url(#amb)" filter="url(#glow)"/>
+    <circle cx="80" cy="22" r="4" fill="url(#amb)"/>
+  </symbol>
+</defs></svg>
+
+<div class="grid">
+  <div class="c"><h3>A · VISOR</h3><p>NOVA's robot helmet, front-on. Two glowing eyes. Ties straight to the 3D robot.</p>
+    <div class="row"><svg class="mark"><use href="#A"/></svg>
+      <div><div class="lock"><svg><use href="#A"/></svg><div class="word">NOVA <span>LABS</span></div></div>
+      <div class="small"><svg><use href="#A"/></svg><svg class="s"><use href="#A"/></svg><span class="light"><svg style="width:32px;height:32px"><use href="#A"/></svg></span></div></div></div></div>
+
+  <div class="c"><h3>B · NOVA STAR</h3><p>A four-point star burst (a nova) cut by the visor line. Iconic, works as a token logo.</p>
+    <div class="row"><svg class="mark"><use href="#B"/></svg>
+      <div><div class="lock"><svg><use href="#B"/></svg><div class="word">NOVA <span>LABS</span></div></div>
+      <div class="small"><svg><use href="#B"/></svg><svg class="s"><use href="#B"/></svg><span class="light"><svg style="width:32px;height:32px"><use href="#B"/></svg></span></div></div></div></div>
+
+  <div class="c"><h3>C · N MONOGRAM</h3><p>An N whose diagonal is the glowing visor slit. Clean, techy, reads at tiny sizes.</p>
+    <div class="row"><svg class="mark"><use href="#C"/></svg>
+      <div><div class="lock"><svg><use href="#C"/></svg><div class="word">NOVA <span>LABS</span></div></div>
+      <div class="small"><svg><use href="#C"/></svg><svg class="s"><use href="#C"/></svg><span class="light"><svg style="width:32px;height:32px"><use href="#C"/></svg></span></div></div></div></div>
+
+  <div class="c"><h3>D · ORBIT EYE</h3><p>The O of NOVA as a ring with one scanning visor, plus a small satellite dot.</p>
+    <div class="row"><svg class="mark"><use href="#D"/></svg>
+      <div><div class="lock"><svg><use href="#D"/></svg><div class="word">NOVA <span>LABS</span></div></div>
+      <div class="small"><svg><use href="#D"/></svg><svg class="s"><use href="#D"/></svg><span class="light"><svg style="width:32px;height:32px"><use href="#D"/></svg></span></div></div></div></div>
+</div>
+</body></html>

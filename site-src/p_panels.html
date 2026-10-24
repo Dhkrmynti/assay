@@ -1,0 +1,175 @@
+<div class="tool panel hud" data-p="launch">
+        <div class="lp">
+          <form id="lpForm" autocomplete="off">
+            <div class="lpgrid">
+              <div class="drop" id="lpDrop">
+                <input type="file" id="lpFile" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+                <img id="lpPrev" alt="" hidden>
+                <div id="lpDropTxt"><b>Upload logo</b><span>PNG, JPG, GIF or WEBP · max 5MB<br>click or drop here</span></div>
+              </div>
+              <div class="lpcol">
+                <label>Name<input name="name" maxlength="32" placeholder="e.g. Robinhood Doge" required></label>
+                <label>Ticker<input name="symbol" maxlength="10" placeholder="e.g. RDOGE" required></label>
+                <label>Or paste an image link<input name="logoUrl" placeholder="https://…" spellcheck="false"></label>
+                <div id="lpUpMsg" class="note" style="margin:0"></div>
+              </div>
+            </div>
+            <label class="full">Description<textarea name="description" rows="3" maxlength="500" placeholder="Tell the story of your token and community"></textarea></label>
+            <div class="full"><span class="lbl">Creator tax <b id="lpTaxLbl">1% (100 bps)</b></span><p class="note" style="margin:4px 0 8px">Paid to your wallet on every buy and sell on the bonding curve (max 10%).</p>
+              <div class="taxes" id="lpTaxes"><button type="button" data-tax="0">0%</button><button type="button" data-tax="1" class="on">1%</button><button type="button" data-tax="2">2%</button><button type="button" data-tax="3">3%</button><button type="button" data-tax="5">5%</button></div></div>
+            <div class="lpgrid2">
+              <label>Website<input name="website" placeholder="Website URL"></label>
+              <label>Twitter / X<input name="twitter" placeholder="https://x.com/…"></label>
+              <label>Telegram<input name="telegram" placeholder="https://t.me/…"></label>
+              <label>Discord<input name="discord" placeholder="https://discord.gg/…"></label>
+            </div>
+            <label class="full">Dev buy (optional, ETH)<span class="inrow" style="margin:6px 0 0"><input name="devBuy" inputmode="decimal" placeholder="0.0 (ETH)"><button class="btn sm ghost" type="button" id="lpMax">MAX</button></span><span id="lpDevHint" class="note" style="margin:6px 0 0"></span></label>
+            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Ocula sniper wallet.</small>
+              <span class="inrow" style="margin:6px 0 0"><input name="exempt" placeholder="0x…, 0x…" spellcheck="false"><button class="btn sm ghost" type="button" id="lpAddSniper">Add my sniper wallet</button></span></label>
+          </form>
+          <aside class="lpside">
+            <div class="kc">
+              <h5>Robinhood Chain · Pons</h5>
+              <div class="mono" id="lpWallet" style="font-size:12.5px;word-break:break-all">Wallet not connected</div>
+              <table style="margin-top:10px">
+                <tr><td>Launch fee</td><td class="r" id="lpFee">…</td></tr>
+                <tr><td>Dev buy</td><td class="r" id="lpDev">0 ETH</td></tr>
+                <tr><td><b>Total</b></td><td class="r"><b id="lpTotal">…</b></td></tr>
+                <tr><td>Your balance</td><td class="r" id="lpBal">—</td></tr>
+                <tr><td>Creator tax</td><td class="r" id="lpTax2">1%</td></tr>
+              </table>
+              <div style="display:grid;gap:8px;margin-top:14px">
+                <button class="btn ghost" type="button" id="lpConnect">Connect wallet</button>
+                <button class="btn" type="button" id="lpGo">Launch token <span class="ar">→</span></button>
+              </div>
+              <div id="lpMsg" class="steps2"></div>
+            </div>
+            <div id="lpDone"></div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="tool panel hud rv" data-p="scan">
+        <form class="inrow" id="scanForm"><input id="scanCa" placeholder="Paste a Pons token address (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm" id="scanGo">Scan</button></form>
+        <div id="scanOut"><p class="empty">Paste any Pons token CA. Ocula checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
+      </div>
+
+      <div class="tool panel hud" data-p="radar">
+        <div class="bar2"><span class="lbl">Newest Pons launches · <b id="radarHead">reading…</b></span><label class="tog"><input type="checkbox" id="onlyPass"> only launches that pass</label></div>
+        <div id="radarOut"><p class="empty">Reading the newest launches…</p></div>
+        <p class="note">PASS means clean and growing: the dev has not dumped their bag (a partial sell while still holding is fine), the dev holds under 15%, creator tax ≤ 3%, socials set, the dev is not launching many tokens, fees go to the dev, and buyers keep arriving (at least 1 new buyer a minute since launch, or 8+ new buyers in the last 15 minutes). Not advice.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="snipe">
+        <div class="snhead">
+          <div><span class="lbl">Sniper wallet</span><div class="mono" id="snAddr" style="margin-top:6px;word-break:break-all">No private key yet</div><div id="snBalLine" class="note" style="margin:4px 0 0"></div></div>
+          <div class="snbtns"><span class="pill2" id="snState">Off</span><button class="btn sm ghost" type="button" id="snDry">Start dry run (no money)</button><button class="btn sm" type="button" id="snLiveBtn">Start LIVE</button><button class="btn sm danger" type="button" id="snStop">Stop</button></div>
+        </div>
+        <div class="snmode" id="snModeSw">
+          <button type="button" data-mode="manual">Manual snipe<small>Your filters below catch every new launch in its first seconds</small></button>
+          <button type="button" data-mode="agent">Agent snipe<small>Ocula's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
+        </div>
+        <div id="snAgentBox" class="agbox" hidden>
+          <div class="agtop"><div><span class="lbl">Minimum Ocula score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
+            <div class="agval"><b id="snMinVal">75</b><span>/100</span></div></div>
+          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Ocula score">
+          <div class="agticks"><span>50 · more buys</span><span>95 · only the best</span></div>
+          <p class="agnote">Buy size, budget, take profit, stop loss, max positions, tax limits and blocked devs/keywords from Settings still apply. Each token is bought once.</p>
+        </div>
+        <div id="snMsg" class="note"></div>
+
+        <div class="snsec"><h4>Manual buy</h4>
+          <div class="inrow" style="margin:0"><input id="mbToken" placeholder="Token CA 0x…" spellcheck="false" autocomplete="off"><input id="mbEth" placeholder="ETH (empty = buy per snipe)" style="flex:0 1 220px"><button class="btn sm" type="button" id="mbGo">Buy now</button></div>
+          <div id="mbMsg" class="note" style="margin-top:8px"></div>
+        </div>
+
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Ocula picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
+          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Ocula's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
+          <div class="picks" id="pkList"><p class="note">Loading Ocula picks…</p></div></div>
+
+        <div class="snsec"><h4>Open positions</h4><div id="snPos"><p class="note">No positions.</p></div></div>
+
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Trade history</h4><span style="display:flex;gap:10px;align-items:center"><span id="snPnl" class="note" style="margin:0"></span><button class="btn sm ghost" type="button" id="snClearHist">Clear history</button></span></div><div id="snHist"><p class="note">No finished trades yet.</p></div></div>
+
+        <div class="snsec"><h4>Bot log</h4><div class="log2" id="snLog"></div></div>
+
+        <div class="snsec"><h4>Settings</h4>
+          <form id="snForm" autocomplete="off">
+            <p class="note" style="margin:0 0 12px">Fill these 6 fields. The rest already has safe defaults.</p>
+            <div class="grid3">
+              <label>1. Sniper wallet private key<small>A dedicated wallet, not your dev wallet. Stays in this browser only. Empty = keep the saved one</small><input name="privateKey" type="password" placeholder="0x…"></label>
+              <label>2. Buy per token (ETH)<small>ETH spent on each snipe</small><input name="buyEth"></label>
+              <label>3. Total budget (ETH)<small>Stops buying after this much</small><input name="maxTotalSpendEth"></label>
+              <label>4. Take profit (%)<small>Sells when up this much</small><input name="takeProfitPercent"></label>
+              <label>5. Stop loss (%)<small>Sells when down this much</small><input name="stopLossPercent"></label>
+              <label style="grid-column:span 3">6. Only snipe tokens from these devs (0x addresses, comma separated)<small>Put your own dev wallet to snipe your own launch. Empty = snipe every new token</small><textarea name="allowedDeployers" rows="2"></textarea></label>
+            </div>
+            <details style="margin-top:14px"><summary>Advanced settings (fine to leave)</summary>
+              <div class="grid3" style="margin-top:12px">
+                <label>Max hold (seconds)<small>Force sell after this. 0 = never</small><input name="maxHoldSeconds"></label>
+                <label>Max open positions<small>Tokens held at the same time</small><input name="maxOpenPositions"></label>
+                <label>Gas reserve (ETH)<small>Balance never spent on buys</small><input name="gasReserveEth"></label>
+                <label>Slippage (%)<small>Price move tolerance</small><input name="slippagePercent"></label>
+                <label>Max creator tax (%)<small>Skip tokens with a higher dev tax</small><input name="maxCreatorTaxPercent"></label>
+                <label>Max snipe tax (%)<small>Waits until the snipe tax drops to this</small><input name="maxSnipeTaxPercent"></label>
+                <label>Max launch age (seconds)<small>Skip launches older than this</small><input name="maxLaunchAgeSeconds"></label>
+                <label>Require socials<small>Skip tokens with no X/Telegram/website on-chain</small><select name="requireSocials"><option value="0">No</option><option value="1">Yes</option></select></label>
+                <label>Max other launches by the dev (24h)<small>Skip serial launchers. 0 = not checked</small><input name="maxDeployerLaunches"></label>
+                <label>Name/ticker keywords<small>Only buy names with one of these. Empty = all</small><textarea name="keywords" rows="2"></textarea></label>
+                <label>Blocked keywords<small>Skip names with these words</small><textarea name="blockedKeywords" rows="2"></textarea></label>
+                <label>Blocked devs<small>Dev addresses never bought</small><textarea name="blockedDeployers" rows="2"></textarea></label>
+              </div>
+            </details>
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="snSave">Save settings</button><button class="btn ghost" type="button" id="snNewWallet">Make a new wallet</button><button class="btn ghost" type="button" id="snExport">Export key</button><button class="btn ghost" type="button" id="snWithdraw">Withdraw ETH</button><button class="btn ghost" type="button" id="snForget">Remove key</button></div>
+          </form>
+        </div>
+        <p class="note">Same engine as the Ocula sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Ocula only relays the signed transactions. Keep the tab open while it runs.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="fees">
+        <div class="fmode"><button type="button" data-m="one" class="on">One wallet</button><button type="button" data-m="seed">Many accounts (seed phrase)</button></div>
+        <div id="feeOne">
+          <form class="inrow" id="feeForm"><input id="feeWallet" placeholder="Your creator wallet (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm ghost" type="button" id="feeConnect">Connect wallet</button><button class="btn sm" id="feeGo">Check</button></form>
+          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Ocula never sees your key.</p></div>
+        </div>
+        <div id="feeSeed" hidden>
+          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Ocula only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
+          <div class="bar2" style="margin-top:14px"><span class="lbl">Seed phrase</span><span style="display:flex;gap:14px;align-items:center"><label class="tog"><input type="checkbox" id="showWords"> show words</label><select id="wordCount" class="selsm"><option value="12">12 words</option><option value="24">24 words</option></select></span></div>
+          <div class="words" id="words"></div>
+          <p class="note" style="margin:8px 0 0">Tip: paste the whole phrase into the first box, it fills every box.</p>
+          <div class="grid3" style="grid-template-columns:120px 1fr 160px">
+            <label>Accounts<input id="seedCount" value="100" inputmode="numeric"></label>
+            <label>Send all fees to<input id="seedDest" placeholder="Account 1 of this seed" spellcheck="false"></label>
+            <label>Skip below (ETH)<input id="seedMin" value="0.0003" inputmode="decimal"></label>
+          </div>
+          <div style="display:flex;gap:10px;margin:14px 0 6px;flex-wrap:wrap"><button class="btn" type="button" id="seedScan">Scan accounts <span class="ar">→</span></button><button class="btn ghost" type="button" id="seedForget">Forget seed</button></div>
+          <div id="seedOut"></div>
+          <p class="note">Gas for accounts with no ETH is sent from Account 1, so keep a little ETH there. Accounts are the standard MetaMask / Rabby ones (Account 1, 2, 3…).</p>
+        </div>
+      </div>
+
+      <div class="tool panel hud" data-p="kit">
+        <form id="kitForm" class="grid2">
+          <label>Token name<input name="name" maxlength="40" placeholder="Moon Cat" required></label>
+          <label>Ticker<input name="ticker" maxlength="12" placeholder="$MCAT" required></label>
+          <label class="full">The idea<textarea name="idea" maxlength="400" rows="3" placeholder="A cat astronaut that only lands on tokens with real holders." required></textarea></label>
+          <label>Tone<select name="tone"><option>bold</option><option>funny</option><option>mysterious</option><option>premium</option><option>degen</option></select></label>
+          <div class="full"><button class="btn" id="kitGo">Write my launch kit <span class="ar">→</span></button></div>
+        </form>
+        <div id="kitOut"></div>
+      </div>
+
+      <div class="tool panel hud" data-p="agent">
+        <div class="studio">
+          <form id="agentForm" class="grid2" style="grid-template-columns:1fr">
+            <label>Agent name<input name="name" maxlength="40" placeholder="Ocula" value="Ocula"></label>
+            <label>Persona<textarea name="persona" maxlength="600" rows="6">An android AI agent that reads Robinhood Chain for its holders. Calm, sharp, a little dry. Short sentences. Always points to on-chain facts, never hypes.</textarea></label>
+            <p class="note" style="margin:0">Design your token's AI agent and talk to it. When you like it, we launch it with the fee engine, site and admin panel.</p>
+            <a class="btn sm ghost" href="#contact">Launch it with Ocula <span class="ar">→</span></a>
+          </form>
+          <div class="chat">
+            <div class="msgs" id="msgs"><div class="m a">Write a persona on the left, then say hi.</div></div>
+            <form class="inrow" id="chatForm" style="margin:0"><input id="chatIn" maxlength="500" placeholder="Talk to your agent…" autocomplete="off"><button class="btn sm" id="chatGo">Send</button></form>
+          </div>
+        </div>
+      </div>

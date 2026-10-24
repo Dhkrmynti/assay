@@ -1,0 +1,18 @@
+node_modules/
+.DS_Store
+# secrets and server state (never commit)
+.env
+.env.*
+burn-wallet.json
+burn-log.json
+ocula-token.json
+studio-auto.json
+launch-cache.json
+*.tmp
+# local backups
+*.pre-*.mjs
+*.pre-*.html
+# render scratch
+brand/x-content/**/.frames-*/
+site-src/designs/check-*.mjs
+site-src/designs/__pycache__/

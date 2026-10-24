@@ -1,0 +1,81 @@
+{
+ "total": 1371,
+ "answer": "1,371 tokens launched on Pons in the last 24 hours. The newest that passed every check: $EVM, $LXS, $ZETA. $MARK is held: no socials. Open the radar to watch them live.",
+ "term": [
+  "New launch <b>$EVM</b> \u00b7 0x119973\u2026",
+  "<span class='g'>Deployer: first launch in 24h</span>",
+  "Creator fees go to the deployer",
+  "Tax 2% \u00b7 <span class='g'>2 social links</span> \u00b7 curve 2.4%"
+ ],
+ "verdict": "Cleared all four checks",
+ "rows": [
+  {
+   "symbol": "EVM",
+   "ca": "0x119973e98316deaadd57482854086892bf1951b4",
+   "tax": 2,
+   "age": "2m ago",
+   "pass": true,
+   "why": ""
+  },
+  {
+   "symbol": "LXS",
+   "ca": "0x3c0c4fe8d3be94dbc71025ddb6e22382b31ab2eb",
+   "tax": 3,
+   "age": "7m ago",
+   "pass": true,
+   "why": ""
+  },
+  {
+   "symbol": "ZETA",
+   "ca": "0x07a2686885e747cfef3a211223d092ffcdab72ba",
+   "tax": 2,
+   "age": "8m ago",
+   "pass": true,
+   "why": ""
+  },
+  {
+   "symbol": "MARK",
+   "ca": "0x8d5ba78c5f4ebd428b80c5b93137b17c17992165",
+   "tax": 3,
+   "age": "1m ago",
+   "pass": false,
+   "why": "no socials"
+  },
+  {
+   "symbol": "PASS12",
+   "ca": "0x8a3a4fb783f0c355d1163c96cb0eda5585876e9c",
+   "tax": 2,
+   "age": "9m ago",
+   "pass": true,
+   "why": ""
+  }
+ ],
+ "scan": {
+  "name": "Evmzone",
+  "symbol": "EVM",
+  "ca": "0x119973e98316deaadd57482854086892bf1951b4",
+  "flags": [
+   {
+    "level": "ok",
+    "title": "Deployer has not sold",
+    "detail": "Bought 1.1415% at launch, still holds 1.1415%."
+   },
+   {
+    "level": "ok",
+    "title": "Spread out",
+    "detail": "The top 10 wallets hold 5.6978% of supply."
+   },
+   {
+    "level": "info",
+    "title": "Early buyers",
+    "detail": "3 wallets bought 5.562% in the first minute."
+   },
+   {
+    "level": "info",
+    "title": "First launch",
+    "detail": "No other Pons launches from this deployer."
+   }
+  ],
+  "summary": "The deployer has not sold and still holds 1.1415% of supply, while three early wallets bought 5.562% in the first minute and still hold 4.5562%."
+ }
+}

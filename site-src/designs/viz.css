@@ -1,0 +1,52 @@
+/* ===== visuals: small animated pictures instead of paragraphs (they inherit the design's colour) ===== */
+.viz{position:relative;width:100%;aspect-ratio:1.5;color:inherit}
+.viz svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.viz .s{stroke:currentColor;fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.viz .f{fill:currentColor}
+.viz .o2{opacity:.22}.viz .o4{opacity:.45}
+/* scanner: a document read by a moving beam */
+.v-scan .beam{animation:vbeam 2.6s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes vbeam{0%{transform:translateY(0)}50%{transform:translateY(118px)}100%{transform:translateY(0)}}
+.v-scan .ck{opacity:0;animation:vck 2.6s infinite}.v-scan .ck:nth-of-type(2){animation-delay:.35s}.v-scan .ck:nth-of-type(3){animation-delay:.7s}
+@keyframes vck{30%,80%{opacity:1}0%,20%,100%{opacity:0}}
+/* radar: rings, a sweep and real launches as blips */
+.v-radar .sweep{position:absolute;left:50%;top:50%;width:84%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from 0deg,currentColor 0deg,transparent 70deg);opacity:.22;animation:vspin 3.2s linear infinite;-webkit-mask:radial-gradient(circle,#000 69%,transparent 70%);mask:radial-gradient(circle,#000 69%,transparent 70%)}
+@keyframes vspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.v-radar .blip{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:currentColor;animation:vblip 3.2s infinite}
+.v-radar .blip.bad{background:#ef4444}
+@keyframes vblip{0%,100%{opacity:.25;transform:scale(.8)}10%{opacity:1;transform:scale(1.4)}}
+/* sniper: a reticle that locks */
+.v-snipe .ret{transform-origin:150px 100px;animation:vlock 2.8s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes vlock{0%{transform:translate(-46px,24px) scale(1.25)}45%,85%{transform:none}100%{transform:translate(-46px,24px) scale(1.25)}}
+.v-snipe .hit{transform-origin:150px 100px;animation:vhit 2.8s infinite}
+@keyframes vhit{0%,44%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+/* fee claimer: many accounts flow into one wallet */
+.v-fees .flow{stroke-dasharray:4 7;animation:vflow 1.2s linear infinite}
+@keyframes vflow{to{stroke-dashoffset:-22}}
+.v-fees .acc{animation:vpulse 2.4s infinite}
+@keyframes vpulse{50%{opacity:.35}}
+/* launchpad: a bonding curve fills to graduation */
+.v-launch .curve{stroke-dasharray:320;stroke-dashoffset:320;animation:vdraw 3.4s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vdraw{0%{stroke-dashoffset:320}60%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.v-launch .grad{transform-origin:244px 38px;animation:vgrad 3.4s infinite}
+@keyframes vgrad{0%,55%{transform:scale(0)}65%,90%{transform:scale(1)}100%{transform:scale(1);opacity:0}}
+/* launch kit: lines being written */
+.v-kit .ln{transform-origin:left;animation:vtype 3s steps(14) infinite}
+.v-kit .ln:nth-of-type(2){animation-delay:.4s}.v-kit .ln:nth-of-type(3){animation-delay:.8s}.v-kit .ln:nth-of-type(4){animation-delay:1.2s}
+@keyframes vtype{0%{transform:scaleX(0)}40%,90%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+/* agent studio: a conversation */
+.v-agent .b1{animation:vb 4s infinite}.v-agent .b2{animation:vb 4s 1.2s infinite}.v-agent .b3{animation:vb 4s 2.2s infinite}
+@keyframes vb{0%,10%{opacity:0;transform:translateY(6px)}20%,85%{opacity:1;transform:none}100%{opacity:0}}
+.v-agent .td{animation:vdot 1s infinite}.v-agent .td:nth-of-type(2){animation-delay:.15s}.v-agent .td:nth-of-type(3){animation-delay:.3s}
+@keyframes vdot{50%{opacity:.2}}
+/* AI picks: a score ring */
+.v-pick .ring{stroke-dasharray:283;stroke-dashoffset:283;animation:vscore 3s cubic-bezier(.5,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:150px 100px}
+@keyframes vscore{0%{stroke-dashoffset:283}50%,90%{stroke-dashoffset:62}100%{stroke-dashoffset:62;opacity:0}}
+/* directives */
+.v-key .cross{stroke-dasharray:130;stroke-dashoffset:130;animation:vdraw2 3s infinite}
+@keyframes vdraw2{0%,20%{stroke-dashoffset:130}50%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.v-clamp .val{animation:vclamp 2.6s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vclamp{0%{transform:translateX(-70px)}40%{transform:translateX(110px)}55%,85%{transform:translateX(64px)}100%{transform:translateX(-70px)}}
+.v-trace .tx{stroke-dasharray:6 6;animation:vflow 1s linear infinite}
+.v-trace .node{animation:vpulse 2s infinite}.v-trace .node:nth-of-type(2){animation-delay:.3s}.v-trace .node:nth-of-type(3){animation-delay:.6s}
+@media (prefers-reduced-motion:reduce){.viz *{animation:none!important}}

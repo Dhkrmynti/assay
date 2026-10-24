@@ -1,0 +1,129 @@
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#top">{{MARK}}ocula<small>Bureau of on-chain reading</small></a>
+  <nav><a href="#work">Procedure</a><a href="#today">Today's files</a><a href="#app">Field kit</a><a href="#safety">Protocol</a></nav>
+  <div class="r"><a class="btn ghost xlink" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Ocula on X" title="@oculaagent on X"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><button class="btn ghost" type="button" id="holderBtn">Holder access</button><a class="btn buy" id="buyNova" aria-disabled="true">$OCULA · Soon</a></div>
+</div></header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="folder">
+        <div class="ftab">FILE Nº <span id="nLaunch">—</span> · TODAY</div>
+        <div class="cover">
+          <div class="meta"><span>Subject: <b>every launch on Pons</b></span><span>Chain: <b>Robinhood</b></span><span>Agent: <b>Ocula</b></span><span class="lv"><i></i>Reading now</span></div>
+          <h1>Every launch gets a file.<br><span class="soft">Ocula opens it <span class="rd" data-rd>before you buy</span>.</span></h1>
+          <div class="thread" id="thread" aria-live="polite"></div>
+          <form class="box" id="ask" autocomplete="off">
+            <label class="fl" for="askIn">Request for reading</label>
+            <textarea id="askIn" rows="2" placeholder="Paste a token CA, or ask Ocula anything…"></textarea>
+            <div class="bar"><span class="hint" id="hint">Ocula reads Pons on Robinhood Chain. It never asks for your keys.</span><button class="send" id="send" type="submit" aria-label="Send" disabled>File it<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </form>
+          <div class="chips">
+            <button class="chip" type="button" data-ask="What's launching on Pons right now?">Open today's launches</button>
+            <button class="chip" type="button" data-tool="scan">Investigate a token</button>
+            <button class="chip" type="button" data-tool="snipe">Snipe a launch</button>
+            <button class="chip" type="button" data-tool="fees">Claim my fees</button>
+            <button class="chip" type="button" data-tool="launch">Launch a token</button>
+            <button class="chip" type="button" data-tool="kit">Write a launch kit</button>
+          </div>
+          <span class="stamp big st-live">Live</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="brief" id="brief">
+    <div class="wrap">
+      <p class="memo"><span class="lbl">Briefing</span>Most launches on Pons are <span class="rd" data-rd>noise</span>. Some are <span class="rd" data-rd>traps</span>: a dev who sells the whole bag, wallets bundled by one hand, an X account a week old. Ocula is the agent that reads <span class="rd" data-rd>every one of them</span>, on-chain, and writes down what it finds.</p>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap work" id="workPin">
+      <div>
+        <div class="sh" style="margin:0"><span class="lbl">Procedure</span><h2>How a file is opened.</h2><p>The same four steps for every new token, in seconds.</p></div>
+        <ol class="steps" id="steps">
+          <li><span class="n">I</span><div><b>Intake</b><span>The launch is caught the moment the factory emits it.</span></div></li>
+          <li><span class="n">II</span><div><b>The deployer</b><span>Has the dev sold? Other launches? Where do the fees go?</span></div></li>
+          <li><span class="n">III</span><div><b>The token</b><span>Creator tax, socials, bundles, and whether buyers keep coming.</span></div></li>
+          <li><span class="n">IV</span><div><b>The verdict</b><span>Cleared, held, or picked for the sniper. Stamped.</span></div></li>
+        </ol>
+      </div>
+      <div class="term" id="term">
+        <div class="top"><span><b>Case report</b> · newest launch</span><span id="termAge">live</span></div>
+        <div class="lines" id="termLines"></div>
+        <div class="verdict"><span class="stamp" id="termVerdict">…</span><a class="btn ghost" href="#app" id="termScan">Open full file</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="today">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Today's files</span><h2>The last hour on Pons, as Ocula filed it.</h2><p>Real launches. Click a file to read the full report.</p></div>
+      <div class="gal" id="gal"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="app">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Field kit</span><h2>Every tool the agent uses, issued to you.</h2><p>The Pons Launchpad is free for everyone. Every other tool opens for $OCULA holders. Keys and seeds always stay in your browser.</p></div>
+      {{WS}}
+    </div>
+  </section>
+
+  <section class="sec" id="flow">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Operation</span><h2>From idea to fees.</h2><p>Launching your own token? The bureau covers every step.</p></div>
+      <div class="flow" id="flowRow">
+        <svg class="line" viewBox="0 0 1000 4" preserveAspectRatio="none" aria-hidden="true"><path class="track" d="M22 2H978"/><path class="drawn" id="drawn" d="M22 2H978" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/></svg>
+        <a class="fstep" href="#app" data-open="kit"><span class="dot">1</span><b>Write</b><span>Launch Kit writes the lore, bio and posts.</span>{{VIZ:kit}}</a>
+        <a class="fstep" href="#app" data-open="launch"><span class="dot">2</span><b>Launch</b><span>Pons Launchpad, from your own wallet.</span>{{VIZ:launch}}</a>
+        <a class="fstep" href="#app" data-open="snipe"><span class="dot">3</span><b>Snipe</b><span>Buy first at 0% snipe tax.</span>{{VIZ:snipe}}</a>
+        <a class="fstep" href="#app" data-open="radar"><span class="dot">4</span><b>Watch</b><span>Scanner and Radar on your token.</span>{{VIZ:radar}}</a>
+        <a class="fstep" href="#app" data-open="fees"><span class="dot">5</span><b>Claim</b><span>Creator fees, one wallet or a hundred.</span>{{VIZ:fees}}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="safety">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Protocol</span><h2>Rules the agent cannot break.</h2></div>
+      <div class="safe">
+        <div class="sf"><span class="pn">§1</span>{{VIZ:key}}<b>Ocula never holds your keys.</b><p>Keys and seeds stay in your browser. Ocula only relays transactions you already signed.</p></div>
+        <div class="sf"><span class="pn">§2</span>{{VIZ:clamp}}<b>The agent works inside limits.</b><p>Decisions stay inside limits written in code. Anything outside them is clamped.</p></div>
+        <div class="sf"><span class="pn">§3</span>{{VIZ:trace}}<b>Every number is evidence.</b><p>Each figure traces back to a transaction or contract call anyone can check.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" id="contact">
+    <div class="wrap">
+      <span class="lbl">Commission</span>
+      <h2>Want an agent of your own?</h2>
+      <p>We build AI agent tokens with their own site, chat and fee engine, like $UNIT.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn lg" href="https://x.com/oculaagent" target="_blank" rel="noopener">Message us on X</a><a class="btn lg ghost" href="#top" id="backChat">Ask Ocula first</a></div>
+    </div>
+  </section>
+</main>
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <button class="x" type="button" id="mClose" aria-label="Close">×</button>
+  <span class="mmark">{{MARK}}</span>
+  <h3 id="mTitle">Clearance</h3>
+  <p id="mText"></p>
+  <button class="btn lg" type="button" id="mSign" hidden>Connect wallet &amp; sign</button>
+  <p class="merr" id="mErr"></p>
+  <details id="mOwner"><summary>Owner? Use your studio key</summary><form id="ownerForm"><input id="ownerKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="btn" type="submit">Unlock</button></form></details>
+</div></div>
+<footer>
+  <div class="wrap fgrid">
+    <div class="fbrand">
+      <a class="brand" href="#top">{{MARK}}ocula</a>
+      <p>The agent that opens a file on every Pons launch on Robinhood Chain.</p>
+      <span class="fstat"><i></i>On duty · block <span id="nBlock">—</span></span>
+    </div>
+    <div class="fcol"><b>Field kit</b><a href="#app" data-open="scan">Scanner</a><a href="#app" data-open="radar">Launch Radar</a><a href="#app" data-open="snipe">Sniper</a><a href="#app" data-open="fees">Fee Claimer</a><a href="#app" data-open="launch">Pons Launchpad</a><a href="#app" data-open="kit">Launch Kit</a><a href="#app" data-open="agent">Agent Studio</a></div>
+    <div class="fcol"><b>Bureau</b><a href="#work">Procedure</a><a href="#today">Today's files</a><a href="#safety">Protocol</a><a href="#contact">Commission an agent</a></div>
+    <div class="fcol"><b>Contact</b><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X · @oculaagent</a></div>
+  </div>
+  <div class="wrap fbottom"><span>© 2026 Ocula · Classification: public</span><span>Not financial advice. Files describe on-chain data only.</span></div>
+</footer>

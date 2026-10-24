@@ -1,0 +1,1607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA Labs</title>
+<meta name="description" content="AI tools and launch services for Pons on Robinhood Chain.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Crect x='6' y='13' width='20' height='6' rx='3' fill='%23f0b04a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#f0b04a;--acc2:rgba(240,176,74,.32);--acc3:rgba(240,176,74,.08);--bg:#040404;--panel:rgba(12,12,12,.66);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);--text:#f2f1ee;--mid:#a3a3a0;--dim:#666663;--high:#e5484d;--watch:#f2b84b;--ok:#3fb950}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at 50% 40%,#000 0%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 0%,transparent 75%);opacity:.5}
+main{position:relative;z-index:1;overflow-x:clip}
+a{color:inherit}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;transition:opacity .2s}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.lbl{font:500 11px "JetBrains Mono";letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.lbl b{color:var(--acc);font-weight:500}
+.hud{position:relative}
+.hud:before,.hud:after{content:"";position:absolute;width:14px;height:14px;border:1px solid var(--acc);pointer-events:none}
+.hud:before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.hud:after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+
+/* top bar */
+.top{position:fixed;left:0;right:0;top:0;z-index:20;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.solid{background:rgba(4,4,4,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.top .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 15px "Inter Tight";letter-spacing:.02em}
+.brand i{width:26px;height:10px;border-radius:6px;background:var(--acc);box-shadow:0 0 18px var(--acc)}
+.brand span{color:var(--dim);font-weight:600}
+.menu{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:rgba(10,10,10,.5)}
+.menu a{font:500 13px Inter;color:var(--mid);text-decoration:none;padding:7px 14px;border-radius:999px;transition:all .2s}
+.menu a:hover,.menu a.on{color:var(--bg);background:var(--text)}
+.top .right{display:flex;justify-content:flex-end;align-items:center;gap:16px}
+.clock{font:500 11px "JetBrains Mono";letter-spacing:.12em;color:var(--dim)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 14px Inter;padding:14px 22px;border-radius:999px;border:1px solid var(--acc);background:var(--acc);color:#120c02;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 44px -10px rgba(240,176,74,.65)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--text);box-shadow:none}
+.btn.sm{padding:10px 16px;font-size:13px}
+.btn .ar{transition:transform .2s}.btn:hover .ar{transform:translateX(3px)}
+
+/* hero: robot in the middle, copy on the left, live panel on the right, giant word at the bottom */
+.hero{position:relative;min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,1fr);align-items:center;gap:24px;padding:110px 0 120px}
+.hero .l{align-self:center}
+.chip{display:inline-flex;align-items:center;gap:10px;font:500 11px "JetBrains Mono";letter-spacing:.14em;color:var(--mid);border:1px solid var(--line2);border-radius:999px;padding:7px 12px;background:rgba(8,8,8,.6)}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc);animation:beat 1.6s infinite}
+@keyframes beat{50%{opacity:.3}}
+h1{font:800 clamp(34px,3.5vw,54px)/.94 "Inter Tight";letter-spacing:-.05em;margin:20px 0 18px;text-transform:uppercase}
+h1 b{color:var(--acc);font-weight:inherit}
+.lead{color:var(--mid);margin:0 0 26px;font-size:15.5px;max-width:380px}
+.ctas{display:flex;gap:10px;flex-wrap:wrap}
+.hero .r{align-self:center;display:grid;gap:12px}
+.panel{background:var(--panel);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:4px;padding:16px 18px}
+.panel .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.log{font:400 12.5px/1.65 "JetBrains Mono";color:var(--mid);min-height:104px}
+.log div{opacity:.45}.log div:last-child{opacity:1;color:var(--text)}
+.log .cur{display:inline-block;width:7px;height:13px;background:var(--acc);vertical-align:-2px;margin-left:2px;animation:beat 1s steps(1) infinite}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat b{display:block;font:800 30px/1 "Inter Tight";letter-spacing:-.04em;margin-top:6px}
+.stat b small{font-size:15px;color:var(--acc)}
+.giant{position:absolute;left:50%;bottom:-6vw;transform:translateX(-50%);font:900 clamp(120px,24vw,360px)/.8 "Inter Tight";letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1px rgba(242,241,238,.09);white-space:nowrap;pointer-events:none;user-select:none}
+.scroll{position:absolute;left:0;bottom:34px;display:flex;align-items:center;gap:12px}
+.scroll i{width:40px;height:1px;background:var(--line2);position:relative;overflow:hidden}
+.scroll i:after{content:"";position:absolute;inset:0;background:var(--acc);animation:slide 1.8s infinite}
+@keyframes slide{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* section heads */
+section{position:relative;padding:150px 0 0}
+.sh{display:grid;grid-template-columns:200px 1fr;gap:24px;margin-bottom:44px;align-items:end}
+.sh .n{font:500 12px "JetBrains Mono";color:var(--acc);letter-spacing:.14em}
+h2{font:800 clamp(38px,5vw,76px)/.92 "Inter Tight";letter-spacing:-.05em;text-transform:uppercase;margin:0}
+h2 b{color:var(--acc);font-weight:inherit}
+.sub{color:var(--mid);max-width:520px;margin:16px 0 0;font-size:16px}
+
+/* services console */
+.console{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:28px;align-items:stretch}
+.list{border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:14px;padding:20px 6px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .25s,padding .25s}
+.item .k{font:500 12px "JetBrains Mono";color:var(--dim)}
+.item h3{margin:0;font:800 clamp(22px,2.4vw,34px)/1 "Inter Tight";letter-spacing:-.04em;text-transform:uppercase;color:#5d5d5a;transition:color .25s}
+.item .t{font:500 10px "JetBrains Mono";letter-spacing:.14em;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:5px 9px}
+.item.on{background:linear-gradient(90deg,var(--acc3),transparent);padding-left:14px}
+.item.on h3{color:var(--text)}
+.item.on .k{color:var(--acc)}
+.item .t.live{color:var(--ok);border-color:rgba(63,185,80,.4)}
+.detail{padding:26px;display:flex;flex-direction:column;gap:16px;min-height:100%}
+.detail .who{display:flex;justify-content:space-between;gap:10px}
+.detail h4{margin:0;font:800 30px/1 "Inter Tight";letter-spacing:-.04em;text-transform:uppercase}
+.detail p{margin:0;color:var(--mid)}
+.detail ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.detail li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:14.5px}
+.detail li:before{content:"→";color:var(--acc);font-family:"JetBrains Mono"}
+.detail .price{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.detail .price b{font:800 18px "Inter Tight"}
+.fade{animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+
+/* scanner demo */
+.scanwrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px;align-items:center;min-height:80vh}
+.scanbox{padding:22px}
+.inrow{display:flex;gap:10px;margin-bottom:18px}
+.inrow input{flex:1;min-width:0;background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:999px;padding:13px 18px;font:13px "JetBrains Mono"}
+.inrow input:focus{outline:none;border-color:var(--acc)}
+.prog{height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:16px}
+.prog i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .2s linear}
+.read{font:600 17px/1.5 "Inter Tight";margin:4px 0 14px;min-height:104px}
+.flag{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line);opacity:0;transform:translateY(6px);transition:all .45s;font-size:14px}
+.flag.in{opacity:1;transform:none}
+.lv{font:800 10px "Inter Tight";letter-spacing:.12em;border-radius:999px;padding:5px 0;text-align:center;height:fit-content}
+.lv.h{background:var(--high);color:#fff}.lv.w{background:var(--watch);color:#111}.lv.i{background:#262626;color:var(--text)}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
+.kv div{background:#080808;padding:12px 14px}
+.kv b{display:block;font:800 22px "Inter Tight";letter-spacing:-.03em}
+.kv span{font-size:11.5px;color:var(--dim)}
+
+/* timeline */
+.how{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-top:40px}
+.how:before{content:"";position:absolute;left:0;right:0;top:15px;height:1px;background:var(--line2)}
+.how .bar{position:absolute;left:0;top:15px;height:1px;background:var(--acc);box-shadow:0 0 10px var(--acc);width:var(--p,0%);transition:width .2s}
+.stp{position:relative;padding:0 22px 0 0}
+.stp .dot{width:31px;height:31px;border-radius:50%;border:1px solid var(--line2);background:var(--bg);display:grid;place-items:center;font:500 11px "JetBrains Mono";color:var(--dim);position:relative;z-index:1;transition:all .3s}
+.stp.on .dot{border-color:var(--acc);color:var(--acc);box-shadow:0 0 18px -2px var(--acc)}
+.stp b{display:block;font:800 22px "Inter Tight";text-transform:uppercase;letter-spacing:-.02em;margin:22px 0 8px}
+.stp p{margin:0;color:var(--mid);font-size:14.5px;max-width:240px}
+.stp a{display:inline-block;margin-top:10px;font:600 13px Inter;color:var(--acc);text-decoration:none}.stp a:hover{text-decoration:underline}
+
+/* rules */
+.rules{border-top:1px solid var(--line)}
+.rule{display:grid;grid-template-columns:120px 1.2fr 1fr;gap:24px;align-items:center;padding:34px 0;border-bottom:1px solid var(--line)}
+.rule .x{font:500 12px "JetBrains Mono";color:var(--acc);letter-spacing:.14em}
+.rule b{font:800 clamp(28px,3.4vw,50px)/.95 "Inter Tight";letter-spacing:-.045em;text-transform:uppercase}
+.rule b s{text-decoration:none;color:#4d4d4a}
+.rule p{margin:0;color:var(--mid)}
+
+/* final */
+.final{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 0 90px}
+.final h2{font-size:clamp(56px,10vw,150px)}
+.final p{color:var(--mid);max-width:480px;margin:18px auto 28px;font-size:16px}
+footer{position:relative;z-index:1;border-top:1px solid var(--line);background:var(--bg)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:22px;padding-bottom:30px;color:var(--dim);font-size:12.5px}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:1000px){
+  .top .wrap{grid-template-columns:1fr auto}
+  .menu,.clock{display:none}
+  .hero{grid-template-columns:1fr;padding:56vh 0 110px;gap:28px}
+  .hero .m{display:none}
+  .sh{grid-template-columns:1fr;gap:10px}
+  .console,.scanwrap{grid-template-columns:1fr}
+  .scanwrap .stage{display:none}
+  .how{grid-template-columns:1fr 1fr;row-gap:36px}
+  .how:before,.how .bar{display:none}
+  .rule{grid-template-columns:1fr;gap:10px}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .top .btn{display:none}
+  .how{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .kv{grid-template-columns:1fr 1fr}
+  section{padding-top:110px}
+  .giant{bottom:0}
+}
+@media (prefers-reduced-motion:reduce){.rv{transition:none;opacity:1;transform:none}}
+
+/* tools */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:600 13.5px Inter;color:var(--mid);background:rgba(10,10,10,.6);border:1px solid var(--line2);border-radius:999px;padding:10px 18px;cursor:pointer;transition:all .2s}
+.tabs button:hover{color:var(--text);border-color:var(--text)}
+.tabs button.on{background:var(--acc);border-color:var(--acc);color:#120c02}
+.tool{display:none;padding:22px;min-height:380px}
+.tool.on{display:block;animation:fade .4s ease}
+.inrow{display:flex;gap:10px;margin-bottom:18px}
+.inrow input{flex:1;min-width:0;background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:999px;padding:13px 18px;font:13px "JetBrains Mono"}
+.inrow input:focus,.grid2 input:focus,.grid2 textarea:focus,.grid2 select:focus{outline:none;border-color:var(--acc)}
+.empty{color:var(--dim);margin:30px 0;text-align:center;max-width:560px;margin-inline:auto}
+.note{color:var(--dim);font-size:12.5px;margin:16px 0 0}
+.err{color:#ff8a8d;border:1px solid rgba(229,72,77,.35);background:rgba(229,72,77,.06);border-radius:10px;padding:12px 14px}
+.load{display:flex;align-items:center;gap:12px;color:var(--mid);padding:30px 0;justify-content:center}
+.load i{width:14px;height:14px;border:2px solid var(--acc2);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn:disabled{opacity:.5;cursor:wait}
+
+/* scan report */
+.rh{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.rh img{width:56px;height:56px;border-radius:12px;object-fit:cover;background:#111;border:1px solid var(--line)}
+.rh h3{margin:0;font:800 28px/1 "Inter Tight";letter-spacing:-.03em}
+.rh h3 span{color:var(--dim);font-size:16px;margin-left:8px}
+.rh .ca{font:12px "JetBrains Mono";color:var(--mid);margin-top:6px;word-break:break-all}
+.rh .links{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.chipl{font:500 12px Inter;border:1px solid var(--line2);border-radius:999px;padding:6px 12px;text-decoration:none;color:var(--mid)}
+.chipl:hover{border-color:var(--acc);color:var(--text)}
+.read{font:600 17px/1.5 "Inter Tight";margin:6px 0 16px}
+.flags{display:grid;gap:8px;margin-bottom:16px}
+.fl{display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:start;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#070707}
+.fl b{display:block;font-size:14px}.fl span.d{color:var(--mid);font-size:13px}
+.lv{font:800 10px "Inter Tight";letter-spacing:.12em;border-radius:999px;padding:5px 0;text-align:center;height:fit-content;text-transform:uppercase}
+.lv.high{background:var(--high);color:#fff}.lv.watch{background:var(--watch);color:#111}.lv.ok{background:var(--ok);color:#04140a}.lv.info{background:#262626;color:var(--text)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:16px}
+.nums div{background:#080808;padding:14px}
+.nums b{display:block;font:800 22px "Inter Tight";letter-spacing:-.03em;margin:4px 0 2px}
+.nums small{color:var(--dim);font-size:12px}
+.pbar{height:3px;background:var(--line2);border-radius:3px;overflow:hidden;margin:6px 0}
+.pbar i{display:block;height:100%;background:var(--acc)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:8px 4px;border-top:1px solid var(--line)}
+td.r{text-align:right}
+td a{color:var(--text)}
+.pill{font:500 10px "JetBrains Mono";border:1px solid var(--line2);border-radius:999px;padding:2px 7px;margin-left:6px;color:var(--mid)}
+
+/* radar */
+.bar2{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.tog{display:flex;align-items:center;gap:8px;color:var(--mid);font-size:13px;cursor:pointer}
+.tog input{accent-color:var(--acc)}
+.rrow{display:grid;grid-template-columns:44px minmax(0,1.3fr) 70px minmax(0,1fr) 92px 120px;gap:14px;align-items:center;padding:12px 4px;border-top:1px solid var(--line)}
+.rrow img,.rrow .ph{width:40px;height:40px;border-radius:10px;object-fit:cover;background:#111;border:1px solid var(--line)}
+.rrow .nm b{display:block;font:800 16px "Inter Tight"}.rrow .nm span{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.rrow .age{font:12px "JetBrains Mono";color:var(--mid)}
+.checks{display:flex;flex-wrap:wrap;gap:4px}
+.ck{font:500 11px Inter;border-radius:999px;padding:3px 8px;border:1px solid var(--line2);color:var(--mid);white-space:nowrap}
+.ck.no{border-color:rgba(229,72,77,.45);color:#ff8a8d}
+.verdict{font:800 11px "Inter Tight";letter-spacing:.12em;text-align:center;border-radius:999px;padding:6px 0}
+.verdict.p{background:rgba(63,185,80,.14);color:var(--ok);border:1px solid rgba(63,185,80,.4)}
+.verdict.s{background:transparent;color:var(--dim);border:1px solid var(--line2)}
+.ract{display:flex;gap:6px;justify-content:flex-end}
+.ract button,.ract a{font:600 12px Inter;border:1px solid var(--line2);background:transparent;color:var(--text);border-radius:999px;padding:6px 10px;cursor:pointer;text-decoration:none}
+.ract button:hover,.ract a:hover{border-color:var(--acc)}
+
+/* fees */
+.total{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:18px;border:1px solid var(--acc2);background:var(--acc3);border-radius:12px;margin-bottom:16px}
+.total b{font:800 34px "Inter Tight";letter-spacing:-.03em}
+.steps2{font:12.5px "JetBrains Mono";color:var(--mid);margin-top:12px;display:grid;gap:4px}
+.steps2 .ok{color:var(--ok)}.steps2 .bad{color:#ff8a8d}
+
+/* kit + agent */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid2 label{display:grid;gap:6px;font:500 11px "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.grid2 .full{grid-column:1/-1}
+.grid2 input,.grid2 textarea,.grid2 select{background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:12px;padding:12px 14px;font:14px Inter;letter-spacing:0;text-transform:none;resize:vertical}
+.kit{margin-top:22px;display:grid;gap:12px}
+.kc{border:1px solid var(--line);border-radius:12px;padding:16px;background:#070707;position:relative}
+.kc h5{margin:0 0 8px;font:500 11px "JetBrains Mono";letter-spacing:.14em;color:var(--acc);text-transform:uppercase}
+.kc p{margin:0;white-space:pre-wrap}
+.kc .cp{position:absolute;right:10px;top:10px;font:600 11px Inter;border:1px solid var(--line2);background:transparent;color:var(--mid);border-radius:999px;padding:4px 10px;cursor:pointer}
+.kc .cp:hover{color:var(--text);border-color:var(--acc)}
+.kc ol{margin:0;padding-left:18px;display:grid;gap:8px}
+.studio{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:20px}
+.chat{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:#060606;padding:14px;min-height:360px}
+.msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;max-height:380px;margin-bottom:12px}
+.m{max-width:82%;padding:10px 13px;border-radius:14px;font-size:14px;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--text);color:#0a0a0a;border-bottom-right-radius:4px}
+.m.a{align-self:flex-start;background:#141414;border:1px solid var(--line);border-bottom-left-radius:4px}
+.m.a.wait{color:var(--dim)}
+
+@media (max-width:1000px){
+  .nums{grid-template-columns:1fr 1fr}
+  .two,.studio,.grid2{grid-template-columns:1fr}
+  .rrow{grid-template-columns:40px minmax(0,1fr) 84px;row-gap:8px}
+  .rrow .age{display:none}
+  .rrow .checks{grid-column:1/-1}
+  .rrow .ract{grid-column:1/-1;justify-content:flex-start}
+  .rrow .pg{display:none}
+}
+@media (max-width:560px){
+  .inrow{flex-wrap:wrap}
+  .inrow input{flex-basis:100%}
+  .tool{padding:16px}
+}
+
+/* sniper */
+.sn{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.grid3 label{display:grid;gap:5px;font:500 10px "JetBrains Mono";letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.grid3 input,.grid3 select{background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:10px;padding:9px 11px;font:14px Inter;min-width:0}
+.grid3 input:focus,.grid3 select:focus{outline:none;border-color:var(--acc)}
+.log2{font:12px/1.6 "JetBrains Mono";color:var(--mid);background:#060606;border:1px solid var(--line);border-radius:12px;padding:10px 12px;height:300px;overflow:auto;margin-top:6px}
+.log2 span{color:var(--dim)}.log2 .ok{color:var(--ok)}.log2 .bad{color:#ff8a8d}.log2 .dry{color:var(--acc)}
+@media (max-width:1000px){.sn{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
+
+/* fee modes + seed grid */
+.fmode{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line2);border-radius:999px;margin-bottom:16px}
+.fmode button{font:600 13px Inter;background:transparent;border:0;color:var(--mid);padding:8px 14px;border-radius:999px;cursor:pointer}
+.fmode button.on{background:var(--text);color:#0a0a0a}
+.warnbox{border:1px solid var(--acc2);background:var(--acc3);border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--mid)}
+.warnbox b{color:var(--text)}
+.words{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.words label{display:flex;align-items:center;gap:8px;background:#070707;border:1px solid var(--line2);border-radius:10px;padding:0 10px}
+.words label:focus-within{border-color:var(--acc)}
+.words span{font:500 11px "JetBrains Mono";color:var(--dim);width:18px}
+.words input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);padding:10px 0;font:14px "JetBrains Mono";outline:none}
+.selsm{background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 8px;font:13px Inter}
+@media (max-width:700px){.words{grid-template-columns:repeat(2,1fr)}}
+
+/* sniper (same layout as the bot dashboard) */
+.snhead{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.snbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill2{font:600 12px Inter;border:1px solid var(--line2);border-radius:999px;padding:7px 12px;color:var(--mid)}
+.pill2.dry{border-color:var(--acc2);color:var(--acc)}.pill2.live{border-color:rgba(63,185,80,.5);color:var(--ok)}
+.btn.danger{background:transparent;border-color:rgba(229,72,77,.5);color:#ff8a8d}.btn.danger:hover{background:rgba(229,72,77,.12);box-shadow:none}
+.snsec{margin-top:20px}
+.snsec h4{margin:0 0 10px;font:800 15px "Inter Tight";text-transform:uppercase;letter-spacing:.02em}
+tr.th td{color:var(--dim);font:500 10.5px "JetBrains Mono";letter-spacing:.1em;text-transform:uppercase;border-top:0}
+#snForm details summary{cursor:pointer;color:var(--mid);font-size:13px}
+#snForm .grid3 label small{font:400 11px Inter;letter-spacing:0;text-transform:none;color:var(--dim)}
+#snForm textarea{background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:10px;padding:9px 11px;font:13px "JetBrains Mono";resize:vertical;min-width:0}
+.tablink{font:600 13.5px Inter;color:var(--acc);border:1px dashed var(--acc2);border-radius:999px;padding:10px 18px;text-decoration:none}
+.tablink:hover{border-style:solid}
+
+/* launchpad */
+.lp{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:22px;align-items:start}
+#lpForm{display:grid;gap:14px}
+#lpForm label{display:grid;gap:6px;font:500 11px "JetBrains Mono";letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+#lpForm label small{font:400 12px Inter;letter-spacing:0;text-transform:none;color:var(--dim)}
+#lpForm input,#lpForm textarea{background:#070707;border:1px solid var(--line2);color:var(--text);border-radius:12px;padding:12px 14px;font:14px Inter;letter-spacing:0;text-transform:none;min-width:0;resize:vertical}
+#lpForm input:focus,#lpForm textarea:focus{outline:none;border-color:var(--acc)}
+.lpgrid{display:grid;grid-template-columns:190px 1fr;gap:16px}
+.lpcol{display:grid;gap:12px;align-content:start}
+.lpgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.drop{position:relative;aspect-ratio:1;border:1px dashed var(--acc2);border-radius:16px;background:#070707;display:grid;place-items:center;text-align:center;cursor:pointer;overflow:hidden;transition:border-color .2s,background .2s}
+.drop:hover,.drop.over{border-color:var(--acc);background:var(--acc3)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop b{display:block;font:800 15px "Inter Tight";margin-bottom:4px}.drop span{color:var(--dim);font-size:12px}
+.taxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.taxes button{font:700 14px "Inter Tight";background:#070707;border:1px solid var(--line2);color:var(--mid);border-radius:10px;padding:11px 0;cursor:pointer}
+.taxes button.on{background:var(--acc);border-color:var(--acc);color:#120c02}
+.lpside{position:sticky;top:90px}
+@media (max-width:1000px){.lp{grid-template-columns:1fr}.lpside{position:static}.lpgrid{grid-template-columns:140px 1fr}.lpgrid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="brand" href="#"><i></i>NOVA <span>LABS</span></a>
+    <nav class="menu"><a href="#services">Services</a><a href="#app">Tools</a><a href="#how">Process</a><a href="#rules">Rules</a></nav>
+    <div class="right"><span class="clock" id="clock">UTC --:--:--</span><a class="btn sm" href="#contact">Hire NOVA</a></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero" data-k='{"s":0,"x":0,"y":-0.03,"sc":1.02,"ry":0,"op":1,"mx":0,"my":0.33,"msc":0.62}'>
+      <div class="l">
+        <span class="chip"><i></i>AGENT 01 · ONLINE</span>
+        <h1>The AI agent that <b>reads the chain</b> for you.</h1>
+        <p class="lead">Scans, agents and launch tools for Pons on Robinhood Chain. Every number from the chain, no key ever leaves your wallet.</p>
+        <div class="ctas">
+          <a class="btn" href="#app" data-open="scan">Scan a token <span class="ar">→</span></a>
+          <a class="btn ghost" href="#app" data-open="radar">Launch Radar</a>
+        </div>
+      </div>
+      <div class="m"></div>
+      <div class="r">
+        <div class="panel hud">
+          <div class="ph"><span class="lbl">NOVA · <b>thinking</b></span><span class="lbl">sample</span></div>
+          <div class="log" id="log"></div>
+        </div>
+        <div class="stats">
+          <div class="panel stat"><span class="lbl">Tools</span><b>07</b></div>
+          <div class="panel stat"><span class="lbl">Report in</span><b>~10<small>s</small></b></div>
+          <div class="panel stat"><span class="lbl">Keys held</span><b>0</b></div>
+          <div class="panel stat"><span class="lbl">AI agent</span><b>NOVA</b></div>
+        </div>
+      </div>
+      <div class="scroll"><i></i><span class="lbl">Scroll</span></div>
+      <div class="giant" aria-hidden="true">NOVA</div>
+    </section>
+
+    <section id="services" data-k='{"s":5,"x":0.3,"y":-0.03,"sc":0.95,"ry":-0.5,"op":0.22,"mx":0,"my":0,"msc":0.8}'>
+      <div class="sh">
+        <span class="n rv">[01] SERVICES</span>
+        <div><h2 class="rv">Seven tools. <b>One agent.</b></h2></div>
+      </div>
+      <div class="console">
+        <div class="list rv" id="list"></div>
+        <div class="panel hud detail rv" id="detail"></div>
+      </div>
+    </section>
+
+    <section id="app" data-k='{"s":5,"x":0,"y":0,"sc":1.15,"ry":0,"op":0.1,"mx":0,"my":0,"msc":0.9}'>
+      <div class="sh">
+        <span class="n rv">[02] TOOLS</span>
+        <div><h2 class="rv">Use it <b>right now.</b></h2><p class="sub rv">Free, no sign-up. Everything reads Robinhood Chain live. Claims are signed in your own wallet.</p></div>
+      </div>
+      <div class="tabs rv" role="tablist" id="tabs">
+        <button role="tab" data-t="scan">Scanner</button>
+        <button role="tab" data-t="radar">Launch Radar</button>
+        <button role="tab" data-t="snipe">Sniper</button>
+        <button role="tab" data-t="fees">Fee Claimer</button>
+        <button role="tab" data-t="kit">Launch Kit</button>
+        <button role="tab" data-t="agent">Agent Studio</button>
+        <button role="tab" data-t="launch">Pons Launchpad</button>
+      </div>
+
+      <div class="tool panel hud" data-p="launch">
+        <div class="lp">
+          <form id="lpForm" autocomplete="off">
+            <div class="lpgrid">
+              <div class="drop" id="lpDrop">
+                <input type="file" id="lpFile" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+                <img id="lpPrev" alt="" hidden>
+                <div id="lpDropTxt"><b>Upload logo</b><span>PNG, JPG, GIF or WEBP · max 5MB<br>click or drop here</span></div>
+              </div>
+              <div class="lpcol">
+                <label>Name<input name="name" maxlength="32" placeholder="e.g. Robinhood Doge" required></label>
+                <label>Ticker<input name="symbol" maxlength="10" placeholder="e.g. RDOGE" required></label>
+                <label>Or paste an image link<input name="logoUrl" placeholder="https://…" spellcheck="false"></label>
+                <div id="lpUpMsg" class="note" style="margin:0"></div>
+              </div>
+            </div>
+            <label class="full">Description<textarea name="description" rows="3" maxlength="500" placeholder="Tell the story of your token and community"></textarea></label>
+            <div class="full"><span class="lbl">Creator tax <b id="lpTaxLbl">1% (100 bps)</b></span><p class="note" style="margin:4px 0 8px">Paid to your wallet on every buy and sell on the bonding curve (max 10%).</p>
+              <div class="taxes" id="lpTaxes"><button type="button" data-tax="0">0%</button><button type="button" data-tax="1" class="on">1%</button><button type="button" data-tax="2">2%</button><button type="button" data-tax="3">3%</button><button type="button" data-tax="5">5%</button></div></div>
+            <div class="lpgrid2">
+              <label>Website<input name="website" placeholder="Website URL"></label>
+              <label>Twitter / X<input name="twitter" placeholder="https://x.com/…"></label>
+              <label>Telegram<input name="telegram" placeholder="https://t.me/…"></label>
+              <label>Discord<input name="discord" placeholder="https://discord.gg/…"></label>
+            </div>
+            <label class="full">Dev buy (optional, ETH)<span class="inrow" style="margin:6px 0 0"><input name="devBuy" inputmode="decimal" placeholder="0.0 (ETH)"><button class="btn sm ghost" type="button" id="lpMax">MAX</button></span><span id="lpDevHint" class="note" style="margin:6px 0 0"></span></label>
+            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your NOVA sniper wallet.</small>
+              <span class="inrow" style="margin:6px 0 0"><input name="exempt" placeholder="0x…, 0x…" spellcheck="false"><button class="btn sm ghost" type="button" id="lpAddSniper">Add my sniper wallet</button></span></label>
+          </form>
+          <aside class="lpside">
+            <div class="kc">
+              <h5>Robinhood Chain · Pons</h5>
+              <div class="mono" id="lpWallet" style="font-size:12.5px;word-break:break-all">Wallet not connected</div>
+              <table style="margin-top:10px">
+                <tr><td>Launch fee</td><td class="r" id="lpFee">…</td></tr>
+                <tr><td>Dev buy</td><td class="r" id="lpDev">0 ETH</td></tr>
+                <tr><td><b>Total</b></td><td class="r"><b id="lpTotal">…</b></td></tr>
+                <tr><td>Your balance</td><td class="r" id="lpBal">—</td></tr>
+                <tr><td>Creator tax</td><td class="r" id="lpTax2">1%</td></tr>
+              </table>
+              <div style="display:grid;gap:8px;margin-top:14px">
+                <button class="btn ghost" type="button" id="lpConnect">Connect wallet</button>
+                <button class="btn" type="button" id="lpGo">Launch token <span class="ar">→</span></button>
+              </div>
+              <div id="lpMsg" class="steps2"></div>
+            </div>
+            <div id="lpDone"></div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="tool panel hud rv" data-p="scan">
+        <form class="inrow" id="scanForm"><input id="scanCa" placeholder="Paste a Pons token address (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm" id="scanGo">Scan</button></form>
+        <div id="scanOut"><p class="empty">Paste any Pons token CA. NOVA checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
+      </div>
+
+      <div class="tool panel hud" data-p="radar">
+        <div class="bar2"><span class="lbl">Newest Pons launches · <b id="radarHead">reading…</b></span><label class="tog"><input type="checkbox" id="onlyPass"> only launches that pass</label></div>
+        <div id="radarOut"><p class="empty">Reading the newest launches…</p></div>
+        <p class="note">These are the checks the NOVA sniper filter runs: creator tax ≤ 3%, socials set, dev not launching many tokens, fees go to the dev. Not advice.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="snipe">
+        <div class="snhead">
+          <div><span class="lbl">Sniper wallet</span><div class="mono" id="snAddr" style="margin-top:6px;word-break:break-all">No private key yet</div><div id="snBalLine" class="note" style="margin:4px 0 0"></div></div>
+          <div class="snbtns"><span class="pill2" id="snState">Off</span><button class="btn sm ghost" type="button" id="snDry">Start dry run (no money)</button><button class="btn sm" type="button" id="snLiveBtn">Start LIVE</button><button class="btn sm danger" type="button" id="snStop">Stop</button></div>
+        </div>
+        <div id="snMsg" class="note"></div>
+
+        <div class="snsec"><h4>Manual buy</h4>
+          <div class="inrow" style="margin:0"><input id="mbToken" placeholder="Token CA 0x…" spellcheck="false" autocomplete="off"><input id="mbEth" placeholder="ETH (empty = buy per snipe)" style="flex:0 1 220px"><button class="btn sm" type="button" id="mbGo">Buy now</button></div>
+          <div id="mbMsg" class="note" style="margin-top:8px"></div>
+        </div>
+
+        <div class="snsec"><h4>Open positions</h4><div id="snPos"><p class="note">No positions.</p></div></div>
+
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Trade history</h4><span style="display:flex;gap:10px;align-items:center"><span id="snPnl" class="note" style="margin:0"></span><button class="btn sm ghost" type="button" id="snClearHist">Clear history</button></span></div><div id="snHist"><p class="note">No finished trades yet.</p></div></div>
+
+        <div class="snsec"><h4>Bot log</h4><div class="log2" id="snLog"></div></div>
+
+        <div class="snsec"><h4>Settings</h4>
+          <form id="snForm" autocomplete="off">
+            <p class="note" style="margin:0 0 12px">Fill these 6 fields. The rest already has safe defaults.</p>
+            <div class="grid3">
+              <label>1. Sniper wallet private key<small>A dedicated wallet, not your dev wallet. Stays in this browser only. Empty = keep the saved one</small><input name="privateKey" type="password" placeholder="0x…"></label>
+              <label>2. Buy per token (ETH)<small>ETH spent on each snipe</small><input name="buyEth"></label>
+              <label>3. Total budget (ETH)<small>Stops buying after this much</small><input name="maxTotalSpendEth"></label>
+              <label>4. Take profit (%)<small>Sells when up this much</small><input name="takeProfitPercent"></label>
+              <label>5. Stop loss (%)<small>Sells when down this much</small><input name="stopLossPercent"></label>
+              <label style="grid-column:span 3">6. Only snipe tokens from these devs (0x addresses, comma separated)<small>Put your own dev wallet to snipe your own launch. Empty = snipe every new token</small><textarea name="allowedDeployers" rows="2"></textarea></label>
+            </div>
+            <details style="margin-top:14px"><summary>Advanced settings (fine to leave)</summary>
+              <div class="grid3" style="margin-top:12px">
+                <label>Max hold (seconds)<small>Force sell after this. 0 = never</small><input name="maxHoldSeconds"></label>
+                <label>Max open positions<small>Tokens held at the same time</small><input name="maxOpenPositions"></label>
+                <label>Gas reserve (ETH)<small>Balance never spent on buys</small><input name="gasReserveEth"></label>
+                <label>Slippage (%)<small>Price move tolerance</small><input name="slippagePercent"></label>
+                <label>Max creator tax (%)<small>Skip tokens with a higher dev tax</small><input name="maxCreatorTaxPercent"></label>
+                <label>Max snipe tax (%)<small>Waits until the snipe tax drops to this</small><input name="maxSnipeTaxPercent"></label>
+                <label>Max launch age (seconds)<small>Skip launches older than this</small><input name="maxLaunchAgeSeconds"></label>
+                <label>Require socials<small>Skip tokens with no X/Telegram/website on-chain</small><select name="requireSocials"><option value="0">No</option><option value="1">Yes</option></select></label>
+                <label>Max other launches by the dev (24h)<small>Skip serial launchers. 0 = not checked</small><input name="maxDeployerLaunches"></label>
+                <label>Name/ticker keywords<small>Only buy names with one of these. Empty = all</small><textarea name="keywords" rows="2"></textarea></label>
+                <label>Blocked keywords<small>Skip names with these words</small><textarea name="blockedKeywords" rows="2"></textarea></label>
+                <label>Blocked devs<small>Dev addresses never bought</small><textarea name="blockedDeployers" rows="2"></textarea></label>
+              </div>
+            </details>
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="snSave">Save settings</button><button class="btn ghost" type="button" id="snNewWallet">Make a new wallet</button><button class="btn ghost" type="button" id="snExport">Export key</button><button class="btn ghost" type="button" id="snWithdraw">Withdraw ETH</button><button class="btn ghost" type="button" id="snForget">Remove key</button></div>
+          </form>
+        </div>
+        <p class="note">Same engine as the NOVA sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; NOVA only relays the signed transactions. Keep the tab open while it runs.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="fees">
+        <div class="fmode"><button type="button" data-m="one" class="on">One wallet</button><button type="button" data-m="seed">Many accounts (seed phrase)</button></div>
+        <div id="feeOne">
+          <form class="inrow" id="feeForm"><input id="feeWallet" placeholder="Your creator wallet (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm ghost" type="button" id="feeConnect">Connect wallet</button><button class="btn sm" id="feeGo">Check</button></form>
+          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. NOVA never sees your key.</p></div>
+        </div>
+        <div id="feeSeed" hidden>
+          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; NOVA only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
+          <div class="bar2" style="margin-top:14px"><span class="lbl">Seed phrase</span><span style="display:flex;gap:14px;align-items:center"><label class="tog"><input type="checkbox" id="showWords"> show words</label><select id="wordCount" class="selsm"><option value="12">12 words</option><option value="24">24 words</option></select></span></div>
+          <div class="words" id="words"></div>
+          <p class="note" style="margin:8px 0 0">Tip: paste the whole phrase into the first box, it fills every box.</p>
+          <div class="grid3" style="grid-template-columns:120px 1fr 160px">
+            <label>Accounts<input id="seedCount" value="100" inputmode="numeric"></label>
+            <label>Send all fees to<input id="seedDest" placeholder="Account 1 of this seed" spellcheck="false"></label>
+            <label>Skip below (ETH)<input id="seedMin" value="0.0003" inputmode="decimal"></label>
+          </div>
+          <div style="display:flex;gap:10px;margin:14px 0 6px;flex-wrap:wrap"><button class="btn" type="button" id="seedScan">Scan accounts <span class="ar">→</span></button><button class="btn ghost" type="button" id="seedForget">Forget seed</button></div>
+          <div id="seedOut"></div>
+          <p class="note">Gas for accounts with no ETH is sent from Account 1, so keep a little ETH there. Accounts are the standard MetaMask / Rabby ones (Account 1, 2, 3…).</p>
+        </div>
+      </div>
+
+      <div class="tool panel hud" data-p="kit">
+        <form id="kitForm" class="grid2">
+          <label>Token name<input name="name" maxlength="40" placeholder="Moon Cat" required></label>
+          <label>Ticker<input name="ticker" maxlength="12" placeholder="$MCAT" required></label>
+          <label class="full">The idea<textarea name="idea" maxlength="400" rows="3" placeholder="A cat astronaut that only lands on tokens with real holders." required></textarea></label>
+          <label>Tone<select name="tone"><option>bold</option><option>funny</option><option>mysterious</option><option>premium</option><option>degen</option></select></label>
+          <div class="full"><button class="btn" id="kitGo">Write my launch kit <span class="ar">→</span></button></div>
+        </form>
+        <div id="kitOut"></div>
+      </div>
+
+      <div class="tool panel hud" data-p="agent">
+        <div class="studio">
+          <form id="agentForm" class="grid2" style="grid-template-columns:1fr">
+            <label>Agent name<input name="name" maxlength="40" placeholder="NOVA" value="NOVA"></label>
+            <label>Persona<textarea name="persona" maxlength="600" rows="6">An android AI agent that reads Robinhood Chain for its holders. Calm, sharp, a little dry. Short sentences. Always points to on-chain facts, never hypes.</textarea></label>
+            <p class="note" style="margin:0">Design your token's AI agent and talk to it. When you like it, we launch it with the fee engine, site and admin panel.</p>
+            <a class="btn sm ghost" href="#contact">Launch it with NOVA <span class="ar">→</span></a>
+          </form>
+          <div class="chat">
+            <div class="msgs" id="msgs"><div class="m a">Write a persona on the left, then say hi.</div></div>
+            <form class="inrow" id="chatForm" style="margin:0"><input id="chatIn" maxlength="500" placeholder="Talk to your agent…" autocomplete="off"><button class="btn sm" id="chatGo">Send</button></form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" data-k='{"s":1,"x":0.34,"y":0,"sc":1.05,"ry":-0.4,"op":0.2,"mx":0,"my":0,"msc":0.8}'>
+      <div class="sh">
+        <span class="n rv">[03] PROCESS</span>
+        <div><h2 class="rv">From idea <b>to fees.</b></h2><p class="sub rv">The whole launch, one tab at a time. No sign-up, your own wallet.</p></div>
+      </div>
+      <div class="how" id="howline">
+        <div class="bar"></div>
+        <div class="stp rv"><span class="dot">01</span><b>Write</b><p>Launch Kit writes your tagline, lore, X bio and posts.</p><a href="#app" data-open="kit">Launch Kit →</a></div>
+        <div class="stp rv"><span class="dot">02</span><b>Launch</b><p>Upload the logo and launch on Pons from your wallet.</p><a href="#app" data-open="launch">Pons Launchpad →</a></div>
+        <div class="stp rv"><span class="dot">03</span><b>Snipe</b><p>Exempt your sniper wallet and buy first at 0% snipe tax.</p><a href="#app" data-open="snipe">Sniper →</a></div>
+        <div class="stp rv"><span class="dot">04</span><b>Watch</b><p>Scan your token and see every new launch on the radar.</p><a href="#app" data-open="scan">Scanner →</a></div>
+        <div class="stp rv"><span class="dot">05</span><b>Claim</b><p>Collect your creator fees, from one wallet or a hundred.</p><a href="#app" data-open="fees">Fee Claimer →</a></div>
+      </div>
+    </section>
+
+    <section id="rules" data-k='{"s":3,"x":0,"y":0,"sc":1.1,"ry":0,"op":0.16,"mx":0,"my":0,"msc":0.9}'>
+      <div class="sh">
+        <span class="n rv">[04] RULES</span>
+        <div><h2 class="rv">What we <b>never</b> do.</h2></div>
+      </div>
+      <div class="rules">
+        <div class="rule rv"><span class="x">RULE_01</span><b>Hold <s>your</s> keys</b><p>Your keys stay in your wallet or on your own server. We never ask for them in chat.</p></div>
+        <div class="rule rv"><span class="x">RULE_02</span><b>Let AI <s>touch</s> money</b><p>The AI picks inside limits set in code. Anything outside the limits is clamped.</p></div>
+        <div class="rule rv"><span class="x">RULE_03</span><b>Make up <s>numbers</s></b><p>Every figure traces back to a transaction or contract call anyone can check.</p></div>
+      </div>
+    </section>
+
+    <section class="final" id="contact" data-k='{"s":0,"x":0,"y":0.2,"sc":0.85,"ry":0,"op":1,"mx":0,"my":0.24,"msc":0.62}'>
+      <span class="lbl rv">[05] <b>Launching on Pons?</b></span>
+      <h2 class="rv" style="margin-top:14px">Hire <b>NOVA.</b></h2>
+      <p class="rv">Want a full AI agent token, with its own site, chat and fee engine like $UNIT? We build it for you. Send a DM.</p>
+      <div class="ctas rv" style="justify-content:center">
+        <a class="btn" href="#">DM on X <span class="ar">→</span></a>
+        <a class="btn ghost" href="#">Telegram</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><span>NOVA Labs · AI tools for Pons on Robinhood Chain</span><span>Not financial advice. Reports describe on-chain data only.</span></div>
+</footer>
+
+<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js","three/addons/":"/vendor/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+camera.position.set(0, 0, 7);
+
+const AMBER = new THREE.Color("#f0b04a");
+const uni = { uPulse: { value: 0 } };
+
+// ---------- materials ----------
+const shell = new THREE.MeshPhysicalMaterial({ color: "#0b0b0c", metalness: 0.6, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.55 });
+const satin = new THREE.MeshPhysicalMaterial({ color: "#151517", metalness: 0.85, roughness: 0.42, envMapIntensity: 0.6 });
+const glow = new THREE.MeshBasicMaterial({ color: AMBER, toneMapped: false });
+
+// visor display: a canvas drawn every frame
+const VC = document.createElement("canvas"); VC.width = 1024; VC.height = 300;
+const vx = VC.getContext("2d");
+const vtex = new THREE.CanvasTexture(VC); vtex.colorSpace = THREE.SRGBColorSpace; vtex.anisotropy = 4;
+const visorMat = new THREE.MeshPhysicalMaterial({ color: "#020202", metalness: 0.3, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02, emissive: "#ffffff", emissiveMap: vtex, emissiveIntensity: 1.25, envMapIntensity: 0.8 });
+
+// ---------- the android bust ----------
+const bust = new THREE.Group(); scene.add(bust); bust.userData.base = 0.74;
+const head = new THREE.Group(); bust.add(head);
+head.position.y = 0.42;
+
+const prof = new THREE.SplineCurve([
+  [0, -1.02], [0.3, -1.0], [0.55, -0.88], [0.69, -0.62], [0.76, -0.25], [0.79, 0.12], [0.77, 0.48], [0.68, 0.8], [0.5, 1.02], [0.26, 1.13], [0, 1.16],
+].map(([x, y]) => new THREE.Vector2(x, y))).getPoints(80);
+const skull = new THREE.Mesh(new THREE.LatheGeometry(prof, 128), shell);
+head.add(skull);
+
+// visor: a band of a slightly larger sphere at eye level
+const visor = new THREE.Mesh(new THREE.SphereGeometry(0.805, 128, 48, Math.PI / 2 - 0.92, 1.84, 1.26, 0.56), visorMat);
+visor.scale.set(1, 1, 1.015); visor.position.y = 0.12;
+head.add(visor);
+// visor rim
+const rimGeo = (y, a) => new THREE.TorusGeometry(0.79, 0.008, 8, 128, a);
+for (const yy of [0.12 + Math.cos(1.26) * 0.805, 0.12 + Math.cos(1.82) * 0.805]) {
+  const r = Math.sqrt(0.805 ** 2 - (yy - 0.12) ** 2) + 0.004;
+  const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.006, 8, 128, 1.84), glow);
+  t.rotation.x = Math.PI / 2; t.rotation.z = Math.PI / 2 - 0.92 - Math.PI / 2 + Math.PI; t.position.y = yy;
+  t.rotation.z = -(Math.PI / 2 + 0.92); head.add(t); t.material = new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.55, toneMapped: false });
+}
+// crest groove over the top
+const crest = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.012, 8, 128, Math.PI * 0.62), new THREE.MeshBasicMaterial({ color: "#2a2a2a" }));
+crest.rotation.y = Math.PI / 2; crest.rotation.z = Math.PI * 0.19; crest.position.y = 0.0; crest.scale.set(1, 1.2, 0.9);
+
+// ear modules
+for (const side of [-1, 1]) {
+  const ear = new THREE.Group(); ear.position.set(side * 0.765, 0.02, -0.04); ear.rotation.z = Math.PI / 2; head.add(ear);
+  ear.add(new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.23, 0.12, 64), satin));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.012, 12, 64), glow); ring.rotation.x = Math.PI / 2; ring.position.y = side * 0.062; ear.add(ring);
+  const dot = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 32), glow); dot.position.y = side * 0.065; ear.add(dot);
+}
+// jaw line
+const jaw = new THREE.Mesh(new THREE.TorusGeometry(0.63, 0.006, 8, 128, Math.PI * 1.1), new THREE.MeshBasicMaterial({ color: "#2c2c2c" }));
+jaw.rotation.x = Math.PI / 2 + 0.25; jaw.rotation.z = -Math.PI * 0.05 - Math.PI * 0.5; jaw.position.set(0, -0.55, 0.04);
+head.add(jaw);
+
+// neck + shoulders
+const neck = new THREE.Group(); bust.add(neck); neck.position.y = -0.72;
+neck.add(new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.33, 0.62, 64), satin));
+for (let i = 0; i < 3; i++) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.3 + i * 0.015, 0.018, 12, 64), shell); r.rotation.x = Math.PI / 2; r.position.y = 0.16 - i * 0.16; neck.add(r); }
+const torso = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 48, 0, Math.PI * 2, 0, Math.PI * 0.55), shell);
+torso.scale.set(1.45, 0.82, 0.78); torso.position.y = -1.8; bust.add(torso);
+const collar = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 16, 96), satin); collar.rotation.x = Math.PI / 2; collar.scale.set(1, 0.8, 1); collar.position.y = -1.03; bust.add(collar);
+const core = new THREE.Mesh(new THREE.CircleGeometry(0.075, 48), glow); core.position.set(0, -1.32, 0.66); core.rotation.x = -0.35; bust.add(core);
+const coreRing = new THREE.Mesh(new THREE.RingGeometry(0.1, 0.115, 48), new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.5, toneMapped: false })); coreRing.position.copy(core.position); coreRing.rotation.copy(core.rotation); bust.add(coreRing);
+// panel seams on the torso
+for (const sx of [-1, 1]) { const l = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.005, 6, 96, 0.7), new THREE.MeshBasicMaterial({ color: "#2a2a2a" })); l.scale.copy(torso.scale); l.position.copy(torso.position); l.rotation.set(0, sx * 0.55, Math.PI / 2 - 0.35); bust.add(l); }
+
+// ---------- lights ----------
+scene.add(new THREE.AmbientLight("#ffffff", 0.08));
+const key = new THREE.DirectionalLight("#ffffff", 1.1); key.position.set(-3, 3, 4); scene.add(key);
+const rimL = new THREE.DirectionalLight(AMBER, 3.2); rimL.position.set(4, 1.5, -3); scene.add(rimL);
+const rimR = new THREE.DirectionalLight("#ffffff", 1.6); rimR.position.set(-4, 2, -3); scene.add(rimR);
+const visorLight = new THREE.PointLight(AMBER, 0.9, 2.2); visorLight.position.set(0, 0.55, 1.2); bust.add(visorLight);
+// soft amber halo behind the head
+function haloTex() { const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, "rgba(240,176,74,.35)"); g.addColorStop(.4, "rgba(240,176,74,.09)"); g.addColorStop(1, "rgba(240,176,74,0)"); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); }
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+halo.scale.set(5.5, 5.5, 1); halo.position.set(0, 0.4, -1.5); bust.add(halo);
+
+// ---------- visor screens ----------
+let vtext = "SCANNER", mode = 0, lookX = 0, lookY = 0, blinkAt = 2, blink = 1;
+const A = "#f0b04a";
+function glowStroke(fn, blur = 22) { vx.save(); vx.shadowColor = A; vx.shadowBlur = blur; fn(); vx.restore(); }
+function rr(x, y, w, h, r) { vx.beginPath(); vx.roundRect(x, y, w, h, r); }
+function drawVisor(t) {
+  const W = 1024, H = 300, p = uni.uPulse.value;
+  vx.clearRect(0, 0, W, H); vx.fillStyle = "#000"; vx.fillRect(0, 0, W, H);
+  vx.globalAlpha = 0.06; vx.fillStyle = A; for (let y = 0; y < H; y += 6) vx.fillRect(0, y, W, 1); vx.globalAlpha = 1;
+  vx.fillStyle = A; vx.strokeStyle = A;
+  if (mode === 0 || mode === 4) { // eyes that look at the cursor
+    const ex = lookX * 60, ey = -lookY * 26, h = 58 * blink * (1 + p * 0.15);
+    glowStroke(() => { for (const cx of [W / 2 - 150, W / 2 + 150]) { rr(cx - 82 + ex, H / 2 - h / 2 + ey, 164, Math.max(4, h), 20); vx.fill(); } }, 30 + p * 20);
+  } else if (mode === 2) { // scan: sweep + readout
+    const sx = (t * 380) % (W + 200) - 100;
+    const g = vx.createLinearGradient(sx - 160, 0, sx, 0); g.addColorStop(0, "rgba(240,176,74,0)"); g.addColorStop(1, "rgba(240,176,74,.55)"); vx.fillStyle = g; vx.fillRect(sx - 160, 40, 160, H - 80);
+    glowStroke(() => { vx.fillRect(sx, 40, 4, H - 80); }, 18);
+    vx.fillStyle = A; vx.font = "500 30px JetBrains Mono, monospace"; vx.textAlign = "left";
+    glowStroke(() => { vx.fillText("SCAN 0x61e1…d6f5", 230, 120); vx.fillText("FLAGS  HIGH 1 · WATCH 1", 230, 175); }, 10);
+    const prog = (t * 0.25) % 1; vx.globalAlpha = .35; vx.fillRect(230, 205, 560, 6); vx.globalAlpha = 1; glowStroke(() => vx.fillRect(230, 205, 560 * prog, 6), 10);
+  } else if (mode === 1) { // network: nodes pulsing along a line
+    const ys = H / 2, xs = [250, 390, 512, 634, 774];
+    vx.globalAlpha = .4; vx.fillRect(250, ys - 1, 524, 2); vx.globalAlpha = 1;
+    xs.forEach((x, i) => { const on = (Math.floor(t * 2.2) % xs.length) === i; glowStroke(() => { vx.beginPath(); vx.arc(x, ys, on ? 22 : 11, 0, Math.PI * 2); vx.fill(); }, on ? 34 : 12); });
+  } else if (mode === 3) { // lock
+    glowStroke(() => { vx.lineWidth = 10; vx.beginPath(); vx.arc(W / 2 - 170, 128, 34, Math.PI, 0); vx.stroke(); rr(W / 2 - 222, 128, 104, 82, 14); vx.fill(); }, 26);
+    vx.fillStyle = A; vx.font = "800 46px Inter Tight, sans-serif"; vx.textAlign = "left";
+    glowStroke(() => { vx.fillText("KEYS HELD: 0", W / 2 - 90, 150); }, 12);
+    vx.font = "500 24px JetBrains Mono, monospace"; vx.globalAlpha = .7; vx.fillText("AI LIMITS · CLAMPED", W / 2 - 90, 196); vx.globalAlpha = 1;
+  }
+  if (mode === 5) { // service name on the visor
+    vx.textAlign = "center"; vx.fillStyle = A;
+    vx.font = "500 22px JetBrains Mono, monospace"; vx.globalAlpha = .65; vx.fillText("· SERVICE ·", W / 2, 96); vx.globalAlpha = 1;
+    vx.font = "800 96px Inter Tight, sans-serif"; glowStroke(() => vx.fillText(vtext, W / 2, 196), 24 + p * 20);
+  }
+  vtex.needsUpdate = true;
+}
+window.nova = { say(t) { vtext = t; uni.uPulse.value = 1; }, pulse(v) { uni.uPulse.value = Math.min(1, uni.uPulse.value + v); } };
+
+// ---------- scroll keyframes ----------
+const secs = [...document.querySelectorAll("[data-k]")].map(el => ({ el, k: JSON.parse(el.dataset.k) }));
+let target = secs[0].k;
+const st = { x: 0, y: 0, sc: 1, op: 1, ry: 0 };
+function pick() {
+  const mid = innerHeight / 2; let best = secs[0], bd = 1e9;
+  for (const s of secs) { const r = s.el.getBoundingClientRect(); const d = r.top <= mid && r.bottom >= mid ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); if (d < bd) { bd = d; best = s; } }
+  if (best.k.s !== target.s) uni.uPulse.value = 1;
+  target = best.k; mode = target.s;
+}
+addEventListener("scroll", pick, { passive: true });
+let mx = 0, my = 0, smx = 0, smy = 0;
+addEventListener("pointermove", e => { mx = e.clientX / innerWidth * 2 - 1; my = -(e.clientY / innerHeight * 2 - 1); });
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener("resize", () => { resize(); pick(); }); resize(); pick();
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.1), t = clock.elapsedTime;
+  uni.uPulse.value += (0 - uni.uPulse.value) * 0.05;
+  const mobile = innerWidth < 900, halfH = Math.tan(17.5 * Math.PI / 180) * 7, halfW = halfH * camera.aspect;
+  const tx = mobile ? (target.mx || 0) * halfW : target.x * halfW, ty = mobile ? (target.my || 0) * halfH : target.y * halfH;
+  const tsc = mobile ? (target.msc || 0.8) : target.sc, top = mobile && target.s !== 0 ? Math.min(target.op, 0.25) : target.op;
+  const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2);
+  st.x += (tx - st.x) * k; st.y += (ty - st.y) * k; st.sc += (tsc - st.sc) * k; st.op += (top - st.op) * k; st.ry += ((mobile ? 0 : target.ry || 0) - st.ry) * k;
+  bust.position.set(st.x, st.y, 0); bust.scale.setScalar(st.sc * bust.userData.base); canvas.style.opacity = st.op.toFixed(3);
+
+  const km = 1 - Math.exp(-dt * 4); smx += (mx - smx) * km; smy += (my - smy) * km;
+  // head looks at the cursor, the body follows a little; a slow idle sway on top
+  const idle = reduce ? 0 : Math.sin(t * 0.6) * 0.04;
+  head.rotation.y = st.ry + smx * 0.45 + idle; head.rotation.x = -smy * 0.22 + Math.sin(t * 0.8) * 0.015;
+  bust.rotation.y = (st.ry + smx * 0.45) * 0.25; head.position.y = 0.42 + Math.sin(t * 1.2) * 0.012;
+  lookX = smx; lookY = smy;
+  if (t > blinkAt) { const b = t - blinkAt; blink = b < 0.08 ? 1 - b / 0.08 : b < 0.16 ? (b - 0.08) / 0.08 : 1; if (b > 0.16) { blink = 1; blinkAt = t + 2.2 + Math.random() * 3.5; } }
+  const pulse = uni.uPulse.value;
+  visorMat.emissiveIntensity = 1.15 + pulse * 0.6; visorLight.intensity = 0.7 + pulse * 1.2;
+  core.scale.setScalar(1 + Math.sin(t * 2.4) * 0.08 + pulse * 0.3); coreRing.material.opacity = 0.35 + Math.sin(t * 2.4) * 0.15;
+  drawVisor(t);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+
+
+// ---------- page ----------
+const SERVICES = [
+  { k: "01", tool: "scan", use: "Scan a token", name: "Token Scanner", visor: "SCANNER", tag: "READY", who: "For traders", price: "Free",
+    p: "Paste a Pons CA and get a full report in seconds, with a plain-English read from NOVA.",
+    pts: ["Deployer sold or moved tokens, even through a router", "Holder concentration and top 10 wallets", "First-minute buyers and whether they still hold", "Deployer history: serial launcher or not"] },
+  { k: "02", tool: "agent", use: "Try Agent Studio", hire: true, name: "AI Agent Token", visor: "AGENT", tag: "LIVE", live: true, who: "For creators", price: "Studio free · full launch on request",
+    p: "Launch a token with its own AI agent. It talks to holders and splits creator fees on-chain.",
+    pts: ["3D site, agent chat room and live thought log", "Fee engine: the AI picks the split inside fixed limits", "Every round signed with a public receipt hash", "Admin panel, lore and X content kit"] },
+  { k: "03", tool: "snipe", use: "Open Sniper", name: "Pons Sniper", visor: "SNIPER", tag: "READY", who: "For traders", price: "Free · you pay gas",
+    p: "The full NOVA sniper bot in your browser: paste your sniper wallet key, set your rules, start a dry run or go LIVE.",
+    pts: ["Same engine as the NOVA bot: dry run, LIVE, stop", "Private key, budget, TP/SL and dev allow list", "Manual buy, open positions, trade history and log", "Waits for the anti-snipe tax; the key stays in your browser"] },
+  { k: "04", tool: "kit", use: "Write my kit", name: "Launch Kit", visor: "LAUNCH", tag: "READY", who: "For creators", price: "Free",
+    p: "Name, ticker and idea in. Tagline, lore, X bio, a thread and posts out, ready to copy.",
+    pts: ["Tagline, lore and X bio", "A 5-post thread and 5 standalone posts", "A launch post ready for your CA"] },
+  { k: "05", tool: "fees", use: "Check my fees", name: "Fee Claimer", visor: "CLAIM", tag: "READY", who: "For creators", price: "Free · you pay gas",
+    p: "One dashboard to claim creator fees across many tokens and wallets.",
+    pts: ["One wallet: connect and claim, nothing shared", "Many accounts: up to 200 accounts of one seed in one click", "Gas top-up from Account 1 and every fee sent to one wallet", "The seed stays in your browser and is never saved"] },
+  { k: "06", tool: "launch", use: "Launch a token", name: "Pons Launchpad", visor: "LAUNCH", tag: "READY", who: "For creators", price: "Free · you pay gas",
+    p: "Launch your token on Pons (Robinhood Chain) from your own wallet, in one form.",
+    pts: ["Upload the logo, or paste an image link", "Name, ticker, socials, creator tax and dev buy", "Snipe-tax-exempt wallets for your own first buy", "Then scan it, snipe it and claim its fees here"] },
+];
+const list = document.getElementById("list"), detail = document.getElementById("detail");
+list.innerHTML = SERVICES.map((s, i) => `<div class="item" data-i="${i}"><span class="k">${s.k}</span><h3>${s.name}</h3><span class="t${s.live ? " live" : ""}">${s.tag}</span></div>`).join("");
+function showService(i) {
+  const s = SERVICES[i];
+  list.querySelectorAll(".item").forEach((el, j) => el.classList.toggle("on", j === i));
+  detail.innerHTML = `<div class="fade" style="display:flex;flex-direction:column;gap:16px;height:100%">
+    <div class="who"><span class="lbl">Service <b>${s.k}</b> / 05</span><span class="lbl">${s.who}</span></div>
+    <h4>${s.name}</h4><p>${s.p}</p><ul>${s.pts.map(x => `<li>${x}</li>`).join("")}</ul>
+    <div class="price"><b>${s.price}</b><span style="display:flex;gap:8px">${s.hire ? `<a class="btn sm ghost" href="#contact">Hire</a>` : ""}<a class="btn sm" href="#app" data-open="${s.tool}">${s.use} <span class="ar">→</span></a></span></div></div>`;
+  window.nova?.say(s.visor);
+}
+list.addEventListener("mouseover", e => { const it = e.target.closest(".item"); if (it) showService(+it.dataset.i); });
+list.addEventListener("click", e => { const it = e.target.closest(".item"); if (it) showService(+it.dataset.i); });
+showService(0);
+
+// thinking log
+const lines = ["scanning 0x61e1…d6f5 · HOLDUSA", "deployer moved 1.59% of supply out.", "10 wallets bought 10.3% in the first minute.", "5 of those early wallets already sold.", "3 holders left. one wallet can move the price.", "flags: 1 high · 1 watch. report ready."];
+const log = document.getElementById("log");
+(async function loop() {
+  let i = 0; const shown = [];
+  while (true) {
+    const s = lines[i++ % lines.length]; shown.push(""); if (shown.length > 4) shown.shift();
+    for (const ch of s) { shown[shown.length - 1] += ch; log.innerHTML = shown.map((x, k) => `<div>&gt; ${x}${k === shown.length - 1 ? '<span class="cur"></span>' : ""}</div>`).join(""); if (ch !== " ") window.nova?.pulse(0.05); await new Promise(r => setTimeout(r, 24 + Math.random() * 28)); }
+    await new Promise(r => setTimeout(r, 1500));
+  }
+})();
+
+// timeline progress
+const how = document.getElementById("howline"), steps = how.querySelectorAll(".stp");
+function howProgress() {
+  const r = how.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight * 0.75 - r.top) / (r.height + innerHeight * 0.3)));
+  how.style.setProperty("--p", p * 100 + "%"); steps.forEach((s, i) => s.classList.toggle("on", p >= i / steps.length + 0.05));
+}
+
+// top bar, menu state, clock
+const top = document.getElementById("top"), links = [...document.querySelectorAll(".menu a")];
+function onScroll() {
+  top.classList.toggle("solid", scrollY > 30); howProgress();
+  let cur = ""; for (const a of links) { const s = document.querySelector(a.getAttribute("href")); if (s && s.getBoundingClientRect().top < innerHeight * 0.5) cur = a.getAttribute("href"); }
+  links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === cur));
+}
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+setInterval(() => { document.getElementById("clock").textContent = "UTC " + new Date().toISOString().slice(11, 19); }, 1000);
+
+// reveals; the scanner runs once when it comes into view
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; e.target.classList.add("in"); io.unobserve(e.target);
+}), { threshold: 0.15 });
+document.querySelectorAll(".rv").forEach(el => io.observe(el));
+
+// ---------- tools ----------
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const short = (a) => (a ? a.slice(0, 6) + "…" + a.slice(-4) : "");
+const fmt = (v, d = 2) => Number(v).toLocaleString("en-US", { maximumFractionDigits: d });
+const EXPLORER = "https://robinhoodchain.blockscout.com/";
+const safeUrl = (u) => (/^https:\/\/[^\s"'<>]+$/.test(u || "") ? u : "");
+const img = (u) => { u = String(u || ""); if (u.startsWith("ipfs://")) u = "https://gateway.pinata.cloud/ipfs/" + u.slice(7); return safeUrl(u); };
+const loading = (t) => `<div class="load"><i></i>${esc(t)}</div>`;
+async function api(url, opts) {
+  const r = await fetch(url, opts); let j = {};
+  try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.error || "Request failed (" + r.status + ").");
+  return j;
+}
+
+// tabs
+const VISOR = { launch: "LAUNCH", scan: "SCANNER", radar: "RADAR", snipe: "SNIPER", fees: "CLAIM", kit: "LAUNCH", agent: "AGENT" };
+let radarTimer = null;
+function openTab(t, scroll, quiet) {
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+  document.querySelectorAll(".tool").forEach((p) => p.classList.toggle("on", p.dataset.p === t));
+  window.nova?.say(VISOR[t]);
+  clearInterval(radarTimer);
+  if (t === "radar") { loadRadar(); radarTimer = setInterval(loadRadar, 10_000); }
+  if (scroll) $("app").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!quiet) history.replaceState(null, "", "#" + t);
+}
+$("tabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.t); });
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-open]"); if (a) { e.preventDefault(); openTab(a.dataset.open, true); } });
+
+// scanner
+const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "NOVA is writing the summary"];
+async function runScan(ca) {
+  ca = ca.trim(); $("scanCa").value = ca;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(ca)) { $("scanOut").innerHTML = `<p class="err">Paste a token contract address (0x… 42 characters).</p>`; return; }
+  $("scanGo").disabled = true;
+  let i = 0; $("scanOut").innerHTML = loading(STEPS[0]);
+  const t = setInterval(() => { i = Math.min(STEPS.length - 1, i + 1); const l = $("scanOut").querySelector(".load"); if (l) l.innerHTML = "<i></i>" + STEPS[i]; window.nova?.pulse(0.3); }, 1700);
+  try { renderScan(await api("/api/scan?ca=" + ca)); }
+  catch (e) { $("scanOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { clearInterval(t); $("scanGo").disabled = false; }
+}
+function renderScan(r) {
+  const f = r.facts, t = f.token, p = f.pons, d = f.deployer, h = f.holders, e = f.early, tr = f.trading;
+  const socials = Object.entries(t.socials || {}).map(([k, v]) => (safeUrl(v) ? `<a class="chipl" href="${esc(v)}" target="_blank" rel="noopener nofollow">${esc(k)}</a>` : "")).join("");
+  const logo = img(t.logo);
+  $("scanOut").innerHTML = `
+  <div class="rh">${logo ? `<img src="${esc(logo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}
+    <div><h3>${esc(t.name)}<span>$${esc(t.symbol)}</span></h3><div class="ca">${esc(t.address)} · ${fmt(t.ageHours, 1)}h old</div></div>
+    <div class="links">${socials}<a class="chipl" href="${EXPLORER}token/${esc(t.address)}" target="_blank" rel="noopener">explorer</a><a class="chipl" href="https://ponsfamily.com/launchpad/${esc(t.address)}" target="_blank" rel="noopener">pons</a></div></div>
+  <span class="lbl">NOVA's read</span>
+  <p class="read">${r.summary ? esc(r.summary) : `<span style="color:var(--dim);font-weight:500">${esc(r.summaryError || "")}</span>`}</p>
+  <div class="flags">${r.flags.map((x) => `<div class="fl"><span class="lv ${esc(x.level)}">${esc(x.level)}</span><div><b>${esc(x.title)}</b><span class="d">${esc(x.detail)}</span></div></div>`).join("")}</div>
+  <div class="nums">
+    <div><span class="lbl">Holders</span><b>${h.count}</b><small>top 10 hold ${fmt(h.top10Pct)}%</small></div>
+    <div><span class="lbl">Deployer</span><b>${fmt(d.holdsPct)}%</b><small>bought ${fmt(d.boughtPct)}% · out ${fmt(d.soldPct)}%</small></div>
+    <div><span class="lbl">First minute</span><b>${e.wallets}</b><small>wallets took ${fmt(e.boughtPct)}%, hold ${fmt(e.stillHoldPct)}%</small></div>
+    <div><span class="lbl">Trades</span><b>${tr.buys} / ${tr.sells}</b><small>buys / sells</small></div>
+    <div><span class="lbl">Volume in</span><b>${fmt(tr.volumeInETH, 3)}</b><small>ETH bought · ${fmt(tr.volumeOutETH, 3)} sold</small></div>
+    <div><span class="lbl">Last hour</span><b>${tr.lastHour.buys} / ${tr.lastHour.sells}</b><small>${fmt(tr.lastHour.inETH, 3)} in · ${fmt(tr.lastHour.outETH, 3)} out ETH</small></div>
+    <div><span class="lbl">Creator tax</span><b>${fmt(p.creatorTaxPct)}%</b><small>${p.snipeTaxNowPct ? "snipe tax now " + fmt(p.snipeTaxNowPct) + "%" : "no snipe tax now"}</small></div>
+    <div><span class="lbl">Graduation</span><b>${p.graduated ? "Done" : fmt(p.progressPct, 1) + "%"}</b><div class="pbar"><i style="width:${p.graduated ? 100 : Math.min(100, p.progressPct)}%"></i></div><small>${fmt(p.curveETH, 3)} / ${fmt(p.graduationETH)} ETH</small></div>
+  </div>
+  <div class="two">
+    <div><span class="lbl">Top holders</span>${h.top.length ? `<table>${h.top.map((x, i) => `<tr><td style="width:26px;color:var(--dim)">${i + 1}</td><td><a href="${EXPLORER}address/${x.address}" target="_blank" rel="noopener">${short(x.address)}</a>${x.dev ? '<span class="pill">deployer</span>' : ""}${x.contract ? '<span class="pill">contract</span>' : ""}</td><td class="r">${fmt(x.pct)}%</td></tr>`).join("")}</table>` : `<p class="note">No one holds outside the curve.</p>`}</div>
+    <div><span class="lbl">Deployer</span><table>
+      <tr><td>Wallet</td><td class="r"><a href="${EXPLORER}address/${d.address}" target="_blank" rel="noopener">${short(d.address)}</a></td></tr>
+      <tr><td>Fees go to</td><td class="r">${d.feeRecipientIsDeployer ? "the deployer" : short(d.feeRecipient)}</td></tr>
+      <tr><td>Other Pons launches</td><td class="r">${d.otherLaunches}</td></tr>
+      <tr><td>Graduated / look abandoned</td><td class="r">${d.otherLaunchesGraduated} / ${d.otherLaunchesDead}</td></tr>
+      ${d.recent.map((x) => `<tr><td><a href="#" data-scan="${x.token}">$${esc(x.symbol)}</a></td><td class="r">${x.graduated ? "graduated" : fmt(x.curveETH, 3) + " ETH on curve"}</td></tr>`).join("")}
+    </table></div>
+  </div>
+  <p class="note" style="text-align:right">Block ${f.scannedAtBlock}${r.cached ? " · cached" : ""} · ${fmt(r.ms / 1000, 1)}s</p>`;
+}
+$("scanForm").addEventListener("submit", (e) => { e.preventDefault(); runScan($("scanCa").value); });
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-scan]"); if (a) { e.preventDefault(); openTab("scan", true); runScan(a.dataset.scan); } });
+
+// radar
+let radarRows = [];
+async function loadRadar() {
+  try {
+    const j = await api("/api/radar");
+    radarRows = j.rows; $("radarHead").textContent = "block " + j.head.toLocaleString("en-US"); drawRadar();
+  } catch (e) { if (!radarRows.length) $("radarOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+}
+function age(s) { return s < 60 ? s + "s" : s < 3600 ? Math.floor(s / 60) + "m" : Math.floor(s / 3600) + "h"; }
+function drawRadar() {
+  const rows = $("onlyPass").checked ? radarRows.filter((r) => r.pass) : radarRows;
+  $("radarOut").innerHTML = rows.length ? rows.map((r) => {
+    const logo = img(r.logo);
+    return `<div class="rrow">${logo ? `<img src="${esc(logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph'}))">` : `<div class="ph"></div>`}
+      <div class="nm"><b>$${esc(r.symbol)}</b><span>${esc(r.name)}</span><div class="pbar"><i style="width:${r.graduated ? 100 : r.progressPct}%"></i></div></div>
+      <span class="age">${age(r.ageSec)} ago${r.snipePct ? `<br>tax ${fmt(r.snipePct)}%` : ""}</span>
+      <div class="checks">${r.checks.map((c) => `<span class="ck${c.ok ? "" : " no"}">${c.ok ? "✓" : "✕"} ${esc(c.text)}</span>`).join("")}</div>
+      <span class="verdict ${r.pass ? "p" : "s"}">${r.pass ? "PASS" : "SKIP"}</span>
+      <div class="ract"><button data-scan="${r.token}">Scan</button><a href="https://ponsfamily.com/launchpad/${r.token}" target="_blank" rel="noopener">Pons</a></div></div>`;
+  }).join("") : `<p class="empty">No launch passes right now. Untick the filter to see everything.</p>`;
+}
+$("onlyPass").addEventListener("change", drawRadar);
+
+// fee claimer (read from the server, claim in the visitor's wallet)
+const CHAIN = { chainId: "0x1237", chainName: "Robinhood Chain", nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 }, rpcUrls: ["https://rpc.mainnet.chain.robinhood.com"], blockExplorerUrls: [EXPLORER] };
+let feeData = null, ethersLib = null;
+const getEthers = async () => (ethersLib ||= await import("/vendor/ethers.min.js"));
+async function connect() {
+  if (!window.ethereum) throw new Error("No wallet found. Install MetaMask or Rabby, or paste your address to just check.");
+  const [acc] = await window.ethereum.request({ method: "eth_requestAccounts" });
+  try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN.chainId }] }); }
+  catch (e) { if (e.code === 4902 || /Unrecognized|not been added/i.test(e.message || "")) await window.ethereum.request({ method: "wallet_addEthereumChain", params: [CHAIN] }); else throw e; }
+  return acc;
+}
+async function checkFees(w) {
+  w = w.trim(); $("feeWallet").value = w;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(w)) { $("feeOut").innerHTML = `<p class="err">Paste a wallet address (0x… 42 characters).</p>`; return; }
+  $("feeGo").disabled = true; $("feeOut").innerHTML = loading("Finding every Pons token this wallet launched");
+  try { feeData = await api("/api/fees?wallet=" + w); drawFees(); }
+  catch (e) { $("feeOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { $("feeGo").disabled = false; }
+}
+function drawFees() {
+  const d = feeData, pend = d.rows.filter((r) => r.pendingETH > 0);
+  $("feeOut").innerHTML = `
+    <div class="total"><div><span class="lbl">Claimable now</span><br><b>${fmt(d.totalETH, 6)} ETH</b></div>
+      <div style="text-align:right"><span class="lbl">${d.launched} token${d.launched === 1 ? "" : "s"} launched · ${pend.length} with fees on the curve · ${fmt(d.escrowETH, 6)} ETH in escrow</span><br>
+      <button class="btn" id="claimAll" style="margin-top:10px" ${d.totalETH > 0 ? "" : "disabled"}>Claim all in my wallet <span class="ar">→</span></button></div></div>
+    ${d.rows.length ? `<table>${d.rows.map((r) => `<tr><td><a href="#" data-scan="${r.token}">$${esc(r.symbol)}</a> <span style="color:var(--dim)">${esc(r.name)}</span></td><td class="r">${r.graduated ? '<span class="pill">graduated</span>' : ""} ${fmt(r.pendingETH, 6)} ETH</td></tr>`).join("")}</table>` : `<p class="note">This wallet has not launched a Pons token, so it has no curves to sweep.</p>`}
+    <div class="steps2" id="claimLog"></div>
+    <p class="note">Claiming sends one transaction per token with fees, then one to the escrow. Gas is paid by your wallet. Only the fee recipient wallet can claim.</p>`;
+  $("claimAll")?.addEventListener("click", claimAll);
+}
+async function claimAll() {
+  const log = (t, c = "") => { $("claimLog").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`); };
+  const btn = $("claimAll"); btn.disabled = true;
+  try {
+    const acc = await connect();
+    if (acc.toLowerCase() !== feeData.wallet.toLowerCase()) throw new Error(`Your wallet is connected as ${short(acc)}. Switch to ${short(feeData.wallet)} to claim its fees.`);
+    const { BrowserProvider, Contract } = await getEthers();
+    const signer = await new BrowserProvider(window.ethereum).getSigner();
+    for (const r of feeData.rows.filter((x) => x.pendingETH > 0)) {
+      log(`sweeping $${r.symbol}…`);
+      const tx = await new Contract(r.curve, ["function sweepFees(uint256 minBuybackTokensOut)"], signer).sweepFees(0);
+      await tx.wait(); log(`$${r.symbol} swept · ${short(tx.hash)}`, "ok");
+    }
+    const st = await api("/api/status");
+    const esc_ = new Contract(st.escrow, ["function balanceOf(address) view returns (uint256)", "function claim()"], signer);
+    if ((await esc_.balanceOf(acc)) > 0n) { log("claiming from the escrow…"); const tx = await esc_.claim(); await tx.wait(); log(`claimed · ${short(tx.hash)}`, "ok"); }
+    log("done. The ETH is in your wallet.", "ok"); window.nova?.pulse(1);
+    setTimeout(() => checkFees(feeData.wallet), 2500);
+  } catch (e) { log(e.shortMessage || e.info?.error?.message || e.message, "bad"); btn.disabled = false; }
+}
+$("feeForm").addEventListener("submit", (e) => { e.preventDefault(); checkFees($("feeWallet").value); });
+$("feeConnect").addEventListener("click", async () => { try { checkFees(await connect()); } catch (e) { $("feeOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; } });
+
+// launch kit
+$("kitForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)); $("kitGo").disabled = true;
+  $("kitOut").innerHTML = loading("NOVA is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
+  try {
+    const k = await api("/api/kit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f) });
+    const card = (title, body, copy) => `<div class="kc"><h5>${title}</h5><button class="cp" type="button" data-copy="${esc(copy)}">Copy</button>${body}</div>`;
+    const list = (a) => `<ol>${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`;
+    $("kitOut").innerHTML = `<div class="kit">
+      ${card("Tagline", `<p>${esc(k.tagline)}</p>`, k.tagline)}
+      ${card("X bio", `<p>${esc(k.bio)}</p>`, k.bio)}
+      ${card("Lore", `<p>${esc(k.lore)}</p>`, k.lore)}
+      ${card("Thread", list(k.thread), k.thread.join("\n\n"))}
+      ${card("Posts", list(k.posts), k.posts.join("\n\n"))}
+      ${card("Launch post", `<p>${esc(k.launchPost)}</p>`, k.launchPost)}</div>`;
+  } catch (e2) { $("kitOut").innerHTML = `<p class="err" style="margin-top:18px">${esc(e2.message)}</p>`; }
+  finally { clearInterval(t); $("kitGo").disabled = false; }
+});
+document.addEventListener("click", async (e) => { const b = e.target.closest("[data-copy]"); if (!b) return; try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); } catch {} });
+
+// agent studio
+let chat = [];
+$("chatForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = $("chatIn").value.trim(); if (!text) return;
+  const f = Object.fromEntries(new FormData($("agentForm")));
+  if (!chat.length) $("msgs").innerHTML = "";
+  chat.push({ role: "user", content: text }); $("chatIn").value = "";
+  $("msgs").insertAdjacentHTML("beforeend", `<div class="m u">${esc(text)}</div><div class="m a wait" id="wait">…</div>`);
+  $("msgs").scrollTop = 1e9; $("chatGo").disabled = true; window.nova?.pulse(0.6);
+  try {
+    const r = await api("/api/agent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...f, messages: chat }) });
+    chat.push({ role: "assistant", content: r.reply });
+    $("wait").outerHTML = `<div class="m a"><b style="color:var(--acc)">${esc(f.name || "Agent")}</b>\n${esc(r.reply)}</div>`;
+  } catch (e2) { chat.pop(); $("wait").outerHTML = `<div class="m a" style="color:#ff8a8d">${esc(e2.message)}</div>`; }
+  finally { $("chatGo").disabled = false; $("msgs").scrollTop = 1e9; }
+});
+$("agentForm").addEventListener("input", () => { chat = []; });
+
+// open from the address bar: #radar, #fees, … or ?ca=0x… for a scan
+const qca = new URLSearchParams(location.search).get("ca");
+const startTab = (location.hash || "").slice(1);
+if (qca) { openTab("scan", false, true); runScan(qca); } else openTab(VISOR[startTab] ? startTab : "scan", false, true);
+if (qca || VISOR[startTab]) setTimeout(() => $("app").scrollIntoView({ block: "start" }), 300);
+
+// ---------- sniper: the same engine as the NOVA sniper bot, the private key stays in this browser ----------
+const PONS_FACTORY = "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e";
+const SK = { key: "nova.sniper.key", cfg: "nova.sniper.cfg2", pos: "nova.sniper.pos2", hist: "nova.sniper.hist" };
+const sstore = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+// same defaults as sniper-config.example.json
+const SN_DEF = { buyEth: "0.005", maxTotalSpendEth: "0.05", takeProfitPercent: 50, stopLossPercent: 30, allowedDeployers: [], maxHoldSeconds: 0, maxOpenPositions: 3, gasReserveEth: "0.001", slippagePercent: 15, maxCreatorTaxPercent: 3, maxSnipeTaxPercent: 1, maxLaunchAgeSeconds: 30, requireSocials: 0, maxDeployerLaunches: 0, keywords: [], blockedKeywords: ["test"], blockedDeployers: [] };
+const SN_NUM = ["slippagePercent", "maxCreatorTaxPercent", "maxSnipeTaxPercent", "maxLaunchAgeSeconds", "maxOpenPositions", "takeProfitPercent", "stopLossPercent", "maxHoldSeconds", "requireSocials", "maxDeployerLaunches"];
+const SN_ETH = ["buyEth", "maxTotalSpendEth", "gasReserveEth"];
+const SN_LIST = ["keywords", "blockedKeywords", "allowedDeployers", "blockedDeployers"];
+const SN_ABI = {
+  curve: ["function buy(uint256 quoteIn, uint256 minTokensOut, address recipient) payable returns (uint256 tokensOut)", "function sell(uint256 tokensIn, uint256 minQuoteOut, address recipient) returns (uint256 quoteOut)", "function creatorTaxBps() view returns (uint256)", "function currentSnipeTaxBps(address recipient) view returns (uint256)", "function graduated() view returns (bool)", "event CurveSell(address indexed seller, address indexed recipient, uint256 tokensIn, uint256 quoteOut, uint256 fee, uint256 tax)"],
+  token: ["function name() view returns (string)", "function symbol() view returns (string)", "function balanceOf(address) view returns (uint256)", "function allowance(address,address) view returns (uint256)", "function approve(address,uint256) returns (bool)", "function getTokenInfo() view returns (address tokenDeployer, string tokenLogo, string tokenDescription, tuple(string twitter, string telegram, string discord, string website, string farcaster) tokenSocials)"],
+  factory: ["function getLaunchedToken(address token) view returns (tuple(address token, address curve, address deployer, address creatorFeeRecipient, address pairToken, uint256 graduationThreshold, uint256 initialLiquidity, uint24 poolFee, int24 tickSpacing, uint16 creatorTaxBps, bool buybackEnabled, uint8 phase, uint256 sweptQuote, uint256 sweptTokens, bool exists))"],
+};
+const SN_LAUNCHED = "0x" + "0".repeat(64); // set once ethers loads
+let snCfg = { ...SN_DEF, ...sstore.get(SK.cfg, {}) }, snPositions = sstore.get(SK.pos, []), snHistory = sstore.get(SK.hist, []);
+let Eth = null, snP = null, snW = null, snMode = null, snSpent = 0n, snNext = 0, snWaiting = [], snBuySent = new Set(), snTimer = null, snLastPos = 0, snTopic = null, snTx = Promise.resolve();
+const snQ = (fn) => (snTx = snTx.then(fn, fn)); // one transaction at a time so nonces never clash
+const snEth = (w) => Number(Eth.formatEther(BigInt(w))).toLocaleString("en-US", { maximumFractionDigits: 6 });
+const snShort = (e) => (e?.shortMessage || e?.info?.error?.message || e?.message || String(e)).slice(0, 160);
+function snLog(t, c = "") { const el = $("snLog"); el.insertAdjacentHTML("afterbegin", `<div class="${c}">[${new Date().toLocaleTimeString("en-GB")}] ${esc(t)}</div>`); while (el.children.length > 300) el.lastChild.remove(); }
+const savePos = () => { sstore.set(SK.pos, snPositions); snDrawPos(); };
+
+async function snBoot() {
+  if (Eth) return;
+  Eth = await getEthers();
+  snP = new Eth.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1, pollingInterval: 1000 });
+  snTopic = Eth.id("TokenLaunched(address,address,address,address,uint256,uint256)");
+  let k = null; try { k = localStorage.getItem(SK.key); } catch {}
+  snW = k ? new Eth.Wallet(k, snP) : null;
+  snFill(); snDrawWallet(); snDrawPos(); snDrawHist();
+}
+async function snDrawWallet() {
+  $("snAddr").textContent = snW ? snW.address : "No private key yet. Paste one in Settings, or make a new wallet.";
+  if (!snW) return ($("snBalLine").textContent = "");
+  try { $("snBalLine").textContent = snEth(await snP.getBalance(snW.address)) + " ETH"; } catch { $("snBalLine").textContent = "balance unreadable"; }
+}
+function snFill() {
+  for (const el of $("snForm").elements) {
+    if (!el.name || el.name === "privateKey") continue;
+    const v = snCfg[el.name]; el.value = Array.isArray(v) ? v.join(", ") : v ?? "";
+  }
+}
+// same validation as the bot dashboard
+$("snForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = $("snForm").elements, next = { ...snCfg };
+  for (const n of SN_NUM) { const v = Number(f[n].value); if (!Number.isFinite(v) || v < 0) return snMsg(`${n} must be a number >= 0`, true); next[n] = v; }
+  for (const n of SN_ETH) { const v = f[n].value.trim(); if (!/^\d+(\.\d{1,18})?$/.test(v)) return snMsg(`${n} must be an ETH amount like 0.005`, true); next[n] = v; }
+  for (const n of SN_LIST) next[n] = f[n].value.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  if ([...next.keywords, ...next.blockedKeywords].some((k) => /^0x[0-9a-fA-F]{40}$/.test(k))) return snMsg("Keywords cannot be wallet addresses. Dev addresses go in field 6 (or Blocked devs).", true);
+  const key = f.privateKey.value.trim();
+  if (key) {
+    if (!/^(0x)?[0-9a-fA-F]{64}$/.test(key)) return snMsg("The private key must be 64 hex characters.", true);
+    if (snMode) return snMsg("Stop the bot before changing the key.", true);
+    snW = new Eth.Wallet(key.startsWith("0x") ? key : "0x" + key, snP);
+    try { localStorage.setItem(SK.key, snW.privateKey); } catch {}
+    f.privateKey.value = "";
+  }
+  snCfg = next; sstore.set(SK.cfg, snCfg); snDrawWallet(); snMsg("Settings saved.");
+});
+function snMsg(t, bad) { $("snMsg").innerHTML = `<span style="color:${bad ? "#ff8a8d" : "var(--ok)"}">${esc(t)}</span>`; }
+$("snNewWallet").addEventListener("click", () => {
+  if (snMode) return snMsg("Stop the bot first.", true);
+  if (snW && !confirm("Replace the saved sniper wallet with a new one? Export the old key first if it holds funds.")) return;
+  const w = Eth.Wallet.createRandom(); snW = w.connect(snP); try { localStorage.setItem(SK.key, w.privateKey); } catch {}
+  snDrawWallet(); snLog("new sniper wallet " + w.address + ". Fund it, and back up the key with Export key.");
+});
+$("snExport").addEventListener("click", () => { if (!snW) return; if (confirm("Show the private key? Anyone who sees it can take the funds.")) prompt("Sniper wallet private key:", snW.privateKey); });
+$("snForget").addEventListener("click", async () => {
+  if (!snW) return; if (snMode) return snMsg("Stop the bot first.", true);
+  const bal = await snP.getBalance(snW.address).catch(() => 0n);
+  if (!confirm(bal > 0n ? `This wallet still holds ${snEth(bal)} ETH. Export the key first or it is lost. Remove anyway?` : "Remove the key from this browser?")) return;
+  try { localStorage.removeItem(SK.key); } catch {} snW = null; snDrawWallet();
+});
+$("snWithdraw").addEventListener("click", async () => {
+  if (!snW) return;
+  const to = (prompt("Send all ETH from the sniper wallet to (0x…):") || "").trim();
+  if (!Eth.isAddress(to)) return to && alert("That is not an address.");
+  await snQ(async () => {
+    try {
+      const bal = await snP.getBalance(snW.address), fee = await snP.getFeeData(), gp = (fee.maxFeePerGas || fee.gasPrice) * 2n, cost = 21000n * gp;
+      if (bal <= cost) throw new Error("Balance is too small to cover gas.");
+      const tx = await snW.sendTransaction({ to, value: bal - cost, gasLimit: 21000n, maxFeePerGas: gp, maxPriorityFeePerGas: fee.maxPriorityFeePerGas ?? 0n });
+      snLog(`WITHDRAW ${snEth(bal - cost)} ETH -> ${to} (${tx.hash})`); await tx.wait(); snDrawWallet();
+    } catch (e) { snLog("withdraw failed: " + snShort(e), "bad"); }
+  });
+});
+
+// ---------- buying ----------
+const lower = (a) => (a || []).map((s) => s.toLowerCase());
+const devCount = new Map();
+async function devLaunches(dev) {
+  const c = devCount.get(dev); if (c !== undefined) return c;
+  try { const j = await api("/api/dev?addr=" + dev); devCount.set(dev, j.launches24h); return j.launches24h; } catch { return 0; }
+}
+/** Same checks as the bot: the reason a launch is skipped, or null; retry when only the anti-snipe tax is in the way. */
+async function snReject(l) {
+  const dev = l.deployer.toLowerCase();
+  if (l.pairToken !== Eth.ZeroAddress) return { reason: "not paired with ETH", symbol: "?" };
+  if (lower(snCfg.blockedDeployers).includes(dev)) return { reason: "deployer is blocked", symbol: "?" };
+  if (snCfg.allowedDeployers.length && !lower(snCfg.allowedDeployers).includes(dev)) return { reason: "deployer not in field 6", symbol: "?" };
+  const t = new Eth.Contract(l.token, SN_ABI.token, snP), c = new Eth.Contract(l.curve, SN_ABI.curve, snP);
+  const [name, symbol, tax, snipe, grad, lb, head] = await Promise.all([t.name(), t.symbol(), c.creatorTaxBps(), c.currentSnipeTaxBps(snW.address), c.graduated(), snP.getBlock(l.block), snP.getBlock("latest")]);
+  const text = `${name} ${symbol}`.toLowerCase(), age = head.timestamp - lb.timestamp;
+  let reason = null;
+  if (grad) reason = "already graduated";
+  else if (age > snCfg.maxLaunchAgeSeconds) reason = `too late (${age}s old)`;
+  else if (Number(tax) > snCfg.maxCreatorTaxPercent * 100) reason = `creator tax ${Number(tax) / 100}% too high`;
+  else if (lower(snCfg.blockedKeywords).some((k) => text.includes(k))) reason = "name matches blocked keywords";
+  else if (snCfg.keywords.length && !lower(snCfg.keywords).some((k) => text.includes(k))) reason = "name matches no keyword";
+  if (!reason && snCfg.requireSocials) { const ti = await t.getTokenInfo(); if (!Object.values(ti[3].toObject()).some((v) => String(v).trim())) reason = "no socials set"; }
+  if (!reason && snCfg.maxDeployerLaunches) { const n = await devLaunches(dev); if (n > snCfg.maxDeployerLaunches) reason = `deployer launched ${n} other tokens in 24h (limit ${snCfg.maxDeployerLaunches})`; }
+  if (reason) return { reason, symbol };
+  if (Number(snipe) > snCfg.maxSnipeTaxPercent * 100) return { reason: `snipe tax ${Number(snipe) / 100}% still active`, symbol, retry: true };
+  return { reason: null, symbol };
+}
+async function snSnipe(l) {
+  if (snPositions.some((p) => p.token === l.token) || snBuySent.has(l.token)) return;
+  let r;
+  try { r = await snReject(l); }
+  catch (e) {
+    if (!snWaiting.some((w) => w.token === l.token)) { snWaiting.push(l); snLog(`wait  ${l.token}: ${snShort(e)}, retrying until max launch age`); }
+    if (Date.now() - (l.seenAt ||= Date.now()) > snCfg.maxLaunchAgeSeconds * 1000) { snWaiting = snWaiting.filter((w) => w.token !== l.token); snLog(`skip  ${l.token}: could not be read in time`); }
+    return;
+  }
+  const was = snWaiting.some((w) => w.token === l.token);
+  if (r.retry) { if (!was) { snWaiting.push(l); snLog(`wait  $${r.symbol} ${l.token}: ${r.reason}, retrying until it drops`); } return; }
+  snWaiting = snWaiting.filter((w) => w.token !== l.token);
+  if (r.reason) return snLog(`skip  $${r.symbol} ${l.token}: ${r.reason}`);
+  if (snPositions.length >= snCfg.maxOpenPositions) return snLog(`skip  $${r.symbol}: ${snPositions.length} positions already open`);
+  const BUY = Eth.parseEther(snCfg.buyEth), RES = Eth.parseEther(snCfg.gasReserveEth);
+  if (snSpent + BUY > Eth.parseEther(snCfg.maxTotalSpendEth)) return snLog(`skip  $${r.symbol}: total budget used up`);
+  const bal = await snP.getBalance(snW.address), live = snMode === "live";
+  // a wallet a little short still buys with what it has, like the bot; skip only under half of the buy size
+  const spendable = bal > RES ? bal - RES : 0n, buyWei = bal < BUY + RES && live ? spendable : BUY;
+  if (buyWei * 2n < BUY) return snLog(`skip  $${r.symbol}: wallet balance ${snEth(bal)} ETH is too low`);
+  const curve = new Eth.Contract(l.curve, SN_ABI.curve, snW);
+  let out;
+  try { out = await curve.buy.staticCall(buyWei, 0n, snW.address, { value: buyWei }); }
+  catch (e) {
+    if (!live) { snSpent += BUY; return snLog(`DRY   would buy $${r.symbol} ${l.token} with ${snCfg.buyEth} ETH (fund the wallet to see the token amount)`, "dry"); }
+    if (!snWaiting.some((w) => w.token === l.token)) snWaiting.push(l);
+    return snLog(`wait  $${r.symbol}: buy simulation failed (${snShort(e)}), retrying until max launch age`);
+  }
+  if (!live) { snSpent += BUY; return snLog(`DRY   would buy $${r.symbol} ${l.token} with ${snCfg.buyEth} ETH -> ${Number(Eth.formatEther(out)).toLocaleString("en-US")} tokens`, "dry"); }
+  const minOut = (out * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n;
+  await snQ(async () => {
+    try {
+      snBuySent.add(l.token); snSpent += buyWei;
+      const tx = await curve.buy(buyWei, minOut, snW.address, { value: buyWei });
+      snPositions.push({ token: l.token, curve: l.curve, symbol: r.symbol, costWei: buyWei.toString(), boughtAt: Date.now(), buyTx: tx.hash }); savePos();
+      const rc = await tx.wait();
+      if (rc.status !== 1) { snSpent -= buyWei; snPositions = snPositions.filter((p) => p.token !== l.token); savePos(); snBuySent.delete(l.token); snWaiting.push(l); return snLog(`FAIL  buy $${r.symbol} reverted (${tx.hash}), retrying with a fresh price`, "bad"); }
+      snLog(`BUY   $${r.symbol} ${l.token} for ${Eth.formatEther(buyWei)} ETH (${tx.hash})`, "ok"); window.nova?.pulse(1); snDrawWallet();
+      const a = await new Eth.Contract(l.token, SN_ABI.token, snW).approve(l.curve, Eth.MaxUint256); await a.wait();
+    } catch (e) { snLog(`buy $${r.symbol} failed: ${snShort(e)}`, "bad"); }
+  });
+}
+
+// ---------- selling ----------
+async function snSellPos(pos, trigger) {
+  return snQ(async () => {
+    const me = snW.address, t = new Eth.Contract(pos.token, SN_ABI.token, snW), c = new Eth.Contract(pos.curve, SN_ABI.curve, snW);
+    const bal = await t.balanceOf(me);
+    if (bal === 0n) return snClose(pos, "sold outside the bot", null, null);
+    if ((await t.allowance(me, pos.curve)) < bal) { const a = await t.approve(pos.curve, Eth.MaxUint256); await a.wait(); }
+    const q = await c.sell.staticCall(bal, 0n, me);
+    const tx = await c.sell(bal, (q * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n, me);
+    const rc = await tx.wait();
+    if (rc.status !== 1) return snLog(`FAIL  sell $${pos.symbol} reverted (${tx.hash}), will retry`, "bad");
+    // book what the curve really paid out
+    let got = q; for (const lg of rc.logs) { try { const ev = c.interface.parseLog(lg); if (ev?.name === "CurveSell" && lg.address.toLowerCase() === pos.curve.toLowerCase()) got = ev.args.quoteOut; } catch {} }
+    const pnl = Number(((got - BigInt(pos.costWei)) * 10000n) / BigInt(pos.costWei)) / 100;
+    snClose(pos, trigger, got, tx.hash);
+    snLog(`SELL  $${pos.symbol} (${trigger}) for ${Eth.formatEther(got)} ETH, ${pnl >= 0 ? "+" : ""}${pnl}% (${tx.hash})`, pnl >= 0 ? "ok" : "bad"); snDrawWallet();
+  });
+}
+function snClose(pos, reason, got, tx) {
+  snPositions = snPositions.filter((p) => p.token !== pos.token); savePos();
+  snHistory.unshift({ token: pos.token, symbol: pos.symbol, costWei: pos.costWei, receivedWei: got === null ? null : got.toString(), boughtAt: pos.boughtAt, closedAt: Date.now(), reason, tx });
+  sstore.set(SK.hist, snHistory); snDrawHist();
+}
+async function snManage() {
+  const me = snW.address;
+  for (const pos of [...snPositions]) {
+    try {
+      const t = new Eth.Contract(pos.token, SN_ABI.token, snP), c = new Eth.Contract(pos.curve, SN_ABI.curve, snP);
+      const [bal, grad] = await Promise.all([t.balanceOf(me), c.graduated()]);
+      if (bal === 0n) { snClose(pos, "sold outside the bot", null, null); snLog(`CLOSE $${pos.symbol}: no tokens left in the wallet`); continue; }
+      if (grad) { snClose(pos, "graduated", null, null); snLog(`GRAD  $${pos.symbol} graduated to the DEX. Sell ${pos.token} there manually.`); continue; }
+      const q = await c.sell.staticCall(bal, 0n, me).catch(() => null);
+      if (q === null) continue;
+      const cost = BigInt(pos.costWei), pnl = Number(((q - cost) * 10000n) / cost) / 100;
+      pos.valueWei = q.toString(); pos.pnlPercent = pnl;
+      const held = (Date.now() - pos.boughtAt) / 1000;
+      let trig = null;
+      if (pnl >= snCfg.takeProfitPercent) trig = "take profit"; else if (pnl <= -snCfg.stopLossPercent) trig = "stop loss"; else if (snCfg.maxHoldSeconds > 0 && held >= snCfg.maxHoldSeconds) trig = "max hold time";
+      if (trig && snMode === "live") snSellPos(pos, trig).catch((e) => snLog(`sell $${pos.symbol} failed: ${snShort(e)}`, "bad"));
+    } catch {}
+  }
+  savePos();
+}
+
+// ---------- main loop: new launches straight from the factory, like the bot ----------
+async function snLoop() {
+  if (!snMode) return;
+  try {
+    const head = await snP.getBlockNumber();
+    if (!snNext) snNext = head + 1;
+    if (head >= snNext) {
+      const logs = await snP.getLogs({ address: PONS_FACTORY, topics: [snTopic], fromBlock: snNext, toBlock: Math.min(head, snNext + 4000) });
+      snNext = Math.min(head, snNext + 4000) + 1;
+      for (const lg of logs) {
+        const l = { token: Eth.getAddress("0x" + lg.topics[1].slice(26)), curve: Eth.getAddress("0x" + lg.topics[2].slice(26)), deployer: Eth.getAddress("0x" + lg.topics[3].slice(26)), pairToken: Eth.getAddress("0x" + lg.data.slice(26, 66)), block: lg.blockNumber };
+        snSnipe(l);
+      }
+    }
+    for (const w of [...snWaiting]) snSnipe(w);
+    if (Date.now() - snLastPos > 3000) { snLastPos = Date.now(); snManage(); }
+  } catch (e) { snLog("rpc: " + snShort(e), "bad"); }
+  snTimer = setTimeout(snLoop, 700);
+}
+async function snStart(mode) {
+  await snBoot();
+  if (!snW) return snMsg("Paste a private key in Settings (field 1) and save, or make a new wallet.", true);
+  if (snMode) return snMsg("Already running. Stop it first.", true);
+  if (mode === "live" && !confirm(`LIVE buys for real: ${snCfg.buyEth} ETH per token, up to ${snCfg.maxTotalSpendEth} ETH. Keep this tab open. Start?`)) return;
+  snMode = mode; snSpent = 0n; snNext = 0; snWaiting = [];
+  $("snState").textContent = mode === "live" ? "LIVE: real buys & sells" : "Dry run: no transactions"; $("snState").className = "pill2 " + mode;
+  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
+  window.nova?.say(mode === "live" ? "LIVE" : "DRY RUN");
+  snLoop();
+}
+function snStop() { if (!snMode) return; snMode = null; clearTimeout(snTimer); $("snState").textContent = "Off"; $("snState").className = "pill2"; snLog("stopped"); window.nova?.say("SNIPER"); }
+$("snDry").addEventListener("click", () => snStart("dry"));
+$("snLiveBtn").addEventListener("click", () => snStart("live"));
+$("snStop").addEventListener("click", snStop);
+
+// ---------- manual buy / sell ----------
+$("mbGo").addEventListener("click", async () => {
+  await snBoot();
+  const ca = $("mbToken").value.trim(), m = (t, bad) => ($("mbMsg").innerHTML = `<span style="color:${bad ? "#ff8a8d" : "var(--ok)"}">${esc(t)}</span>`);
+  if (!snW) return m("Save a private key first.", true);
+  if (!Eth.isAddress(ca)) return m("Paste a token CA (0x…).", true);
+  const amt = $("mbEth").value.trim() || snCfg.buyEth;
+  if (!/^\d+(\.\d{1,18})?$/.test(amt)) return m("ETH must be an amount like 0.005.", true);
+  try {
+    const rec = await new Eth.Contract(PONS_FACTORY, SN_ABI.factory, snP).getLaunchedToken(ca);
+    if (!rec.exists) return m("That token was not launched on Pons.", true);
+    const curve = new Eth.Contract(rec.curve, SN_ABI.curve, snW), token = new Eth.Contract(ca, SN_ABI.token, snP);
+    const [symbol, grad, snipe] = await Promise.all([token.symbol(), curve.graduated(), curve.currentSnipeTaxBps(snW.address)]);
+    if (grad) return m(`$${symbol} already graduated to the DEX, buy it there.`, true);
+    if (Number(snipe) > snCfg.maxSnipeTaxPercent * 100) return m(`Anti-snipe tax on $${symbol} is still ${Number(snipe) / 100}% (limit ${snCfg.maxSnipeTaxPercent}%). Wait a few seconds and try again.`, true);
+    const wei = Eth.parseEther(amt), bal = await snP.getBalance(snW.address);
+    if (bal < wei + Eth.parseEther(snCfg.gasReserveEth)) return m(`The sniper wallet has ${snEth(bal)} ETH. It needs ${amt} ETH plus the ${snCfg.gasReserveEth} ETH gas reserve.`, true);
+    if (!confirm(`Buy $${symbol} for ${amt} ETH now?`)) return;
+    const out = await curve.buy.staticCall(wei, 0n, snW.address, { value: wei });
+    await snQ(async () => {
+      const tx = await curve.buy(wei, (out * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n, snW.address, { value: wei });
+      m(`Buying $${symbol}… ${tx.hash}`);
+      const rc = await tx.wait(); if (rc.status !== 1) throw new Error("buy reverted (price moved)");
+      snPositions.push({ token: Eth.getAddress(ca), curve: rec.curve, symbol, costWei: wei.toString(), boughtAt: Date.now(), buyTx: tx.hash }); savePos();
+      snLog(`BUY   $${symbol} ${ca} (manual) for ${amt} ETH (${tx.hash})`, "ok"); m(`Bought $${symbol}. The bot manages it with your take profit and stop loss while it runs.`);
+      const a = await new Eth.Contract(ca, SN_ABI.token, snW).approve(rec.curve, Eth.MaxUint256); await a.wait(); snDrawWallet();
+    });
+  } catch (e) { m(snShort(e), true); }
+});
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-snsell]"); if (!b) return;
+  const pos = snPositions.find((p) => p.token === b.dataset.snsell); if (!pos || !snW) return;
+  if (!confirm(`Sell all $${pos.symbol} now?`)) return;
+  b.disabled = true; try { await snSellPos(pos, "manual"); } catch (er) { snLog(`sell $${pos.symbol} failed: ${snShort(er)}`, "bad"); b.disabled = false; }
+});
+
+// ---------- tables ----------
+const REASONS = { "take profit": "Take profit", "stop loss": "Stop loss", "max hold time": "Hold time over", manual: "Manual sell", graduated: "Graduated to DEX (sell manually)", "sold outside the bot": "Sold outside the bot" };
+function snDrawPos() {
+  if (!Eth) return;
+  $("snPos").innerHTML = snPositions.length ? `<table><tr class="th"><td>Token</td><td>Cost</td><td>Value now</td><td>PnL</td><td>Bought</td><td></td></tr>${snPositions.map((p) => `<tr><td><a href="#" data-scan="${p.token}">$${esc(p.symbol)}</a></td><td>${snEth(p.costWei)} ETH</td><td>${p.valueWei ? snEth(p.valueWei) + " ETH" : "…"}</td><td style="color:${(p.pnlPercent ?? 0) >= 0 ? "var(--ok)" : "var(--high)"}">${p.pnlPercent === undefined ? "…" : (p.pnlPercent >= 0 ? "+" : "") + p.pnlPercent + "%"}</td><td>${new Date(p.boughtAt).toLocaleTimeString("en-GB")}</td><td class="r"><button class="btn sm danger" type="button" data-snsell="${p.token}">Sell now</button></td></tr>`).join("")}</table>` : `<p class="note">No positions.</p>`;
+}
+function snDrawHist() {
+  if (!Eth) return;
+  const known = snHistory.filter((t) => t.receivedWei !== null);
+  const total = known.reduce((s, t) => s + BigInt(t.receivedWei) - BigInt(t.costWei), 0n);
+  $("snPnl").textContent = known.length ? `Total PnL ${total >= 0n ? "+" : "-"}${snEth(total < 0n ? -total : total)} ETH over ${known.length} trades` : "";
+  $("snHist").innerHTML = snHistory.length ? `<table><tr class="th"><td>Token</td><td>Cost</td><td>Got</td><td>PnL</td><td>Reason</td><td>Closed</td><td></td></tr>${snHistory.map((t, i) => {
+    const pnl = t.receivedWei === null ? null : Number(((BigInt(t.receivedWei) - BigInt(t.costWei)) * 10000n) / BigInt(t.costWei)) / 100;
+    return `<tr><td>$${esc(t.symbol)}</td><td>${snEth(t.costWei)} ETH</td><td>${t.receivedWei === null ? "-" : snEth(t.receivedWei) + " ETH"}</td><td style="color:${(pnl ?? 0) >= 0 ? "var(--ok)" : "var(--high)"}">${pnl === null ? "-" : (pnl >= 0 ? "+" : "") + pnl + "%"}</td><td>${esc(REASONS[t.reason] || t.reason)}</td><td>${new Date(t.closedAt).toLocaleString("en-GB")}</td><td class="r"><button class="btn sm ghost" type="button" data-sndel="${i}">Delete</button></td></tr>`;
+  }).join("")}</table>` : `<p class="note">No finished trades yet.</p>`;
+}
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-sndel]"); if (!b) return; snHistory.splice(+b.dataset.sndel, 1); sstore.set(SK.hist, snHistory); snDrawHist(); });
+$("snClearHist").addEventListener("click", () => { if (snHistory.length && confirm("Delete the whole trade history?")) { snHistory = []; sstore.set(SK.hist, snHistory); snDrawHist(); } });
+document.querySelector('#tabs button[data-t="snipe"]').addEventListener("click", () => snBoot());
+if (location.hash === "#snipe") snBoot();
+
+// ---------- fee claimer: many accounts of one seed, derived and signed only in this browser ----------
+const SEED_PATH = "m/44'/60'/0'/0"; // MetaMask / Rabby accounts: Account 1 = index 0
+let seedAccs = [], seedRows = [], seedProv = null, seedBusy = false;
+document.querySelectorAll(".fmode button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".fmode button").forEach((x) => x.classList.toggle("on", x === b));
+  $("feeOne").hidden = b.dataset.m !== "one"; $("feeSeed").hidden = b.dataset.m !== "seed";
+}));
+function drawWords(n) {
+  const old = [...document.querySelectorAll("#words input")].map((i) => i.value);
+  $("words").innerHTML = Array.from({ length: n }, (_, i) => `<label><span>${i + 1}</span><input type="password" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(old[i] || "")}"></label>`).join("");
+}
+drawWords(12);
+$("wordCount").addEventListener("change", (e) => drawWords(+e.target.value));
+$("words").addEventListener("paste", (e) => {
+  const t = (e.clipboardData?.getData("text") || "").trim().toLowerCase().split(/\s+/);
+  if (t.length < 2) return;
+  e.preventDefault();
+  if (t.length === 24 || t.length === 12) { $("wordCount").value = String(t.length); drawWords(t.length); }
+  document.querySelectorAll("#words input").forEach((inp, i) => (inp.value = t[i] || ""));
+});
+$("showWords").addEventListener("change", (e) => document.querySelectorAll("#words input").forEach((i) => (i.type = e.target.checked ? "text" : "password")));
+function forgetSeed() {
+  document.querySelectorAll("#words input").forEach((i) => (i.value = "")); seedAccs = []; seedRows = [];
+  $("seedOut").innerHTML = `<p class="note">Seed cleared from this page.</p>`;
+}
+$("seedForget").addEventListener("click", forgetSeed);
+
+$("seedScan").addEventListener("click", async () => {
+  if (seedBusy) return;
+  const E2 = await getEthers();
+  const phrase = [...document.querySelectorAll("#words input")].map((i) => i.value.trim().toLowerCase()).join(" ");
+  if (!E2.Mnemonic.isValidMnemonic(phrase)) return ($("seedOut").innerHTML = `<p class="err">These words are not a valid seed phrase. Check the spelling and the order.</p>`);
+  const n = Math.min(200, Math.max(1, parseInt($("seedCount").value) || 100));
+  seedProv ||= new E2.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1, pollingInterval: 1500 });
+  seedBusy = true; $("seedScan").disabled = true;
+  $("seedOut").innerHTML = loading(`Making ${n} accounts in your browser`);
+  try {
+    await new Promise((r) => setTimeout(r, 30));
+    const root = E2.HDNodeWallet.fromPhrase(phrase, undefined, SEED_PATH);
+    seedAccs = Array.from({ length: n }, (_, i) => root.deriveChild(i).connect(seedProv));
+    if (!E2.isAddress($("seedDest").value.trim())) $("seedDest").value = seedAccs[0].address;
+    $("seedOut").innerHTML = loading(`Reading fees for ${n} accounts (only addresses are sent)`);
+    const j = await api("/api/fees-many", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ wallets: seedAccs.map((a) => a.address) }) });
+    seedRows = j.accounts.map((r, i) => ({ ...r, i })); seedEscrow = j.escrow; drawSeed();
+  } catch (e) { $("seedOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { seedBusy = false; $("seedScan").disabled = false; }
+});
+let seedEscrow = null, seedAll = false;
+function drawSeed() {
+  const E2 = ethersLib, min = E2.parseEther(String(parseFloat($("seedMin").value) || 0));
+  const total = seedRows.reduce((s, r) => s + BigInt(r.totalWei), 0n);
+  const ready = seedRows.filter((r) => BigInt(r.totalWei) >= min && BigInt(r.totalWei) > 0n);
+  const launched = seedRows.filter((r) => r.tokens.length).length;
+  const rows = seedAll ? seedRows : seedRows.filter((r) => r.tokens.length || BigInt(r.escrowWei) > 0n);
+  $("seedOut").innerHTML = `
+    <div class="total"><div><span class="lbl">Claimable across ${seedRows.length} accounts</span><br><b>${fmt(Number(E2.formatEther(total)), 6)} ETH</b></div>
+      <div style="text-align:right"><span class="lbl">${launched} accounts launched tokens · ${ready.length} above the minimum</span><br>
+      <button class="btn" id="seedClaim" style="margin-top:10px" ${ready.length ? "" : "disabled"}>Claim all ${ready.length} accounts <span class="ar">→</span></button></div></div>
+    <label class="tog" style="margin-bottom:8px"><input type="checkbox" id="seedShowAll" ${seedAll ? "checked" : ""}> show accounts with nothing to claim</label>
+    ${rows.length ? `<table>${rows.map((r) => `<tr><td style="color:var(--dim);width:72px">Acc ${r.i + 1}</td><td class="mono" style="font-size:12px">${short(seedAccs[r.i].address)}</td>
+      <td>${r.tokens.map((t) => `<a href="#" data-scan="${t.token}">$${esc(t.symbol)}</a>`).join(" ") || '<span style="color:var(--dim)">—</span>'}</td>
+      <td class="r">${fmt(Number(E2.formatEther(BigInt(r.totalWei))), 6)} ETH</td><td class="r" style="color:var(--dim)">gas ${fmt(Number(E2.formatEther(BigInt(r.ethWei))), 5)}</td></tr>`).join("")}</table>` : `<p class="note">None of these accounts launched a Pons token.</p>`}
+    <div class="steps2" id="seedLog"></div>`;
+  $("seedShowAll").onchange = (e) => { seedAll = e.target.checked; drawSeed(); };
+  $("seedClaim")?.addEventListener("click", seedClaimAll);
+}
+$("seedMin").addEventListener("input", () => seedRows.length && drawSeed());
+
+async function seedClaimAll() {
+  const E2 = ethersLib, log = (t, c = "") => $("seedLog").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`);
+  const dest = $("seedDest").value.trim();
+  if (!E2.isAddress(dest)) return log("Fill in a valid wallet to send the fees to.", "bad");
+  const min = E2.parseEther(String(parseFloat($("seedMin").value) || 0));
+  const todo = seedRows.filter((r) => BigInt(r.totalWei) >= min && BigInt(r.totalWei) > 0n);
+  if (!confirm(`Claim fees from ${todo.length} accounts and send them to ${short(dest)}? Each account signs its own transactions in this browser.`)) return;
+  $("seedClaim").disabled = true; seedBusy = true;
+  const funder = seedAccs[0], escrowAbi = ["function balanceOf(address) view returns (uint256)", "function claim()"];
+  let done = 0, got = 0n;
+  try {
+    for (const r of todo) {
+      const acc = seedAccs[r.i], label = `Acc ${r.i + 1}`, sweeps = r.tokens.filter((t) => BigInt(t.pendingWei) > 0n);
+      try {
+        const fee = await seedProv.getFeeData(), gp = (fee.maxFeePerGas || fee.gasPrice) * 3n / 2n;
+        const need = (BigInt(sweeps.length) * 600_000n + 150_000n + 30_000n) * gp;
+        const has = await seedProv.getBalance(acc.address);
+        if (has < need && acc.address !== funder.address) {
+          const top = need - has;
+          log(`${label}: sending ${fmt(Number(E2.formatEther(top)), 6)} ETH gas from Acc 1`);
+          const t = await funder.sendTransaction({ to: acc.address, value: top }); await t.wait();
+        }
+        for (const t of sweeps) {
+          const tx = await new E2.Contract(t.curve, ["function sweepFees(uint256 minBuybackTokensOut)"], acc).sweepFees(0);
+          await tx.wait(); log(`${label}: swept $${t.symbol}`);
+        }
+        const esc_ = new E2.Contract(seedEscrow, escrowAbi, acc), owed = await esc_.balanceOf(acc.address);
+        if (owed > 0n) { const tx = await esc_.claim(); await tx.wait(); log(`${label}: claimed ${fmt(Number(E2.formatEther(owed)), 6)} ETH`, "ok"); got += owed; }
+        if (owed > 0n && acc.address.toLowerCase() !== dest.toLowerCase()) {
+          const tx = await acc.sendTransaction({ to: dest, value: owed }); await tx.wait();
+          log(`${label}: sent ${fmt(Number(E2.formatEther(owed)), 6)} ETH → ${short(dest)}`, "ok");
+        }
+        done++;
+      } catch (e) { log(`${label}: ${e.shortMessage || e.info?.error?.message || e.message}`, "bad"); }
+    }
+    log(`done: ${done}/${todo.length} accounts, ${fmt(Number(E2.formatEther(got)), 6)} ETH claimed.`, "ok"); window.nova?.pulse(1);
+  } finally { seedBusy = false; }
+}
+
+
+// ---------- launchpad: the LOCKEY Pons launch, signed in the visitor's own wallet ----------
+const LP = {
+  factory: "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",
+  launchAndBuy: "0xe33E9E479dF8802cb0866d5d05258bEc4cF62948",
+  fallbackLogo: "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+};
+const LP_PARAMS = "(string name,string symbol,string logo,string description,(string twitter,string telegram,string discord,string website,string farcaster) socials,address creatorFeeRecipient,uint16 creatorTaxBps,bool buybackEnabled,bytes32 expectedEconomics,bytes32 salt)";
+const LP_ABI = [
+  `function launchToken(${LP_PARAMS} params, uint256 launchConfigId, address pairToken) payable returns (address token, address curve)`,
+  `function launchToken(${LP_PARAMS} params, uint256 launchConfigId, address pairToken, address[] snipeTaxExemptions) payable returns (address token, address curve)`,
+  "function previewLaunchEconomics(uint256 launchConfigId, address pairToken) view returns (bytes32)",
+  "function launchFee() view returns (uint256)",
+  "event TokenLaunched(address indexed token, address indexed curve, address indexed deployer, address pairToken, uint256 launchConfigId, uint256 graduationThreshold)",
+];
+const LP_ROUTER = [`function launchAndBuy(${LP_PARAMS} params, uint256 launchConfigId, address pairToken, uint256 quoteIn, uint256 minTokensOut, address recipient, address[] snipeTaxExemptions) payable returns (address token, address curve, uint256 tokensOut)`];
+let lpE = null, lpRead = null, lpFee = null, lpEcon = null, lpAcc = null, lpBalWei = null, lpLogo = "", lpUploading = false, lpTax = 1;
+const lpF = () => $("lpForm").elements;
+const lpMsg = (t, c = "") => $("lpMsg").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`);
+
+async function lpBoot() {
+  if (lpE) return;
+  lpE = await getEthers();
+  lpRead = new lpE.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1 });
+  const f = new lpE.Contract(LP.factory, LP_ABI, lpRead);
+  try { [lpFee, lpEcon] = await Promise.all([f.launchFee(), f.previewLaunchEconomics(0n, lpE.ZeroAddress)]); } catch { lpFee = lpE.parseEther("0.0005"); }
+  lpSummary();
+}
+function lpDevWei() { const v = lpF().devBuy.value.trim(); try { return v && Number(v) > 0 ? lpE.parseEther(v) : 0n; } catch { return null; } }
+function lpSummary() {
+  if (!lpE) return;
+  const dev = lpDevWei(), fee = lpFee ?? lpE.parseEther("0.0005");
+  $("lpFee").textContent = lpE.formatEther(fee) + " ETH";
+  $("lpDev").textContent = dev === null ? "not a number" : lpE.formatEther(dev) + " ETH";
+  $("lpTotal").textContent = dev === null ? "…" : lpE.formatEther(fee + dev) + " ETH";
+  $("lpBal").textContent = lpBalWei === null || lpBalWei === undefined ? "—" : Number(lpE.formatEther(lpBalWei)).toFixed(5) + " ETH";
+  $("lpTax2").textContent = lpTax + "%";
+  const short_ = lpBalWei != null && dev !== null && lpBalWei < fee + dev;
+  $("lpBal").style.color = short_ ? "var(--high)" : "";
+}
+$("lpForm").addEventListener("input", (e) => { if (e.target.name === "symbol") e.target.value = e.target.value.toUpperCase(); if (e.target.name === "logoUrl") lpLinkLogo(); lpSummary(); });
+$("lpTaxes").addEventListener("click", (e) => { const b = e.target.closest("[data-tax]"); if (!b) return; lpTax = +b.dataset.tax; $("lpTaxes").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); $("lpTaxLbl").textContent = `${lpTax}% (${lpTax * 100} bps)`; lpSummary(); });
+
+// logo: upload (Catbox, then GitHub backup on the server) or a pasted link
+function lpShow(src) { const i = $("lpPrev"); if (src) { i.src = src; i.hidden = false; $("lpDropTxt").hidden = true; } else { i.hidden = true; $("lpDropTxt").hidden = false; } }
+function lpLinkLogo() {
+  const u = lpF().logoUrl.value.trim();
+  if (!u) { if (!lpUploading && !lpLogo) lpShow(null); return; }
+  if (!/^https:\/\/[^\s"'<>]+$/.test(u)) { $("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">Paste a full image link that starts with https://</span>`; return; }
+  lpLogo = u; lpShow(u); $("lpUpMsg").textContent = "Using the pasted link.";
+}
+async function lpUpload(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) return ($("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">File size exceeds 5MB limit</span>`);
+  lpShow(URL.createObjectURL(file)); lpUploading = true; lpLogo = ""; lpF().logoUrl.value = "";
+  $("lpUpMsg").innerHTML = `<span class="load" style="padding:0;justify-content:flex-start"><i></i>Uploading image…</span>`;
+  try {
+    const r = await fetch("/api/upload", { method: "POST", headers: { "content-type": file.type || "application/octet-stream" }, body: file });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || (r.status === 413 ? "Image too large for the server." : "Upload failed (" + r.status + ")."));
+    lpLogo = j.url; $("lpUpMsg").innerHTML = `Hosted at <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a>`;
+  } catch (e) { lpShow(null); $("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">${esc(e.message)}</span>`; }
+  finally { lpUploading = false; }
+}
+$("lpDrop").addEventListener("click", () => $("lpFile").click());
+$("lpFile").addEventListener("change", (e) => lpUpload(e.target.files?.[0]));
+$("lpDrop").addEventListener("dragover", (e) => { e.preventDefault(); $("lpDrop").classList.add("over"); });
+$("lpDrop").addEventListener("dragleave", () => $("lpDrop").classList.remove("over"));
+$("lpDrop").addEventListener("drop", (e) => { e.preventDefault(); $("lpDrop").classList.remove("over"); lpUpload(e.dataTransfer.files?.[0]); });
+
+// wallet
+async function lpConnect() {
+  await lpBoot();
+  lpAcc = lpE.getAddress(await connect());
+  $("lpWallet").textContent = lpAcc; $("lpConnect").textContent = "Connected";
+  lpBalWei = await lpRead.getBalance(lpAcc).catch(() => null); lpSummary();
+  return lpAcc;
+}
+$("lpConnect").addEventListener("click", () => lpConnect().catch((e) => lpMsg(e.message, "bad")));
+$("lpMax").addEventListener("click", async () => {
+  await lpBoot(); $("lpDevHint").textContent = "";
+  if (!lpAcc) return ($("lpDevHint").textContent = "Connect your EVM wallet (Robinhood Chain) first.");
+  lpBalWei = await lpRead.getBalance(lpAcc);
+  const safe = lpBalWei - lpFee - lpE.parseEther("0.001");
+  if (safe <= 0n) return ($("lpDevHint").textContent = `Balance ${Number(lpE.formatEther(lpBalWei)).toFixed(5)} ETH only covers the launch fee (${lpE.formatEther(lpFee)} ETH + 0.001 gas buffer). Top up ETH on Robinhood Chain.`);
+  lpF().devBuy.value = lpE.formatEther(safe); lpSummary();
+});
+$("lpAddSniper").addEventListener("click", async () => {
+  let k = null; try { k = localStorage.getItem("nova.sniper.key"); } catch {}
+  if (!k) return lpMsg("No NOVA sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
+  const E2 = await getEthers(), a = new E2.Wallet(k).address, inp = lpF().exempt;
+  if (!inp.value.toLowerCase().includes(a.toLowerCase())) inp.value = [inp.value.trim(), a].filter(Boolean).join(", ");
+});
+
+// launch (same parameters and checks as LOCKEY)
+$("lpGo").addEventListener("click", async () => {
+  $("lpMsg").innerHTML = "";
+  await lpBoot();
+  const f = lpF(), name = f.name.value.trim(), symbol = f.symbol.value.trim();
+  if (!name || !symbol) return lpMsg("Fill in the name and the ticker.", "bad");
+  if (lpUploading) return lpMsg("The logo is still uploading. Wait until it finishes.", "bad");
+  const ex = f.exempt.value.split(/[\s,]+/).filter(Boolean), badEx = ex.find((a) => !lpE.isAddress(a));
+  if (badEx) return lpMsg(`Snipe tax exempt wallet "${badEx}" is not a valid 0x address.`, "bad");
+  const dev = lpDevWei(); if (dev === null) return lpMsg("Dev buy must be an ETH amount like 0.01.", "bad");
+  try {
+    const acc = lpAcc || (await lpConnect());
+    const fee = lpFee ?? lpE.parseEther("0.0005"), total = fee + dev;
+    lpBalWei = await lpRead.getBalance(acc).catch(() => lpBalWei); lpSummary();
+    if (lpBalWei != null && lpBalWei < total) return lpMsg("Insufficient ETH balance for launch fee + dev buy.", "bad");
+    const exempt = [...new Set(ex.map((a) => lpE.getAddress(a)))];
+    const params = {
+      name, symbol, logo: lpLogo || LP.fallbackLogo, description: f.description.value.trim(),
+      socials: { twitter: f.twitter.value.trim(), telegram: f.telegram.value.trim(), discord: f.discord.value.trim(), website: f.website.value.trim(), farcaster: "" },
+      creatorFeeRecipient: acc, creatorTaxBps: Math.min(Math.max(Math.round(lpTax * 100), 0), 1000), buybackEnabled: false,
+      expectedEconomics: lpEcon || lpE.ZeroHash, salt: lpE.hexlify(crypto.getRandomValues(new Uint8Array(32))),
+    };
+    if (!confirm(`Launch $${symbol} on Pons for ${lpE.formatEther(total)} ETH${dev > 0n ? " (incl. dev buy)" : ""}?`)) return;
+    const signer = await new lpE.BrowserProvider(window.ethereum).getSigner();
+    $("lpGo").disabled = true; lpMsg("Confirm the transaction in your wallet…");
+    let tx;
+    if (dev > 0n) tx = await new lpE.Contract(LP.launchAndBuy, LP_ROUTER, signer).launchAndBuy(params, 0n, lpE.ZeroAddress, dev, 0n, acc, exempt, { value: total });
+    else {
+      const fc = new lpE.Contract(LP.factory, LP_ABI, signer);
+      tx = exempt.length ? await fc["launchToken(" + LP_PARAMS + ",uint256,address,address[])"](params, 0n, lpE.ZeroAddress, exempt, { value: fee })
+                         : await fc["launchToken(" + LP_PARAMS + ",uint256,address)"](params, 0n, lpE.ZeroAddress, { value: fee });
+    }
+    lpMsg(`Sent ${tx.hash}. Waiting for the chain…`);
+    const rc = await tx.wait();
+    if (rc.status !== 1) throw new Error("The launch transaction reverted.");
+    const iface = new lpE.Interface(LP_ABI); let token = null, curve = null;
+    for (const lg of rc.logs) { try { const ev = iface.parseLog(lg); if (ev?.name === "TokenLaunched") { token = ev.args.token; curve = ev.args.curve; break; } } catch {} }
+    if (!token) for (const lg of rc.logs) if (lg.address.toLowerCase() === LP.factory.toLowerCase() && lg.topics[1]) { token = lpE.getAddress("0x" + lg.topics[1].slice(26)); break; }
+    lpMsg(`$${symbol} launched!`, "ok"); window.nova?.pulse(1); window.nova?.say("LAUNCHED");
+    $("lpDone").innerHTML = `<div class="kc" style="margin-top:12px;border-color:var(--acc2)"><h5>Launched</h5><p style="margin:0 0 8px"><b>${esc(name)}</b> <span style="color:var(--dim)">$${esc(symbol)}</span></p>
+      <div class="mono" style="font-size:12px;word-break:break-all">${esc(token || "")}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"><a class="btn sm" href="https://ponsfamily.com/launchpad/${esc(token)}" target="_blank" rel="noopener">Open on Pons ↗</a>
+      <a class="btn sm ghost" href="${EXPLORER}tx/${esc(tx.hash)}" target="_blank" rel="noopener">Transaction ↗</a><a class="btn sm ghost" href="#" data-scan="${esc(token)}">Scan it</a><a class="btn sm ghost" href="#app" data-open="fees">Claim its fees later</a></div></div>`;
+    lpBalWei = await lpRead.getBalance(acc).catch(() => lpBalWei); lpSummary();
+  } catch (e) { lpMsg(e.shortMessage || e.info?.error?.message || e.message, "bad"); }
+  finally { $("lpGo").disabled = false; }
+});
+document.querySelector('#tabs button[data-t="launch"]').addEventListener("click", () => lpBoot());
+if (location.hash === "#launch") lpBoot();
+</script>
+</body>
+</html>

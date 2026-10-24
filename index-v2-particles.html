@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA Labs</title>
+<meta name="description" content="AI tools and launch services for Pons on Robinhood Chain.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f0b04a' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23f2f1ee'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#f0b04a;--acc2:rgba(240,176,74,.35);--bg:#050505;--bg2:rgba(17,17,17,.72);--line:#222;--line2:#2e2e2e;--text:#f2f1ee;--mid:#a3a3a0;--dim:#6b6b68;--ok:#3fb950;--watch:#f2b84b;--high:#e5484d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{overflow-x:clip;position:relative;z-index:1}
+a{color:inherit}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.7) 100%)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.ey{font:500 11px "JetBrains Mono";letter-spacing:.18em;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.ey:before{content:"";width:18px;height:1px;background:var(--acc)}
+
+nav{position:sticky;top:0;z-index:10;background:rgba(5,5,5,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{font:800 16px "Inter Tight";letter-spacing:-.01em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo span{color:var(--dim)}
+.links{display:flex;gap:28px;font-size:14px;color:var(--mid)}
+.links a{text-decoration:none;transition:color .2s}.links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px Inter;padding:13px 22px;border-radius:999px;border:1px solid var(--text);background:var(--text);color:#050505;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 40px -10px rgba(240,176,74,.5)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--acc)}
+.btn.sm{padding:9px 16px;font-size:13px}
+
+/* hero */
+.hero{min-height:calc(100vh - 64px);display:grid;grid-template-columns:1.05fr .95fr;align-items:center;padding:40px 0}
+.badge{display:inline-flex;align-items:center;gap:9px;font:800 11px "Inter Tight";letter-spacing:.18em;border:1px solid var(--line2);background:rgba(10,10,10,.6);border-radius:999px;padding:8px 13px}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc);animation:beat 1.6s infinite}
+@keyframes beat{50%{opacity:.35}}
+h1{font:800 clamp(44px,6.4vw,92px)/.9 "Inter Tight",sans-serif;letter-spacing:-.05em;text-transform:uppercase;margin:22px 0 22px}
+h1 b{color:var(--acc);font-weight:inherit}
+h1 em{font-style:normal;color:#5c5c59}
+.lead{color:var(--mid);max-width:520px;margin:0 0 28px;font-size:17px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.think{margin-top:34px;max-width:520px;border:1px solid var(--line);background:rgba(8,8,8,.7);backdrop-filter:blur(6px);border-radius:14px;padding:14px 16px;font:400 13px/1.6 "JetBrains Mono";color:var(--mid);min-height:76px}
+.think .h{display:flex;justify-content:space-between;color:var(--dim);font-size:10.5px;letter-spacing:.16em;margin-bottom:6px}
+.think .h b{color:var(--acc);font-weight:500}
+.think .cur{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;margin-left:2px;animation:beat 1s steps(1) infinite}
+.scrollhint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font:500 10px "JetBrains Mono";letter-spacing:.2em;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:8px}
+.scrollhint i{width:1px;height:34px;background:linear-gradient(var(--acc),transparent);animation:drop 2s infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* marquee */
+.marq{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(5,5,5,.7);overflow:hidden;position:relative;z-index:1}
+.marq .track{display:flex;gap:48px;padding:18px 0;width:max-content;animation:mq 38s linear infinite;font:800 15px "Inter Tight";letter-spacing:.06em;text-transform:uppercase;color:#7a7a77}
+.marq .track span{display:flex;align-items:center;gap:48px}
+.marq .track span:after{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+section{padding:120px 0 0;position:relative}
+h2{font:800 clamp(34px,4.4vw,60px)/.95 "Inter Tight";letter-spacing:-.045em;text-transform:uppercase;margin:14px 0 14px}
+h2 b{color:var(--acc);font-weight:inherit}
+.sub{color:var(--mid);max-width:560px;margin:0 0 34px;font-size:16px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:86vh}
+.split.rev .col{order:2}
+
+/* services */
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.svc{grid-column:span 2;position:relative;background:var(--bg2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;overflow:hidden;transition:border-color .3s,transform .3s}
+.svc.wide{grid-column:span 3}
+.svc:before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(240,176,74,.13),transparent 45%);opacity:0;transition:opacity .3s;pointer-events:none}
+.svc:hover{border-color:var(--acc2);transform:translateY(-3px)}
+.svc:hover:before{opacity:1}
+.svc .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.num{font:500 12px "JetBrains Mono";color:var(--dim)}
+.st{font:800 10px "Inter Tight";letter-spacing:.16em;border-radius:999px;padding:5px 10px;border:1px solid var(--acc2);color:var(--acc)}
+.st.live{border-color:rgba(63,185,80,.45);color:var(--ok)}
+.svc h3{margin:0;font:800 26px/1.02 "Inter Tight";letter-spacing:-.035em;text-transform:uppercase}
+.svc p{margin:0;color:var(--mid);font-size:14px}
+.svc ul{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:14px}
+.svc li{display:flex;gap:10px}
+.svc li:before{content:"";flex:0 0 5px;height:5px;margin-top:9px;background:var(--acc);border-radius:50%}
+.svc .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+.svc .foot b{color:var(--text);font-weight:600}
+
+/* scan demo */
+.report{background:rgba(8,8,8,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:20px;font-size:13.5px;box-shadow:0 40px 120px -40px rgba(240,176,74,.25)}
+.report .bar{display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line);font:12px "JetBrains Mono";color:var(--dim)}
+.report .bar i{width:8px;height:8px;border-radius:50%;background:#333}
+.report .bar i:first-child{background:var(--acc)}
+.report .ai{font:600 16px/1.5 "Inter Tight";margin:6px 0 14px;min-height:96px}
+.report .row{display:grid;grid-template-columns:66px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line);opacity:0;transform:translateX(10px);transition:all .5s}
+.report .row.in{opacity:1;transform:none}
+.lv{font:800 10px "Inter Tight";letter-spacing:.12em;border-radius:999px;padding:4px 0;text-align:center;height:fit-content}
+.lv.h{background:var(--high);color:#fff}.lv.w{background:var(--watch);color:#111}.lv.i{background:#2a2a2a;color:var(--text)}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kv div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kv b{display:block;font:800 20px "Inter Tight";letter-spacing:-.02em}
+.kv span{font-size:11.5px;color:var(--dim)}
+
+/* steps + rules */
+.steps{display:grid;gap:0;counter-reset:s}
+.step{display:grid;grid-template-columns:56px 1fr;gap:16px;padding:22px 0;border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step .n{font:800 34px/1 "Inter Tight";color:var(--acc);letter-spacing:-.04em}
+.step b{display:block;font:800 20px "Inter Tight";text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
+.step p{margin:0;color:var(--mid);font-size:14px}
+.rules{display:grid;gap:12px}
+.rule{background:var(--bg2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:grid;grid-template-columns:40px 1fr;gap:14px}
+.rule .x{width:34px;height:34px;border-radius:50%;border:1px solid var(--acc2);display:grid;place-items:center;color:var(--acc);font:800 15px "Inter Tight"}
+.rule b{display:block;font:800 19px/1.1 "Inter Tight";text-transform:uppercase;letter-spacing:-.02em;margin-bottom:6px}
+.rule p{margin:0;color:var(--mid);font-size:14px}
+
+.cta{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 0}
+.cta h2{font-size:clamp(44px,7vw,104px);margin:18px 0 18px}
+.cta p{color:var(--mid);margin:0 auto 30px;max-width:520px;font-size:17px}
+.cta .ey:after{content:"";width:18px;height:1px;background:var(--acc)}
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);font-size:13px;background:var(--bg)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding:46vh 0 60px}
+  .links{display:none}
+  .split{grid-template-columns:1fr;min-height:auto}
+  .split .stage{display:none}
+  .split.rev .col{order:0}
+  .svc,.svc.wide{grid-column:span 6}
+  .scrollhint{display:none}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  nav .btn{display:none}
+  .kv{grid-template-columns:1fr 1fr}
+  section{padding-top:90px}
+}
+@media (prefers-reduced-motion:reduce){.marq .track{animation:none}.rv{transition:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="vignette"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="#f0b04a" stroke-width="1.6"/><circle cx="16" cy="16" r="4.5" fill="currentColor"/><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".25"/></svg>NOVA <span>LABS</span></a>
+    <div class="links"><a href="#services">Services</a><a href="#scanner">Scanner</a><a href="#how">How it works</a><a href="#rules">Rules</a></div>
+    <a class="btn sm" href="#contact">Order a service</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <header class="hero" data-k='{"s":0,"x":0.42,"y":0.02,"sc":1.05,"op":1,"mx":0,"my":0.27,"msc":0.72}'>
+      <div>
+        <span class="badge"><i></i>NOVA ONLINE</span>
+        <h1>The AI agent <b>that reads</b> the chain <em>for you.</em></h1>
+        <p class="lead">NOVA Labs builds the tools Pons traders check before they ape, and the AI agents creators launch with. Every number comes from Robinhood Chain. No key ever leaves your wallet.</p>
+        <div class="ctas">
+          <a class="btn" href="#scanner">Scan a token free</a>
+          <a class="btn ghost" href="#services">See services</a>
+        </div>
+        <div class="think" aria-live="polite">
+          <div class="h"><span>NOVA · THINKING</span><b>SAMPLE SCAN</b></div>
+          <span id="typed"></span><span class="cur"></span>
+        </div>
+      </div>
+      <div></div>
+    </header>
+  </div>
+  <div class="scrollhint">SCROLL<i></i></div>
+
+  <div class="marq" aria-hidden="true">
+    <div class="track">
+      <span>Token scanner</span><span>AI agent tokens</span><span>Fee engines</span><span>Launch kits</span><span>Sniper filters</span><span>On-chain receipts</span><span>Fee claimer</span><span>Robinhood Chain</span>
+      <span>Token scanner</span><span>AI agent tokens</span><span>Fee engines</span><span>Launch kits</span><span>Sniper filters</span><span>On-chain receipts</span><span>Fee claimer</span><span>Robinhood Chain</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="services" data-k='{"s":4,"x":0,"y":0,"sc":1,"op":0.45,"mx":0,"my":0,"msc":1}'>
+      <div class="ey rv">Services</div>
+      <h2 class="rv">Five tools. <b>One agent.</b></h2>
+      <p class="sub rv">Pick one or run the whole stack. Each one already runs on mainnet.</p>
+      <div class="grid">
+        <article class="svc wide rv">
+          <div class="top"><span class="num">01</span><span class="st">READY</span></div>
+          <h3>NOVA Token Scanner</h3>
+          <p>Paste a Pons CA. Get a full report in seconds, with a plain-English read from NOVA.</p>
+          <ul>
+            <li>Deployer sold or moved tokens, even through a router</li>
+            <li>Holder concentration and top 10 wallets</li>
+            <li>First-minute buyers and whether they still hold</li>
+            <li>Deployer history: serial launcher or not</li>
+          </ul>
+          <div class="foot"><span>For traders</span><b>Free · 20 scans/hour</b></div>
+        </article>
+        <article class="svc wide rv">
+          <div class="top"><span class="num">02</span><span class="st live">LIVE · $UNIT</span></div>
+          <h3>AI Agent Token</h3>
+          <p>Launch a token with its own AI agent. It talks to holders and splits creator fees on-chain.</p>
+          <ul>
+            <li>3D site, agent chat room and live thought log</li>
+            <li>Fee engine: AI picks the split inside fixed limits</li>
+            <li>Every round signed with a public receipt hash</li>
+            <li>Admin panel, lore and X content kit included</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Setup fee + small fee share</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">03</span><span class="st">READY</span></div>
+          <h3>Pons Sniper</h3>
+          <p>Self-hosted sniper with NOVA filters. It only buys launches that pass the checks.</p>
+          <ul>
+            <li>Waits for the anti-snipe tax to drop</li>
+            <li>Skips serial launchers and tokens with no socials</li>
+            <li>Take profit, stop loss, max hold</li>
+          </ul>
+          <div class="foot"><span>Runs on your machine</span><b>License</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">04</span><span class="st">READY</span></div>
+          <h3>Launch Kit</h3>
+          <p>Everything around the launch, done in one go.</p>
+          <ul>
+            <li>Narrative and lore</li>
+            <li>Logo, banner and hosted logo link</li>
+            <li>Landing page and X content bank</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Per package</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">05</span><span class="st">READY</span></div>
+          <h3>Fee Claimer</h3>
+          <p>One dashboard to claim creator fees across many tokens and wallets.</p>
+          <ul>
+            <li>Sweeps curves and claims the escrow</li>
+            <li>Many wallets from one seed</li>
+            <li>Installed on your machine only</li>
+          </ul>
+          <div class="foot"><span>For serial creators</span><b>License</b></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="scanner" data-k='{"s":2,"x":-0.5,"y":0,"sc":1.05,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split rev">
+        <div class="col">
+          <div class="ey rv">Live sample</div>
+          <h2 class="rv">Paste a CA. <b>NOVA reads it.</b></h2>
+          <p class="sub rv">Flags come from code, straight from the chain. NOVA only writes the summary, and it never says buy, sell or safe.</p>
+          <div class="report rv" id="report">
+            <div class="bar"><i></i><i></i><i></i><span>scan 0x61e1…d6f5 · HOLDUSA</span></div>
+            <div class="ey" style="margin-bottom:4px">NOVA's read</div>
+            <p class="ai" id="aiText"></p>
+            <div class="row"><span class="lv h">HIGH</span><span>Deployer sold or moved tokens: 1.59% of supply left the deployer wallet.</span></div>
+            <div class="row"><span class="lv w">WATCH</span><span>Heavy early buying: 10 wallets took 10.3% in the first minute.</span></div>
+            <div class="row"><span class="lv i">INFO</span><span>Trading so far: 22 buys, 17 sells.</span></div>
+            <div class="kv"><div><b>3</b><span>holders</span></div><div><b>10.3%</b><span>first minute</span></div><div><b>~10s</b><span>scan time</span></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section id="how" data-k='{"s":1,"x":0.48,"y":0,"sc":1,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split">
+        <div class="col">
+          <div class="ey rv">How it works</div>
+          <h2 class="rv">From DM <b>to launch.</b></h2>
+          <div class="steps">
+            <div class="step rv"><span class="n">01</span><div><b>DM</b><p>Tell us which service you want and your launch date.</p></div></div>
+            <div class="step rv"><span class="n">02</span><div><b>Brief</b><p>Name, ticker, lore and look. You get a preview first.</p></div></div>
+            <div class="step rv"><span class="n">03</span><div><b>Build</b><p>Site, agent and engine, tested on mainnet before you launch.</p></div></div>
+            <div class="step rv"><span class="n">04</span><div><b>Hand over</b><p>You run everything from one admin panel. We stay on call.</p></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section id="rules" data-k='{"s":3,"x":-0.5,"y":0,"sc":0.95,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split rev">
+        <div class="col">
+          <div class="ey rv">House rules</div>
+          <h2 class="rv">What we <b>never</b> do.</h2>
+          <div class="rules">
+            <div class="rule rv"><span class="x">×</span><div><b>Hold your keys</b><p>Your keys stay in your wallet or on your own server. We never ask for them in chat.</p></div></div>
+            <div class="rule rv"><span class="x">×</span><div><b>Let AI touch money freely</b><p>The AI picks inside limits set in code. Anything outside the limits is clamped.</p></div></div>
+            <div class="rule rv"><span class="x">×</span><div><b>Make up numbers</b><p>Every figure traces back to a transaction or contract call anyone can check.</p></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section class="cta" id="contact" data-k='{"s":0,"x":0,"y":0,"sc":1.6,"op":0.55,"mx":0,"my":0,"msc":1.2}'>
+      <div class="ey rv">Launching on Pons?</div>
+      <h2 class="rv">Let NOVA <b>run it.</b></h2>
+      <p class="rv">Send a DM with the service you want. You get a preview before you pay.</p>
+      <div class="ctas rv" style="justify-content:center">
+        <a class="btn" href="#">DM on X</a>
+        <a class="btn ghost" href="#">Telegram</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><span>NOVA Labs · AI tools for Pons on Robinhood Chain</span><span>Not financial advice. Reports describe on-chain data only.</span></div>
+</footer>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 0, 6);
+
+const AMBER = new THREE.Color("#f0b04a"), WHITE = new THREE.Color("#f2f1ee");
+const N = innerWidth < 700 ? 5200 : 9000;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+
+// ---------- shapes (one position per particle) ----------
+function sphere() {
+  const a = new Float32Array(N * 3), g = Math.PI * (3 - Math.sqrt(5));
+  const shell = Math.floor(N * 0.72);
+  for (let i = 0; i < N; i++) {
+    let x, y, z;
+    if (i < shell) { const yy = 1 - (i / (shell - 1)) * 2, r = Math.sqrt(1 - yy * yy), t = g * i; x = Math.cos(t) * r; y = yy; z = Math.sin(t) * r; }
+    else { const u = Math.random(), v = Math.random(), th = 2 * Math.PI * u, ph = Math.acos(2 * v - 1), r = rnd(0.25, 0.85); x = r * Math.sin(ph) * Math.cos(th); y = r * Math.cos(ph); z = r * Math.sin(ph) * Math.sin(th); }
+    a.set([x, y, z], i * 3);
+  }
+  return a;
+}
+function nodes() { // agent network: 6 nodes around a core, joined by beams
+  const a = new Float32Array(N * 3), C = [[0, 0, 0]];
+  for (let k = 0; k < 6; k++) { const t = k / 6 * Math.PI * 2; C.push([Math.cos(t) * 1.55, Math.sin(t) * 1.15, Math.sin(t * 2) * 0.5]); }
+  for (let i = 0; i < N; i++) {
+    const m = i % 10;
+    if (m < 6) { const c = C[i % 7], s = i % 7 === 0 ? 0.3 : 0.16; a.set([c[0] + gauss() * s, c[1] + gauss() * s, c[2] + gauss() * s], i * 3); }
+    else { const k = 1 + (i % 6), c = C[k], n = C[1 + (k % 6)], t = Math.random(), to = m < 8 ? [0, 0, 0] : n;
+      a.set([c[0] + (to[0] - c[0]) * t + gauss() * 0.015, c[1] + (to[1] - c[1]) * t + gauss() * 0.015, c[2] + (to[2] - c[2]) * t + gauss() * 0.015], i * 3); }
+  }
+  return a;
+}
+function radar() { // scanner: concentric rings, sweep line and blips, tilted toward the viewer
+  const a = new Float32Array(N * 3), tilt = -1.0, ct = Math.cos(tilt), st = Math.sin(tilt);
+  for (let i = 0; i < N; i++) {
+    let x, z, y = 0; const m = i % 9;
+    if (m < 6) { const r = [0.45, 0.9, 1.35, 1.8][i % 4], t = Math.random() * Math.PI * 2; x = Math.cos(t) * r; z = Math.sin(t) * r; y = gauss() * 0.01; }
+    else if (m < 8) { const r = Math.random() * 1.85, t = 0.6 + gauss() * 0.04 * (1 + r); x = Math.cos(t) * r; z = Math.sin(t) * r; }
+    else { const b = [[0.7, -0.9], [-1.1, 0.5], [1.3, 0.6], [-0.4, -1.4]][i % 4]; x = b[0] + gauss() * 0.06; z = b[1] + gauss() * 0.06; y = Math.abs(gauss()) * 0.35; }
+    a.set([x, y * ct - z * st, y * st + z * ct], i * 3);
+  }
+  return a;
+}
+function lattice() { // rules: a locked cube (edges + corners)
+  const a = new Float32Array(N * 3), S = 1.05, E = [];
+  const V = [-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z])));
+  for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) { const d = V[i].reduce((s, v, k) => s + (v !== V[j][k]), 0); if (d === 1) E.push([V[i], V[j]]); }
+  for (let i = 0; i < N; i++) {
+    if (i % 5 === 0) { const v = V[i % 8], r = 0.07; a.set([v[0] * S + gauss() * r, v[1] * S + gauss() * r, v[2] * S + gauss() * r], i * 3); continue; }
+    if (i % 5 === 1) { const r = 0.32; a.set([gauss() * r, gauss() * r, gauss() * r], i * 3); continue; }
+    const [p, q] = E[i % E.length], t = Math.random();
+    a.set([(p[0] + (q[0] - p[0]) * t) * S + gauss() * 0.012, (p[1] + (q[1] - p[1]) * t) * S + gauss() * 0.012, (p[2] + (q[2] - p[2]) * t) * S + gauss() * 0.012], i * 3);
+  }
+  return a;
+}
+function dust() {
+  const a = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) a.set([rnd(-6, 6), rnd(-3.4, 3.4), rnd(-3, 1.5)], i * 3);
+  return a;
+}
+const SHAPES = [sphere(), nodes(), radar(), lattice(), dust()];
+
+// ---------- particles ----------
+const cur = SHAPES[0].slice();
+const geo = new THREE.BufferGeometry();
+geo.setAttribute("position", new THREE.BufferAttribute(cur, 3));
+const aR = new Float32Array(N), aD = new Float32Array(N);
+for (let i = 0; i < N; i++) { aR[i] = Math.random(); aD[i] = 0.035 + Math.random() * 0.05; }
+geo.setAttribute("aR", new THREE.BufferAttribute(aR, 1));
+const uni = { uTime: { value: 0 }, uSize: { value: 15 * renderer.getPixelRatio() }, uPulse: { value: 0 }, uOp: { value: 1 }, uC1: { value: WHITE }, uC2: { value: AMBER } };
+const mat = new THREE.ShaderMaterial({
+  uniforms: uni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `attribute float aR; uniform float uTime,uSize,uPulse; varying float vR; varying float vA;
+    void main(){ vec3 p=position;
+      float n=sin(p.x*3.1+uTime*.9)*sin(p.y*2.7+uTime*.7)*sin(p.z*3.3+uTime*.8);
+      p+=normalize(p+1e-4)*n*(.045+uPulse*.06);
+      vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
+      gl_PointSize=uSize*(.45+aR*.9)*(1.+uPulse*.5)/-mv.z;
+      vR=aR; vA=clamp((mv.z+7.6)/2.4,.18,1.); }`,
+  fragmentShader: `uniform vec3 uC1,uC2; uniform float uOp; varying float vR; varying float vA;
+    void main(){ float d=length(gl_PointCoord-.5); if(d>.5) discard; float a=smoothstep(.5,0.,d);
+      vec3 c=mix(uC1,uC2,step(.8,vR)); gl_FragColor=vec4(c,a*vA*uOp*.85); }`,
+});
+const group = new THREE.Group();
+const pts = new THREE.Points(geo, mat);
+group.add(pts);
+scene.add(group);
+
+// halo
+function glowTex() {
+  const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, "rgba(240,176,74,.55)"); g.addColorStop(.35, "rgba(240,176,74,.14)"); g.addColorStop(1, "rgba(240,176,74,0)");
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+}
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+halo.scale.set(4.2, 4.2, 1); group.add(halo);
+
+// orbit rings with a travelling spark each
+const rings = new THREE.Group(); group.add(rings);
+const ringDefs = [[1.42, 1.2, 0.2, AMBER, .5], [1.6, -0.5, 0.9, WHITE, .22], [1.8, 0.35, -0.7, WHITE, .14]];
+const sparks = [];
+for (const [r, rx, ry, col, op] of ringDefs) {
+  const pts2 = []; for (let i = 0; i <= 160; i++) { const t = i / 160 * Math.PI * 2; pts2.push(new THREE.Vector3(Math.cos(t) * r, Math.sin(t) * r, 0)); }
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts2), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op, blending: THREE.AdditiveBlending }));
+  const holder = new THREE.Group(); holder.rotation.set(rx, ry, 0); holder.add(line);
+  const spark = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 12), new THREE.MeshBasicMaterial({ color: col, transparent: true }));
+  holder.add(spark); rings.add(holder); sparks.push({ spark, r, sp: 0.4 + Math.random() * 0.5, line });
+}
+
+// the eye: slides over the sphere to look at the cursor, and blinks
+const eye = new THREE.Group();
+const iris = new THREE.Mesh(new THREE.RingGeometry(0.15, 0.2, 64), new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+const iris2 = new THREE.Mesh(new THREE.RingGeometry(0.235, 0.245, 64), new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: .5, side: THREE.DoubleSide }));
+const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.075, 48), new THREE.MeshBasicMaterial({ color: WHITE, transparent: true }));
+const eg = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+eg.scale.set(0.9, 0.9, 1);
+eye.add(eg, iris, iris2, pupil); group.add(eye);
+
+// ---------- scroll keyframes ----------
+const secs = [...document.querySelectorAll("[data-k]")].map(el => ({ el, k: JSON.parse(el.dataset.k) }));
+let target = secs[0].k, shape = -1, eyeVis = 1;
+const st = { x: 0, y: 0, sc: 1, op: 1 };
+function pick() {
+  const mid = innerHeight / 2; let best = secs[0], bd = 1e9;
+  for (const s of secs) { const r = s.el.getBoundingClientRect(); const d = r.top <= mid && r.bottom >= mid ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); if (d < bd) { bd = d; best = s; } }
+  target = best.k;
+  if (target.s !== shape) { shape = target.s; uni.uPulse.value = 1; }
+}
+addEventListener("scroll", pick, { passive: true });
+
+let mx = 0, my = 0, smx = 0, smy = 0;
+addEventListener("pointermove", e => { mx = e.clientX / innerWidth * 2 - 1; my = -(e.clientY / innerHeight * 2 - 1); });
+
+function resize() {
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener("resize", () => { resize(); pick(); }); resize(); pick();
+
+const clock = new THREE.Clock(); let blinkAt = 2.5;
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  uni.uTime.value = t;
+  uni.uPulse.value += (0 - uni.uPulse.value) * 0.04;
+  // morph toward the section's shape, each particle at its own pace
+  const T = SHAPES[shape < 0 ? 0 : shape];
+  for (let i = 0; i < N; i++) { const d = aD[i], j = i * 3; cur[j] += (T[j] - cur[j]) * d; cur[j + 1] += (T[j + 1] - cur[j + 1]) * d; cur[j + 2] += (T[j + 2] - cur[j + 2]) * d; }
+  geo.attributes.position.needsUpdate = true;
+
+  const mobile = innerWidth < 900, halfW = Math.tan(22.5 * Math.PI / 180) * 6 * camera.aspect, halfH = Math.tan(22.5 * Math.PI / 180) * 6;
+  const tx = mobile ? (target.mx || 0) * halfW : target.x * halfW, ty = mobile ? (target.my || 0) * halfH : target.y * halfH;
+  const tsc = mobile ? (target.msc || 0.8) : target.sc, top = mobile && target.s !== 0 ? Math.min(target.op, 0.35) : target.op;
+  st.x += (tx - st.x) * 0.05; st.y += (ty - st.y) * 0.05; st.sc += (tsc - st.sc) * 0.05; st.op += (top - st.op) * 0.05;
+  group.position.set(st.x, st.y, 0); group.scale.setScalar(st.sc); uni.uOp.value = st.op;
+
+  smx += (mx - smx) * 0.06; smy += (my - smy) * 0.06;
+  pts.rotation.y += reduce ? 0 : dt * (shape === 4 ? 0.02 : 0.12);
+  pts.rotation.x = smy * 0.25; group.rotation.y = smx * 0.25;
+  if (shape === 2) pts.rotation.y = smx * 0.3; // radar stays facing the viewer
+
+  // rings, halo and eye only around the core
+  const core = shape === 0 ? 1 : 0;
+  eyeVis += (core - eyeVis) * 0.08;
+  rings.rotation.z += dt * 0.15;
+  for (const s of sparks) { const a = t * s.sp; s.spark.position.set(Math.cos(a) * s.r, Math.sin(a) * s.r, 0); s.spark.material.opacity = eyeVis * st.op; s.line.material.opacity = s.line.material.opacity; }
+  rings.visible = eyeVis > 0.02; rings.scale.setScalar(0.85 + eyeVis * 0.15);
+  rings.children.forEach((h, k) => h.children[0].material.opacity = ringDefs[k][4] * eyeVis * st.op);
+  halo.material.opacity = (0.35 + eyeVis * 0.65) * st.op;
+
+  const dir = new THREE.Vector3(smx * 0.75, smy * 0.6, 1).normalize();
+  eye.position.copy(dir).multiplyScalar(1.04);
+  eye.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), dir);
+  if (t > blinkAt) { const b = t - blinkAt; eye.scale.set(1, b < 0.09 ? 1 - b / 0.09 * 0.9 : b < 0.18 ? 0.1 + (b - 0.09) / 0.09 * 0.9 : 1, 1); if (b > 0.18) blinkAt = t + 2.5 + Math.random() * 4; }
+  const ev = eyeVis * st.op;
+  iris.material.opacity = ev; iris2.material.opacity = ev * 0.5; pupil.material.opacity = ev; eg.material.opacity = ev;
+  pupil.scale.setScalar(1 + uni.uPulse.value * 0.6);
+  eye.visible = ev > 0.02;
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+
+// ---------- NOVA thinking (typed, pulses the core) ----------
+const lines = [
+  "scanning 0x61e1…d6f5 · HOLDUSA",
+  "deployer moved 1.59% of supply out of the wallet.",
+  "10 wallets bought 10.3% in the first minute.",
+  "5 of those early wallets already sold.",
+  "3 holders left. one wallet can move the price.",
+  "flags: 1 high · 1 watch. report ready.",
+];
+const typed = document.getElementById("typed");
+let li = 0;
+async function typeLoop() {
+  while (true) {
+    const s = lines[li++ % lines.length]; typed.textContent = "";
+    for (const ch of s) { typed.textContent += ch; if (ch !== " ") uni.uPulse.value = Math.min(1, uni.uPulse.value + 0.05); await new Promise(r => setTimeout(r, 26 + Math.random() * 30)); }
+    await new Promise(r => setTimeout(r, 2200));
+  }
+}
+typeLoop();
+
+
+// ---------- reveals, report typing, card spotlight ----------
+const aiText = "The deployer has moved 1.59% of supply out of their wallet. Ten wallets bought 10.3% in the first minute and half of them have already sold. Only three holders are left, so one wallet can move the price.";
+let reportDone = false;
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add("in"); io.unobserve(e.target);
+  if (e.target.id === "report" && !reportDone) {
+    reportDone = true; const p = document.getElementById("aiText"); let i = 0;
+    const tick = setInterval(() => { p.textContent = aiText.slice(0, ++i); uni.uPulse.value = Math.min(1, uni.uPulse.value + 0.03); if (i >= aiText.length) { clearInterval(tick); document.querySelectorAll(".report .row").forEach((r, k) => setTimeout(() => r.classList.add("in"), 250 * k)); } }, 14);
+  }
+}), { threshold: 0.15 });
+document.querySelectorAll(".rv").forEach(el => io.observe(el));
+document.querySelectorAll(".svc").forEach(c => c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px"); }));
+</script>
+</body>
+</html>

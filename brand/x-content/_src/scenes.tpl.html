@@ -1,0 +1,148 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+{{VIZCSS}}
+:root{--ink:#161514;--paper:#F5F3EC;--surface:#FCFBF7;--sunk:#EBE8DF;--line:#DDD8CC;--ink2:#45423C;--mute:#86827A;--ok:#2F7A4A;--high:#C8432F;
+  --serif:"Libre Baskerville",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0}
+html,body{width:1600px;height:900px;overflow:hidden;background:var(--paper);color:var(--ink);font:24px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+body.dark{background:var(--ink);color:var(--paper)}
+.stage{position:absolute;inset:0;padding:84px 110px;display:flex;flex-direction:column}
+.foot{position:absolute;left:110px;right:110px;bottom:54px;display:flex;justify-content:space-between;align-items:center;font:500 20px var(--sans);color:var(--mute)}
+.brand{display:flex;align-items:center;gap:12px;font:600 26px var(--sans);color:var(--ink)}
+body.dark .brand{color:var(--paper)}
+.brand svg{width:40px;height:auto}
+.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
+h1{font:400 84px/1.12 var(--serif);letter-spacing:-.02em}
+h2{font:400 60px/1.16 var(--serif);letter-spacing:-.015em}
+.sub{color:var(--ink2);font-size:28px;margin-top:22px;max-width:30ch}
+body.dark .sub{color:#b9b4aa}
+.mark{color:currentColor}
+.center{align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;flex:1}
+/* chat */
+.chat{width:1100px;margin:0 auto;display:grid;gap:26px}
+.bub{justify-self:end;background:var(--sunk);border-radius:26px 26px 6px 26px;padding:16px 24px;font-size:27px;white-space:nowrap}
+.ans{display:grid;grid-template-columns:52px 1fr;gap:20px;align-items:start;font-size:27px;line-height:1.5}
+.av{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center}
+.av svg{width:30px;height:auto}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:22px 26px 18px 30px;box-shadow:0 18px 50px -30px rgba(22,21,20,.35);display:flex;justify-content:space-between;align-items:flex-end;gap:20px;font-size:26px;color:var(--mute)}
+.box .go{width:52px;height:52px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.box .go svg{width:24px;height:24px}
+.tok{font-weight:600;color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--line);font:500 21px var(--sans);color:var(--ink2);margin:0 6px}
+/* report */
+.rep{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:28px 32px;display:grid;gap:16px;font-size:24px}
+.rep .hd b{font:600 30px var(--sans)}.rep .hd span{display:block;color:var(--mute);font:20px var(--mono);margin-top:2px}
+.rep li{list-style:none;display:grid;grid-template-columns:16px 1fr;gap:14px;align-items:baseline}
+.rep li i{width:12px;height:12px;border-radius:50%;background:var(--mute)}
+.rep li.ok i{background:var(--ok)}.rep li.high i{background:var(--high)}
+.rep ul{padding:0;display:grid;gap:12px}
+/* terminal */
+.term{background:var(--ink);color:var(--paper);border-radius:30px;padding:36px 40px;font:24px/1.6 var(--mono);display:grid;gap:14px}
+.term .k{color:#9d988e}.term .g{color:#9fd3a8}.term .r{color:#e9a08f}
+/* rows */
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:200px 1fr 140px 170px;align-items:center;gap:20px;padding:16px 26px;border-radius:18px;background:var(--surface);border:1px solid var(--line);font-size:24px}
+.row b{font-weight:600}.row .m{color:var(--mute);font:22px var(--mono)}
+.tag{justify-self:end;font:600 19px var(--sans);padding:6px 16px;border-radius:999px}
+.tag.ok{background:rgba(47,122,74,.12);color:var(--ok)}.tag.held{background:rgba(200,67,47,.1);color:var(--high)}
+.big{font:400 230px/1 var(--serif);letter-spacing:-.04em}
+#n{font-size:170px}
+.steps{display:grid;gap:18px}
+.step{display:grid;grid-template-columns:60px 1fr;gap:22px;align-items:center;font-size:28px}
+.step .n{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:600 22px var(--sans)}
+.step.on .n{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.step span{color:var(--mute);display:block;font-size:22px}
+.viz{color:currentColor}
+.vbig{width:560px}
+.grid7{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:46px}
+.tool{border:1px solid var(--line);border-radius:24px;padding:22px 24px;background:var(--surface);font:600 25px var(--sans);display:grid;gap:8px}
+.tool .viz{height:120px;aspect-ratio:auto}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:26px;margin-top:70px}
+.flow .viz{height:150px;aspect-ratio:auto;margin-top:10px}
+.flow div{display:grid;gap:14px}
+.flow b{font:400 40px var(--serif)}.flow span{color:var(--ink2);font-size:21px}
+.flow .d{width:62px;height:62px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:600 24px var(--sans)}
+.fade{opacity:0}
+/* stills: drawn pictures shown complete */
+body.still .v-launch .curve{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+body.still .v-launch .grad{animation:none;transform:none}
+.score{width:420px;height:420px}
+</style></head>
+<body>
+<div id="root"></div>
+<script>
+const MARK = '<svg class="mark" viewBox="40 68 176 118"><path d="{{LID}}" fill="currentColor"/><path d="{{DOT}}" fill="currentColor"/></svg>';
+const VIZ = {{VIZ}};
+const D = {{DATA}};
+const nf = (n) => Number(n).toLocaleString("en-US");
+const brand = `<div class="brand">${MARK}ocula</div>`;
+const foot = (dark) => `<div class="foot"><div class="brand">${MARK}ocula</div><span>oculaagent.com</span></div>`;
+const clamp = (x) => Math.max(0, Math.min(1, x));
+const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const $ = (s) => document.querySelector(s), $$ = (s) => [...document.querySelectorAll(s)];
+// show(el, t, start, dur, dy): fade up between start and start+dur (seconds)
+function show(el, t, s, d = 0.7, dy = 24) { if (!el) return; const k = ease((t - s) / d); el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px)`; }
+function type(el, text, t, s, cps = 32) { const n = Math.max(0, Math.min(text.length, Math.floor((t - s) * cps))); el.textContent = text.slice(0, n); return n >= text.length; }
+
+const SCENES = {
+  // ---------- videos (and stills at their last frame) ----------
+  intro: { dur: 7, dark: true, html: () => `<div class="stage center" style="gap:34px"><div id="m" style="width:260px">${MARK}</div><h1 id="h">Meet Ocula.</h1><p class="sub" id="s" style="margin:0;max-width:none">The AI agent that reads every Pons launch.</p></div><div class="foot" id="f"><span></span><span>oculaagent.com</span></div>`,
+    at(t) { const m = $("#m svg"); const k = ease((t - .2) / 1.4); m.querySelector("path").style.transform = `translateY(${(1 - k) * -40}px)`; m.style.opacity = clamp((t - .1) / .8);
+      m.querySelectorAll("path")[1].style.transform = `translateY(${(1 - ease((t - .8) / 1.2)) * 60}px)`; show($("#h"), t, 1.8, .9); show($("#s"), t, 2.6, .9); show($("#f"), t, 3.4, .8, 0); } },
+  ask: { dur: 13, html: () => `<div class="stage" style="justify-content:center"><div class="chat"><h2 class="serif" id="h" style="text-align:center;margin-bottom:16px">What should Ocula read for you?</h2>
+      <div class="bub fade" id="q"></div><div class="ans fade" id="a"><span class="av">${MARK}</span><div id="at"></div></div>
+      <div class="box"><span id="ph">Paste a token CA, or ask Ocula anything…</span><span class="go"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#F5F3EC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div></div>${foot()}`,
+    at(t) { const Q = "What's launching on Pons right now?";
+      show($("#h"), t, 0, .8);
+      const typed = Math.max(0, Math.min(Q.length, Math.floor((t - 1) * 26)));
+      $("#ph").textContent = t < 1 ? "Paste a token CA, or ask Ocula anything…" : t < 2.7 ? Q.slice(0, typed) : "Paste a token CA, or ask Ocula anything…"; $("#ph").style.color = t >= 1 && t < 2.7 ? "var(--ink)" : "";
+      $("#q").textContent = Q; show($("#q"), t, 2.7, .5);
+      show($("#a"), t, 3.4, .5);
+      const A = D.answer; const el = $("#at");
+      if (t < 3.6) { el.innerHTML = '<span style="color:var(--mute)">· · ·</span>'; } else { const n = Math.floor((t - 3.6) * 44); el.innerHTML = A.slice(0, n).replace(/\$([A-Z0-9]+)/g, '<span class="tok">$$$1</span>'); } } },
+  scan: { dur: 12, html: () => `<div class="stage"><div class="split" style="grid-template-columns:.9fr 1.1fr"><div><h2 id="h">Paste a CA.<br>Ocula reads the rest.</h2><p class="sub" id="s">Deployer, holders, first buyers and the curve, in seconds.</p>
+      <div class="box" style="margin-top:44px;font:22px var(--mono)" id="b"><span id="ca"></span><span class="go"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#F5F3EC" stroke-width="2.4" stroke-linecap="round"/></svg></span></div></div>
+      <div class="rep fade" id="r"><div class="hd"><b>${D.scan.name} · $${D.scan.symbol}</b><span>${D.scan.ca.slice(0, 8)}…${D.scan.ca.slice(-6)}</span></div>
+      <ul>${D.scan.flags.map((f) => `<li class="${f.level} fade"><i></i><span><b>${f.title}</b> — ${f.detail}</span></li>`).join("")}</ul>
+      <p id="sum" style="color:var(--ink2);font-size:22px"></p></div></div></div>${foot()}`,
+    at(t) { show($("#h"), t, 0, .8); show($("#s"), t, .5, .8); show($("#b"), t, .9, .6);
+      type($("#ca"), D.scan.ca, t, 1.5, 40); show($("#r"), t, 3.2, .7);
+      $$("#r li").forEach((li, i) => show(li, t, 3.8 + i * .45, .5, 10));
+      type($("#sum"), D.scan.summary, t, 6.2, 70); } },
+  radar: { dur: 11, html: () => `<div class="stage"><div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="big" id="n">0</div><p class="sub" id="s" style="margin-top:6px">Pons launches in the last 24 hours. Ocula read every one.</p></div></div>
+      <div class="rows" style="margin-top:34px">${D.rows.slice(0, 4).map((r) => `<div class="row fade"><b>$${r.symbol}</b><span class="m">${r.ca.slice(0, 8)}… · tax ${r.tax}%</span><span class="m">${r.age}</span><span class="tag ${r.pass ? "ok" : "held"}">${r.pass ? "Cleared" : "Held · " + r.why}</span></div>`).join("")}</div></div>${foot()}`,
+    at(t) { $("#n").textContent = nf(Math.round(D.total * ease(t / 2.4))); show($("#s"), t, 1.2, .8); $$(".row").forEach((r, i) => show(r, t, 2.6 + i * .5, .6, 16)); } },
+  steps: { dur: 12, html: () => `<div class="stage"><div class="split"><div><h2 id="h">Every launch,<br>read in four steps.</h2><div class="steps" style="margin-top:44px">
+      ${["Catches the launch|The moment the factory emits it.", "Checks the deployer|Other launches in 24h, where the fees go.", "Reads the token|Creator tax, socials, the bonding curve.", "Gives a verdict|Cleared, held, or picked for the sniper."].map((x, i) => `<div class="step" id="st${i}"><span class="n">${i + 1}</span><div>${x.split("|")[0]}<span>${x.split("|")[1]}</span></div></div>`).join("")}</div></div>
+      <div class="term">${D.term.map((l, i) => `<div class="fade" id="tl${i}"><span class="k">${i + 1}</span>&nbsp; ${l}</div>`).join("")}<div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(245,243,236,.15);font:600 26px var(--sans)" id="v" class="fade">${D.verdict}</div></div></div></div>${foot()}`,
+    at(t) { show($("#h"), t, 0, .8); for (let i = 0; i < 4; i++) { const on = t >= 1.6 + i * 2; $("#st" + i).classList.toggle("on", on && t < 1.6 + (i + 1) * 2 || (i === 3 && t > 7.6)); show($("#tl" + i), t, 1.8 + i * 2, .6, 8); } show($("#v"), t, 9.4, .7, 8); } },
+  soon: { dur: 7, dark: true, html: () => `<div class="stage center" style="gap:30px"><div id="m" style="width:180px">${MARK}</div><h1 id="h">$OCULA</h1><p class="sub" id="s" style="margin:0;max-width:none">The agent is awake. The token is next.</p></div><div class="foot" id="f"><span>Robinhood Chain · Pons</span><span>oculaagent.com</span></div>`,
+    at(t) { show($("#m"), t, .2, 1.2, -20); show($("#h"), t, 1.2, 1); show($("#s"), t, 2.4, 1); show($("#f"), t, 3.4, .8, 0); } },
+
+  // ---------- stills ----------
+  count: { dark: true, html: () => `<div class="stage" style="justify-content:center"><div class="big">${nf(D.total)}</div><h2 style="margin-top:18px">launches on Pons in 24 hours.<br><span style="color:#8d887e">Ocula read every single one.</span></h2></div>${foot()}` },
+  quote: { html: () => `<div class="stage" style="justify-content:center"><h1 style="max-width:20ch">Most launches are noise. Some are traps.<br><span style="color:var(--mute)">Ocula reads them all.</span></h1></div>${foot()}` },
+  keys: { html: () => `<div class="stage"><div class="split"><div><h2>Ocula never holds your keys.</h2><p class="sub">Keys and seeds stay in your browser. Ocula only relays transactions you already signed.</p></div><div class="vbig">${VIZ.key}</div></div></div>${foot()}` },
+  limits: { vt: 1800, html: () => `<div class="stage"><div class="split"><div><h2>An agent that works inside limits.</h2><p class="sub">Every decision stays inside rules written in code. Anything outside them is clamped.</p></div><div class="vbig">${VIZ.clamp}</div></div></div>${foot()}` },
+  onchain: { html: () => `<div class="stage"><div class="split"><div><h2>Every number traces back to the chain.</h2><p class="sub">No estimates, no invented stats. A transaction or a contract call anyone can check.</p></div><div class="vbig">${VIZ.trace}</div></div></div>${foot()}` },
+  picks: { dark: true, html: () => `<div class="stage"><div class="split"><div><h2>Agent snipe.</h2><p class="sub">Ocula scores fresh launches from curve inflow, socials and dev history. The bot buys only what clears your bar.</p></div>
+      <svg class="score" viewBox="0 0 200 200"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(245,243,236,.14)" stroke-width="10"/><circle cx="100" cy="100" r="84" fill="none" stroke="#F5F3EC" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="78 100" transform="rotate(-90 100 100)"/>
+      <text x="100" y="98" text-anchor="middle" font-family="Libre Baskerville, Georgia, serif" font-size="56" fill="#F5F3EC">78</text><text x="100" y="128" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" letter-spacing="2" fill="#8d887e">MIN SCORE · 75</text></svg></div></div>${foot()}` },
+  claim: { html: () => `<div class="stage"><div class="split"><div><h2>Two hundred accounts.<br>One claim.</h2><p class="sub">Creator fees from every account of one seed, swept into one wallet. The seed never leaves your browser.</p></div><div class="vbig">${VIZ.fees}</div></div></div>${foot()}` },
+  launch: { html: () => `<div class="stage"><div class="split"><div><h2>Launch on Pons from your own wallet.</h2><p class="sub">Logo, ticker, socials, dev buy and snipe-tax-exempt wallets. Always free.</p></div><div class="vbig">${VIZ.launch}</div></div></div>${foot()}` },
+  tools: { html: () => `<div class="stage"><h2>One agent. Seven tools.</h2><div class="grid7">${[["scan", "Scanner"], ["radar", "Launch Radar"], ["snipe", "Sniper"], ["fees", "Fee Claimer"], ["launch", "Launchpad"], ["kit", "Launch Kit"], ["agent", "Agent Studio"]].map(([v, n]) => `<div class="tool">${VIZ[v]}${n}</div>`).join("")}</div></div>${foot()}` },
+  flow: { html: () => `<div class="stage"><h2>From idea to fees.</h2><div class="flow">${[["Write", "Launch Kit writes the lore, bio and posts."], ["Launch", "Pons Launchpad, from your wallet."], ["Snipe", "Buy first at 0% snipe tax."], ["Watch", "Scanner and Radar on your token."], ["Claim", "Creator fees, one wallet or a hundred."]].map(([b, s], i) => `<div><span class="d">${i + 1}</span><b>${b}</b><span>${s}</span>${VIZ[["kit", "launch", "snipe", "radar", "fees"][i]]}</div>`).join("")}</div></div>${foot()}` },
+  chatstill: { html: () => `<div class="stage center"><h1 style="font-size:72px">What should Ocula read for you?</h1><div class="box" style="width:1000px;margin-top:44px;text-align:left"><span>Paste a token CA, or ask Ocula anything…</span><span class="go"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#F5F3EC" stroke-width="2.4" stroke-linecap="round"/></svg></span></div>
+      <div style="margin-top:26px">${["What's launching now?", "Scan a token", "Snipe a launch", "Claim my fees"].map((c) => `<span class="chip">${c}</span>`).join("")}</div></div>${foot()}` },
+};
+
+const P = new URLSearchParams(location.search), S = SCENES[P.get("s")];
+document.body.classList.toggle("dark", !!S.dark); document.body.classList.toggle("still", !S.dur);
+$("#root").innerHTML = S.html();
+// videos run the small animations in real time; stills freeze them at a frame where each picture is complete
+window.SCENE = { dur: S.dur || 0, seek(t) { S.at?.(t); document.getAnimations().forEach((a) => { a.pause(); a.currentTime = S.dur ? t * 1000 : (S.vt || 2400); }); } };
+window.SCENE.seek(S.dur || 99);
+</script></body></html>

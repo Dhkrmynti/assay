@@ -1,0 +1,247 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===== visuals: small animated pictures instead of paragraphs (they inherit the design's colour) ===== */
+.viz{position:relative;width:100%;aspect-ratio:1.5;color:inherit}
+.viz svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.viz .s{stroke:currentColor;fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.viz .f{fill:currentColor}
+.viz .o2{opacity:.22}.viz .o4{opacity:.45}
+/* scanner: a document read by a moving beam */
+.v-scan .beam{animation:vbeam 2.6s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes vbeam{0%{transform:translateY(0)}50%{transform:translateY(118px)}100%{transform:translateY(0)}}
+.v-scan .ck{opacity:0;animation:vck 2.6s infinite}.v-scan .ck:nth-of-type(2){animation-delay:.35s}.v-scan .ck:nth-of-type(3){animation-delay:.7s}
+@keyframes vck{30%,80%{opacity:1}0%,20%,100%{opacity:0}}
+/* radar: rings, a sweep and real launches as blips */
+.v-radar .sweep{position:absolute;left:50%;top:50%;width:84%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from 0deg,currentColor 0deg,transparent 70deg);opacity:.22;animation:vspin 3.2s linear infinite;-webkit-mask:radial-gradient(circle,#000 69%,transparent 70%);mask:radial-gradient(circle,#000 69%,transparent 70%)}
+@keyframes vspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.v-radar .blip{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:currentColor;animation:vblip 3.2s infinite}
+.v-radar .blip.bad{background:#ef4444}
+@keyframes vblip{0%,100%{opacity:.25;transform:scale(.8)}10%{opacity:1;transform:scale(1.4)}}
+/* sniper: a reticle that locks */
+.v-snipe .ret{transform-origin:150px 100px;animation:vlock 2.8s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes vlock{0%{transform:translate(-46px,24px) scale(1.25)}45%,85%{transform:none}100%{transform:translate(-46px,24px) scale(1.25)}}
+.v-snipe .hit{transform-origin:150px 100px;animation:vhit 2.8s infinite}
+@keyframes vhit{0%,44%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+/* fee claimer: many accounts flow into one wallet */
+.v-fees .flow{stroke-dasharray:4 7;animation:vflow 1.2s linear infinite}
+@keyframes vflow{to{stroke-dashoffset:-22}}
+.v-fees .acc{animation:vpulse 2.4s infinite}
+@keyframes vpulse{50%{opacity:.35}}
+/* launchpad: a bonding curve fills to graduation */
+.v-launch .curve{stroke-dasharray:320;stroke-dashoffset:320;animation:vdraw 3.4s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vdraw{0%{stroke-dashoffset:320}60%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.v-launch .grad{transform-origin:244px 38px;animation:vgrad 3.4s infinite}
+@keyframes vgrad{0%,55%{transform:scale(0)}65%,90%{transform:scale(1)}100%{transform:scale(1);opacity:0}}
+/* launch kit: lines being written */
+.v-kit .ln{transform-origin:left;animation:vtype 3s steps(14) infinite}
+.v-kit .ln:nth-of-type(2){animation-delay:.4s}.v-kit .ln:nth-of-type(3){animation-delay:.8s}.v-kit .ln:nth-of-type(4){animation-delay:1.2s}
+@keyframes vtype{0%{transform:scaleX(0)}40%,90%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+/* agent studio: a conversation */
+.v-agent .b1{animation:vb 4s infinite}.v-agent .b2{animation:vb 4s 1.2s infinite}.v-agent .b3{animation:vb 4s 2.2s infinite}
+@keyframes vb{0%,10%{opacity:0;transform:translateY(6px)}20%,85%{opacity:1;transform:none}100%{opacity:0}}
+.v-agent .td{animation:vdot 1s infinite}.v-agent .td:nth-of-type(2){animation-delay:.15s}.v-agent .td:nth-of-type(3){animation-delay:.3s}
+@keyframes vdot{50%{opacity:.2}}
+/* AI picks: a score ring */
+.v-pick .ring{stroke-dasharray:283;stroke-dashoffset:283;animation:vscore 3s cubic-bezier(.5,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:150px 100px}
+@keyframes vscore{0%{stroke-dashoffset:283}50%,90%{stroke-dashoffset:62}100%{stroke-dashoffset:62;opacity:0}}
+/* directives */
+.v-key .cross{stroke-dasharray:130;stroke-dashoffset:130;animation:vdraw2 3s infinite}
+@keyframes vdraw2{0%,20%{stroke-dashoffset:130}50%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.v-clamp .val{animation:vclamp 2.6s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vclamp{0%{transform:translateX(-70px)}40%{transform:translateX(110px)}55%,85%{transform:translateX(64px)}100%{transform:translateX(-70px)}}
+.v-trace .tx{stroke-dasharray:6 6;animation:vflow 1s linear infinite}
+.v-trace .node{animation:vpulse 2s infinite}.v-trace .node:nth-of-type(2){animation-delay:.3s}.v-trace .node:nth-of-type(3){animation-delay:.6s}
+@media (prefers-reduced-motion:reduce){.viz *{animation:none!important}}
+
+:root{--ink:#161514;--paper:#F5F3EC;--surface:#FCFBF7;--sunk:#EBE8DF;--line:#DDD8CC;--ink2:#45423C;--mute:#86827A;--ok:#2F7A4A;--high:#C8432F;
+  --serif:"Libre Baskerville",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0}
+html,body{width:1600px;height:900px;overflow:hidden;background:var(--paper);color:var(--ink);font:24px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+body.dark{background:var(--ink);color:var(--paper)}
+.stage{position:absolute;inset:0;padding:84px 110px;display:flex;flex-direction:column}
+.foot{position:absolute;left:110px;right:110px;bottom:54px;display:flex;justify-content:space-between;align-items:center;font:500 20px var(--sans);color:var(--mute)}
+.brand{display:flex;align-items:center;gap:12px;font:600 26px var(--sans);color:var(--ink)}
+body.dark .brand{color:var(--paper)}
+.brand svg{width:40px;height:auto}
+.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
+h1{font:400 84px/1.12 var(--serif);letter-spacing:-.02em}
+h2{font:400 60px/1.16 var(--serif);letter-spacing:-.015em}
+.sub{color:var(--ink2);font-size:28px;margin-top:22px;max-width:30ch}
+body.dark .sub{color:#b9b4aa}
+.mark{color:currentColor}
+.center{align-items:center;justify-content:center;text-align:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;flex:1}
+/* chat */
+.chat{width:1100px;margin:0 auto;display:grid;gap:26px}
+.bub{justify-self:end;background:var(--sunk);border-radius:26px 26px 6px 26px;padding:16px 24px;font-size:27px;white-space:nowrap}
+.ans{display:grid;grid-template-columns:52px 1fr;gap:20px;align-items:start;font-size:27px;line-height:1.5}
+.av{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center}
+.av svg{width:30px;height:auto}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:22px 26px 18px 30px;box-shadow:0 18px 50px -30px rgba(22,21,20,.35);display:flex;justify-content:space-between;align-items:flex-end;gap:20px;font-size:26px;color:var(--mute)}
+.box .go{width:52px;height:52px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.box .go svg{width:24px;height:24px}
+.tok{font-weight:600;color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--line);font:500 21px var(--sans);color:var(--ink2);margin:0 6px}
+/* report */
+.rep{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:28px 32px;display:grid;gap:16px;font-size:24px}
+.rep .hd b{font:600 30px var(--sans)}.rep .hd span{display:block;color:var(--mute);font:20px var(--mono);margin-top:2px}
+.rep li{list-style:none;display:grid;grid-template-columns:16px 1fr;gap:14px;align-items:baseline}
+.rep li i{width:12px;height:12px;border-radius:50%;background:var(--mute)}
+.rep li.ok i{background:var(--ok)}.rep li.high i{background:var(--high)}
+.rep ul{padding:0;display:grid;gap:12px}
+/* terminal */
+.term{background:var(--ink);color:var(--paper);border-radius:30px;padding:36px 40px;font:24px/1.6 var(--mono);display:grid;gap:14px}
+.term .k{color:#9d988e}.term .g{color:#9fd3a8}.term .r{color:#e9a08f}
+/* rows */
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:200px 1fr 140px 170px;align-items:center;gap:20px;padding:16px 26px;border-radius:18px;background:var(--surface);border:1px solid var(--line);font-size:24px}
+.row b{font-weight:600}.row .m{color:var(--mute);font:22px var(--mono)}
+.tag{justify-self:end;font:600 19px var(--sans);padding:6px 16px;border-radius:999px}
+.tag.ok{background:rgba(47,122,74,.12);color:var(--ok)}.tag.held{background:rgba(200,67,47,.1);color:var(--high)}
+.big{font:400 230px/1 var(--serif);letter-spacing:-.04em}
+#n{font-size:170px}
+.steps{display:grid;gap:18px}
+.step{display:grid;grid-template-columns:60px 1fr;gap:22px;align-items:center;font-size:28px}
+.step .n{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:600 22px var(--sans)}
+.step.on .n{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.step span{color:var(--mute);display:block;font-size:22px}
+.viz{color:currentColor}
+.vbig{width:560px}
+.grid7{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:46px}
+.tool{border:1px solid var(--line);border-radius:24px;padding:22px 24px;background:var(--surface);font:600 25px var(--sans);display:grid;gap:8px}
+.tool .viz{height:120px;aspect-ratio:auto}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:26px;margin-top:70px}
+.flow .viz{height:150px;aspect-ratio:auto;margin-top:10px}
+.flow div{display:grid;gap:14px}
+.flow b{font:400 40px var(--serif)}.flow span{color:var(--ink2);font-size:21px}
+.flow .d{width:62px;height:62px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:600 24px var(--sans)}
+.fade{opacity:0}
+/* stills: drawn pictures shown complete */
+body.still .v-launch .curve{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+body.still .v-launch .grad{animation:none;transform:none}
+.score{width:420px;height:420px}
+.reads{list-style:none;padding:0;margin:44px 0 0;display:grid;gap:16px;font-size:30px}
+.reads li{display:grid;grid-template-columns:22px 1fr;gap:18px;align-items:center}
+.reads li i{width:12px;height:12px;border-radius:50%;background:#e9a08f}
+.stamp{margin-top:44px;justify-self:start;align-self:flex-start;font:600 26px var(--sans);padding:12px 26px;border-radius:999px;background:rgba(233,160,143,.14);color:#e9a08f;border:1px solid rgba(233,160,143,.35)}
+.gauge{position:relative;width:520px;height:520px}.gauge svg{width:100%;height:100%}
+.gauge>div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.gauge b{font:400 150px/1 var(--serif);letter-spacing:-.03em}.gauge span{font:600 20px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-top:10px}
+.why{margin:40px 0 0;padding:0;list-style:none;display:grid;gap:14px;font-size:26px}
+.why li{padding:14px 22px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.lanes{display:grid;gap:26px;margin-top:50px}
+.lane{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px 30px}
+.lh{display:flex;justify-content:space-between;align-items:center;font-size:28px}
+.track{position:relative;height:46px;margin:46px 0 10px;border-bottom:2px solid var(--line)}
+.track i{position:absolute;bottom:8px;width:14px;height:14px;border-radius:50%;background:var(--ink);transform:translateX(-50%);transition:opacity .2s}
+.track em{position:absolute;top:-4px;bottom:-6px;border-left:2px dashed var(--mute);opacity:.6}
+.lane p{color:var(--ink2);font-size:23px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:56px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:34px 38px;display:grid;gap:14px;justify-items:start}
+.card b{font:400 44px/1.15 var(--serif)}.card p{color:var(--ink2);font-size:25px}
+.card .tag{justify-self:start}
+.bag{width:100%;height:18px;border-radius:999px;background:var(--sunk);overflow:hidden;margin-top:10px}.bag span{display:block;height:100%;background:var(--ok)}
+.card small{font:500 19px var(--mono);color:var(--mute)}
+.card.bad small{color:var(--high)}
+.web{width:640px;height:640px;justify-self:center}
+.web line{stroke:var(--line);stroke-width:2}.web circle{fill:var(--high);opacity:.85}
+.web .dev{fill:var(--ink);opacity:1}.web text{fill:var(--paper);font:600 20px var(--sans);text-anchor:middle}
+.xcard{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:36px 40px;display:grid;gap:30px}
+.xh{display:flex;gap:20px;align-items:center}.xh b{font:600 30px var(--sans);display:block}.xh span{color:var(--mute);font-size:21px}
+.xa{width:72px;height:72px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:34px}
+.xn{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.xn b{display:block;font:400 72px/1 var(--serif)}.xn span{color:var(--mute);font-size:21px}
+.xv{font-size:24px;color:var(--high);border-top:1px solid var(--line);padding-top:22px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:50px}
+.trio b{display:block;font:400 190px/1 var(--serif);letter-spacing:-.04em;color:#8d887e}.trio .on b{color:var(--paper)}
+.trio span{font-size:26px;color:#b9b4aa}
+.handle{margin-top:20px;font:500 34px var(--mono);padding:18px 40px;border:1px solid rgba(245,243,236,.25);border-radius:999px}
+.track em small{position:absolute;top:-30px;left:8px;font:500 17px var(--mono);color:var(--mute);white-space:nowrap}
+.track u{position:absolute;right:0;top:-30px;text-decoration:none;font:500 17px var(--mono);color:var(--mute)}
+.livechip{display:inline-flex;align-items:center;gap:14px;font:500 22px var(--sans);padding:12px 26px;border-radius:999px;border:1px solid rgba(245,243,236,.22);color:#d9d4c9}
+.livechip i{width:12px;height:12px;border-radius:50%;background:#4ade80;box-shadow:0 0 14px #4ade80}
+.unl{display:grid;grid-template-columns:repeat(3,auto);gap:80px;margin-top:40px;padding-top:36px;border-top:1px solid rgba(245,243,236,.14)}
+.unl b{display:block;font:400 56px/1 var(--serif)}.unl span{font-size:20px;color:#8d887e}
+.nhead{display:flex;justify-content:space-between;align-items:center}
+.livechip.lt{border-color:var(--line);color:var(--ink2);font-size:20px;padding:10px 22px}.livechip.lt i{background:#2F7A4A;box-shadow:none}
+.nca{font:500 20px var(--mono);color:var(--mute)}
+.ntiles{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px}
+.ntiles div{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 24px}
+.ntiles b{display:block;font:400 54px/1 var(--serif);letter-spacing:-.02em}.ntiles span{display:block;margin-top:10px;font-size:19px;color:var(--mute);line-height:1.3}
+.nnew{margin-top:34px;display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+.lbl2{font:600 15px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);padding-top:6px}
+.nnew ul{list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 40px;font-size:21px;color:var(--ink2)}
+.nnew li b{color:var(--ink);font-weight:600}
+</style></head>
+<body>
+<div id="root"></div>
+<script>
+const MARK = '<svg class="mark" viewBox="40 68 176 118"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>';
+const VIZ = {"scan": "<div class=\"viz v-scan\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><rect class=\"s o4\" x=\"95\" y=\"30\" width=\"110\" height=\"140\" rx=\"6\"/>\n<rect class=\"f o2\" x=\"110\" y=\"50\" width=\"70\" height=\"5\" rx=\"2.5\"/><rect class=\"f o2\" x=\"110\" y=\"66\" width=\"80\" height=\"5\" rx=\"2.5\"/><rect class=\"f o2\" x=\"110\" y=\"82\" width=\"56\" height=\"5\" rx=\"2.5\"/><rect class=\"f o2\" x=\"110\" y=\"98\" width=\"76\" height=\"5\" rx=\"2.5\"/><rect class=\"f o2\" x=\"110\" y=\"114\" width=\"62\" height=\"5\" rx=\"2.5\"/><rect class=\"f o2\" x=\"110\" y=\"130\" width=\"70\" height=\"5\" rx=\"2.5\"/>\n<g class=\"beam\"><rect class=\"f\" x=\"88\" y=\"40\" width=\"124\" height=\"2\" rx=\"1\"/><rect class=\"f o2\" x=\"88\" y=\"22\" width=\"124\" height=\"18\"/></g>\n<path class=\"s ck\" d=\"M222 60l6 6 12-14\"/><path class=\"s ck\" d=\"M222 96l6 6 12-14\"/><path class=\"s ck\" d=\"M222 132l6 6 12-14\"/></svg></div>", "radar": "<div class=\"viz v-radar\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><circle class=\"s o2\" cx=\"150\" cy=\"100\" r=\"84\"/><circle class=\"s o2\" cx=\"150\" cy=\"100\" r=\"56\"/><circle class=\"s o2\" cx=\"150\" cy=\"100\" r=\"28\"/><path class=\"s o2\" d=\"M66 100h168M150 16v168\"/></svg><div class=\"sweep\"></div><div class=\"blips\" data-blips></div></div>", "snipe": "<div class=\"viz v-snipe\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><circle class=\"f o4\" cx=\"150\" cy=\"100\" r=\"7\"/><circle class=\"s hit\" cx=\"150\" cy=\"100\" r=\"16\"/>\n<g class=\"ret\"><circle class=\"s\" cx=\"150\" cy=\"100\" r=\"40\"/><path class=\"s\" d=\"M150 48v22M150 130v22M98 100h22M180 100h22\"/></g></svg></div>", "fees": "<div class=\"viz v-fees\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><circle class=\"f acc\" cx=\"40\" cy=\"40\" r=\"5\" style=\"animation-delay:0.0s\"/><path class=\"s o4 flow\" d=\"M46 40C 170 40 180 100 236 100\"/><circle class=\"f acc\" cx=\"62\" cy=\"40\" r=\"5\" style=\"animation-delay:0.2s\"/><path class=\"s o4 flow\" d=\"M68 40C 170 40 180 100 236 100\"/><circle class=\"f acc\" cx=\"84\" cy=\"40\" r=\"5\" style=\"animation-delay:0.4s\"/><path class=\"s o4 flow\" d=\"M90 40C 170 40 180 100 236 100\"/><circle class=\"f acc\" cx=\"40\" cy=\"80\" r=\"5\" style=\"animation-delay:0.6s\"/><path class=\"s o4 flow\" d=\"M46 80C 170 80 180 100 236 100\"/><circle class=\"f acc\" cx=\"62\" cy=\"80\" r=\"5\" style=\"animation-delay:0.8s\"/><path class=\"s o4 flow\" d=\"M68 80C 170 80 180 100 236 100\"/><circle class=\"f acc\" cx=\"84\" cy=\"80\" r=\"5\" style=\"animation-delay:1.0s\"/><path class=\"s o4 flow\" d=\"M90 80C 170 80 180 100 236 100\"/><circle class=\"f acc\" cx=\"40\" cy=\"120\" r=\"5\" style=\"animation-delay:1.2s\"/><path class=\"s o4 flow\" d=\"M46 120C 170 120 180 100 236 100\"/><circle class=\"f acc\" cx=\"62\" cy=\"120\" r=\"5\" style=\"animation-delay:1.4s\"/><path class=\"s o4 flow\" d=\"M68 120C 170 120 180 100 236 100\"/><circle class=\"f acc\" cx=\"84\" cy=\"120\" r=\"5\" style=\"animation-delay:1.6s\"/><path class=\"s o4 flow\" d=\"M90 120C 170 120 180 100 236 100\"/>\n<circle class=\"s\" cx=\"250\" cy=\"100\" r=\"18\"/><circle class=\"f\" cx=\"250\" cy=\"100\" r=\"7\"/></svg></div>", "launch": "<div class=\"viz v-launch\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><path class=\"s o2\" d=\"M40 170H260M40 170V30\"/><path class=\"s o2\" d=\"M40 38H260\" stroke-dasharray=\"3 5\"/>\n<path class=\"s curve\" d=\"M40 168C120 166 180 140 244 38\" style=\"stroke-width:2.2\"/><circle class=\"s grad\" cx=\"244\" cy=\"38\" r=\"12\"/><circle class=\"f grad\" cx=\"244\" cy=\"38\" r=\"5\"/></svg></div>", "kit": "<div class=\"viz v-kit\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><rect class=\"s o4\" x=\"70\" y=\"34\" width=\"160\" height=\"132\" rx=\"8\"/>\n<rect class=\"f ln\" x=\"88\" y=\"58\" width=\"96\" height=\"9\" rx=\"4.5\"/><rect class=\"f o4 ln\" x=\"88\" y=\"82\" width=\"124\" height=\"6\" rx=\"3\"/><rect class=\"f o4 ln\" x=\"88\" y=\"98\" width=\"110\" height=\"6\" rx=\"3\"/><rect class=\"f o4 ln\" x=\"88\" y=\"114\" width=\"118\" height=\"6\" rx=\"3\"/><rect class=\"f o2\" x=\"88\" y=\"140\" width=\"40\" height=\"10\" rx=\"5\"/></svg></div>", "agent": "<div class=\"viz v-agent\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><g class=\"b1\"><rect class=\"s\" x=\"60\" y=\"40\" width=\"120\" height=\"34\" rx=\"17\"/><rect class=\"f o4\" x=\"76\" y=\"54\" width=\"80\" height=\"6\" rx=\"3\"/></g>\n<g class=\"b2\"><rect class=\"f o2\" x=\"120\" y=\"86\" width=\"120\" height=\"34\" rx=\"17\"/><rect class=\"f o4\" x=\"136\" y=\"100\" width=\"70\" height=\"6\" rx=\"3\"/></g>\n<g class=\"b3\"><rect class=\"s\" x=\"60\" y=\"132\" width=\"70\" height=\"30\" rx=\"15\"/><circle class=\"f td\" cx=\"82\" cy=\"147\" r=\"3.5\"/><circle class=\"f td\" cx=\"95\" cy=\"147\" r=\"3.5\"/><circle class=\"f td\" cx=\"108\" cy=\"147\" r=\"3.5\"/></g></svg></div>", "pick": "<div class=\"viz v-pick\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><circle class=\"s o2\" cx=\"150\" cy=\"100\" r=\"45\" style=\"stroke-width:6\"/><circle class=\"s ring\" cx=\"150\" cy=\"100\" r=\"45\" style=\"stroke-width:6\"/></svg></div>", "key": "<div class=\"viz v-key\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><circle class=\"s o4\" cx=\"130\" cy=\"100\" r=\"22\"/><path class=\"s o4\" d=\"M152 100h70M200 100v16M214 100v12\"/><path class=\"s cross\" d=\"M90 160L210 40\" style=\"stroke-width:2.4\"/></svg></div>", "clamp": "<div class=\"viz v-clamp\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><path class=\"s o2\" d=\"M50 100H250\"/><path class=\"s\" d=\"M90 76v48M86 76h8M86 124h8M210 76v48M206 76h8M206 124h8\" style=\"stroke-width:2\"/>\n<g class=\"val\"><circle class=\"f\" cx=\"150\" cy=\"100\" r=\"9\"/></g></svg></div>", "trace": "<div class=\"viz v-trace\"><svg viewBox=\"0 0 300 200\" preserveAspectRatio=\"xMidYMid meet\"><rect class=\"s o4\" x=\"40\" y=\"80\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"s o4\" x=\"122\" y=\"80\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"s\" x=\"204\" y=\"80\" width=\"56\" height=\"40\" rx=\"6\"/>\n<path class=\"s tx\" d=\"M96 100h26M178 100h26\"/><circle class=\"f node\" cx=\"68\" cy=\"100\" r=\"4\"/><circle class=\"f node\" cx=\"150\" cy=\"100\" r=\"4\"/><circle class=\"f node\" cx=\"232\" cy=\"100\" r=\"4\"/></svg></div>"};
+const D = {"trap": {"symbol": "GATTAI", "ageMin": 5, "buyers": 94, "score": 70, "lines": ["The dev sold the whole bag: 1.14% out, 0% left", "10 snipe-tax-exempt wallets bought 8.7%, now hold 0%", "92 of 94 buyers already sold"]}, "risk": {"score": 70, "reasons": ["Deployer dumped: sold 1.14% of supply and holds 0%", "Bundled wallets bought 8.70% and already sold most of it", "10 wallets look bundled", "X account has 58 followers"]}, "growth": [{"label": "Launch A \u00b7 10 minutes old", "pass": true, "dots": 20, "at": [68.19499815742647, 69.40447912961362, 69.50404865024049, 71.11408493647954, 71.69792946641718, 72.38337539463492, 73.07521427510424, 73.32362979778048, 73.78958696133535, 75.13052723356786, 79.06992200615247, 79.25250347800747, 83.71044026976884, 91.25036588267946, 92.41477867191789, 92.41492759936168, 92.61952744117667, 93.35436160968784, 96.29251642189473, 96.606695837126], "cut": 50, "text": "20 buyers in 10 minutes. Two new wallets a minute, still arriving."}, {"label": "Launch B \u00b7 31 minutes old", "pass": false, "dots": 43, "at": [2.0754465154679274, 2.2234559521686066, 4.162476126476248, 4.288617948738736, 7.743389093837207, 8.533928363557655, 9.387527727999139, 9.728189576275025, 13.262632078064792, 13.460794157578498, 14.411795499519584, 14.645356628771472, 14.872797950377707, 15.392107355987614, 16.45647674026349, 17.079876221152897, 19.814143507551602, 19.869410070323134, 20.69006483007874, 22.619524133519665, 22.732218604086967, 24.285781234099936, 24.401874015972076, 25.661846154212263, 26.286665740178584, 27.47360648092279, 28.747798665119493, 29.080890418554233, 30.064835785915363, 30.094828915830245, 30.367919125968914, 32.24166991279072, 35.130946026178464, 35.853248687542205, 39.004431294461796, 40.706116234734466, 41.023121183584664, 41.543240168884, 42.24243606533757, 42.351227514181915, 43.62577389190495, 44.860241467195586, 47.8693859602614], "cut": 50, "text": "43 buyers, but none new in the last 15 minutes. It stopped growing."}], "bund": {"count": 10, "bought": 8.7, "holds": 0, "ws": [1.0, 0.6923611111111111, 0.6502136752136752, 0.6231837606837607, 0.507051282051282, 0.42232905982905977, 0.3884081196581196, 0.1879807692307692, 0.10267094017094017, 0.07457264957264957]}, "x": {"handle": "gattai_ai", "followers": 58, "ageDays": 8, "posts": 14}, "stat": {"total": 24, "dumped": 19, "pass": 2}, "oc": {"date": "24 Oct 2026", "ca": "0xDDEC469bd035fB42Db868367D50E059Afdd53892", "tiles": [["27", "holders so far"], ["15.5%", "of the curve, 0.65 ETH in"], ["0", "bundled wallets found"], ["0%", "sold by the dev"], ["13/100", "rug risk, by Ocula's own scanner"]], "news": [["Holder unlock is on.", "Hold 0.1% of $OCULA and sign once to open every tool."], ["Radar ranks by growth.", "New buyers per minute, not a fixed count."], ["Rug detection.", "A dev who sold the whole bag is held at once."], ["Scanner risk score.", "0 to 100, with bundles and an X check."]]}};
+const nf = (n) => Number(n).toLocaleString("en-US");
+const brand = `<div class="brand">${MARK}ocula</div>`;
+const foot = (dark) => `<div class="foot"><div class="brand">${MARK}ocula</div><span>oculaagent.com</span></div>`;
+const clamp = (x) => Math.max(0, Math.min(1, x));
+const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const $ = (s) => document.querySelector(s), $$ = (s) => [...document.querySelectorAll(s)];
+// show(el, t, start, dur, dy): fade up between start and start+dur (seconds)
+function show(el, t, s, d = 0.7, dy = 24) { if (!el) return; const k = ease((t - s) / d); el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px)`; }
+function type(el, text, t, s, cps = 32) { const n = Math.max(0, Math.min(text.length, Math.floor((t - s) * cps))); el.textContent = text.slice(0, n); return n >= text.length; }
+
+const SCENES = {
+  // ---------- videos ----------
+  trap: { dur: 13, dark: true, html: () => `<div class="stage" style="justify-content:center">
+      <p class="sub fade" id="k" style="margin:0 0 10px;color:#8d887e">$${D.trap.symbol} · ${D.trap.ageMin} minutes after launch</p>
+      <div style="display:flex;align-items:baseline;gap:28px"><div class="big" id="n" style="font-size:200px">0</div><h2 id="b">buyers.<br><span style="color:#8d887e">Looks alive.</span></h2></div>
+      <ul class="reads">${D.trap.lines.map((l) => `<li class="fade"><i></i>${l}</li>`).join("")}</ul>
+      <div class="stamp fade" id="v">Held · rug risk ${D.trap.score}/100</div></div>${foot()}`,
+    at(t) { show($("#k"), t, 0, .6); $("#n").textContent = Math.round(D.trap.buyers * ease(t / 2.6)); show($("#b"), t, .6, .8);
+      $$(".reads li").forEach((li, i) => show(li, t, 3.6 + i * 1.3, .6, 12)); show($("#v"), t, 3.6 + D.trap.lines.length * 1.3 + .4, .6, 0); } },
+  risk: { dur: 11, html: () => `<div class="stage"><div class="split" style="grid-template-columns:auto 1fr;gap:110px"><div class="gauge">
+      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="84" fill="none" stroke="var(--sunk)" stroke-width="12"/><circle id="arc" cx="100" cy="100" r="84" fill="none" stroke="var(--high)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)"/></svg>
+      <div><b id="sc">0</b><span>rug risk</span></div></div>
+      <div><h2 id="h">One number for the risk.<br><span style="color:var(--mute)">Every reason behind it.</span></h2>
+      <ul class="why">${D.risk.reasons.map((r) => `<li class="fade">${r}</li>`).join("")}</ul></div></div></div>${foot()}`,
+    at(t) { const k = ease((t - .6) / 2.4) * D.risk.score; $("#sc").textContent = Math.round(k); $("#arc").setAttribute("stroke-dasharray", `${k} 100`);
+      show($("#h"), t, 0, .8); $$(".why li").forEach((li, i) => show(li, t, 3.4 + i * .9, .6, 10)); } },
+  growth: { dur: 12, html: () => `<div class="stage" style="justify-content:center"><h2 id="h">Not how many buyers.<br><span style="color:var(--mute)">How fast they keep coming.</span></h2>
+      <div class="lanes">${D.growth.map((g, i) => `<div class="lane fade" id="l${i}"><div class="lh"><b>${g.label}</b><span class="tag ${g.pass ? "ok" : "held"}">${g.pass ? "Pass" : "Skip"}</span></div>
+        <div class="track">${Array.from({ length: g.dots }, (_, j) => `<i style="left:${g.at[j]}%"></i>`).join("")}<em style="left:${g.cut}%"><small>15 min ago</small></em><u>now</u></div><p>${g.text}</p></div>`).join("")}</div></div>${foot()}`,
+    at(t) { show($("#h"), t, 0, .8); D.growth.forEach((g, i) => { show($("#l" + i), t, 1 + i * .6, .6, 12); $$(`#l${i} .track i`).forEach((d, j) => { d.style.opacity = t > 1.8 + i * .6 + (g.at[j] / 100) * 5 ? 1 : 0; }); }); } },
+
+  // ---------- stills ----------
+  dumped: { html: () => `<div class="stage" style="justify-content:center"><h2>Selling is not the same as leaving.</h2><div class="pair">
+      <div class="card"><span class="tag ok">Still in</span><b>Dev sold some.</b><p>Took a little profit and still holds part of the bag. Ocula keeps reading.</p><div class="bag"><span style="width:62%"></span></div><small>still holding</small></div>
+      <div class="card bad"><span class="tag held">Held</span><b>Dev sold everything.</b><p>The deployer wallet is empty. On the radar today: ${D.stat.dumped} of ${D.stat.total} new launches.</p><div class="bag"><span style="width:0"></span></div><small>holds 0%</small></div></div></div>${foot()}` },
+  bundles: { html: () => `<div class="stage"><div class="split" style="grid-template-columns:1fr 1fr"><div><h2>One operator.<br>${D.bund.count} wallets.</h2><p class="sub">$${D.trap.symbol}: the deployer exempted ${D.bund.count} wallets from snipe tax. They bought ${D.bund.bought}% at launch. They hold ${D.bund.holds}% now.</p></div>
+      <svg class="web" viewBox="-200 -200 400 400">${D.bund.ws.map((w, i) => { const a = (i / D.bund.ws.length) * Math.PI * 2 - Math.PI / 2, x = Math.cos(a) * 150, y = Math.sin(a) * 150, r = 6 + w * 7; return `<line x1="0" y1="0" x2="${x}" y2="${y}"/><circle cx="${x}" cy="${y}" r="${r}"/>`; }).join("")}<circle class="dev" r="30"/><text y="6">dev</text></svg></div></div>${foot()}` },
+  xcheck: { html: () => `<div class="stage"><div class="split"><div><h2>Is the hype real?</h2><p class="sub">Ocula opens the token's X account: how old it is, who follows it, and whether the likes fit the audience.</p></div>
+      <div class="xcard"><div class="xh"><span class="xa"><svg viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><div><b>@${D.x.handle}</b><span>linked by $${D.trap.symbol}</span></div></div>
+      <div class="xn"><div><b>${D.x.ageDays}</b><span>days old</span></div><div><b>${D.x.followers}</b><span>followers</span></div><div><b>${D.x.posts}</b><span>posts</span></div></div>
+      <p class="xv">A week-old account with ${D.x.followers} followers, next to ${D.trap.buyers} buyers in ${D.trap.ageMin} minutes.</p></div></div></div>${foot()}` },
+  stat: { dark: true, html: () => `<div class="stage" style="justify-content:center"><div class="trio">
+      <div><b>${D.stat.total}</b><span>new launches read</span></div><div><b>${D.stat.dumped}</b><span>devs already sold everything</span></div><div class="on"><b>${D.stat.pass}</b><span>cleared every check</span></div></div>
+      <h2 style="margin-top:70px">Ocula would rather point at nothing<br><span style="color:#8d887e">than point at a trap.</span></h2></div>${foot()}` },
+  news: { html: () => `<div class="stage" style="justify-content:center;padding-bottom:140px"><div class="nhead"><span class="livechip lt"><i></i>Update · ${D.oc.date}</span><span class="nca">$OCULA · ${D.oc.ca.slice(0, 6)}…${D.oc.ca.slice(-4)}</span></div>
+      <h2 style="margin-top:26px">$OCULA is live. <span style="color:var(--mute)">Here is what Ocula reads on its own token.</span></h2>
+      <div class="ntiles">${D.oc.tiles.map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join("")}</div>
+      <div class="nnew"><span class="lbl2">New in the workspace</span><ul>${D.oc.news.map((n) => `<li><b>${n[0]}</b> ${n[1]}</li>`).join("")}</ul></div></div>${foot()}` },
+  paydex: { dark: true, html: () => `<div class="stage center" style="gap:26px"><div class="livechip"><i style="background:#e8c35a;box-shadow:0 0 14px #e8c35a"></i>Coming soon</div><div style="width:130px;margin-top:16px">${MARK}</div>
+      <h1 style="font-size:116px">Paid DEX. Soon.</h1><p class="sub" style="margin:0;max-width:none">$OCULA's DEX Screener profile is on the way: logo, banner, links and the full story in one place.</p></div>
+      <div class="foot"><span>$OCULA · Robinhood Chain</span><span>oculaagent.com</span></div>` },
+  live: { dark: true, html: () => `<div class="stage center" style="gap:26px"><div class="livechip"><i></i>Live on Robinhood Chain</div><div style="width:170px;margin-top:20px">${MARK}</div><h1 style="font-size:120px">$OCULA is live.</h1>
+      <p class="sub" style="margin:0;max-width:none">The agent that reads every Pons launch now has a token.</p>
+      <div class="unl"><div><b>0.1%</b><span>of supply unlocks the agent</span></div><div><b>7</b><span>tools in one workspace</span></div><div><b>Free</b><span>Pons Launchpad, always</span></div></div></div>
+      <div class="foot"><span>Launched on Pons · CA in the post</span><span>oculaagent.com</span></div>` },
+  follow: { dark: true, html: () => `<div class="stage center" style="gap:30px"><div style="width:150px">${MARK}</div><h1>Ocula is on X.</h1><p class="sub" style="margin:0;max-width:none">What the agent sees on Pons, as it sees it.</p><div class="handle">@oculaagent</div></div><div class="foot"><span>Robinhood Chain · Pons</span><span>oculaagent.com</span></div>` },
+};
+
+const P = new URLSearchParams(location.search), S = SCENES[P.get("s")];
+document.body.classList.toggle("dark", !!S.dark); document.body.classList.toggle("still", !S.dur);
+$("#root").innerHTML = S.html();
+// videos run the small animations in real time; stills freeze them at a frame where each picture is complete
+window.SCENE = { dur: S.dur || 0, seek(t) { S.at?.(t); document.getAnimations().forEach((a) => { a.pause(); a.currentTime = S.dur ? t * 1000 : (S.vt || 2400); }); } };
+window.SCENE.seek(S.dur || 99);
+</script></body></html>

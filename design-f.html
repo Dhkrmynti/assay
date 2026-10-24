@@ -1,0 +1,2128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ocula — every launch gets a file</title>
+<meta name="description" content="Ocula is the AI agent that reads every Pons launch on Robinhood Chain.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://oculaagent.com/">
+<meta property="og:title" content="Ocula">
+<meta property="og:description" content="The AI agent that reads every Pons launch on Robinhood Chain.">
+<meta property="og:image" content="https://oculaagent.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@oculaagent">
+<meta name="twitter:creator" content="@oculaagent">
+<meta name="twitter:image" content="https://oculaagent.com/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Ocula as an agent you talk to — after Manus / Perplexity: broken white, near-black, one serif voice ===== */
+:root{
+  --bg:#F5F3EC;--surface:#FCFBF7;--sunk:#EEEBE2;--ink:#161514;--ink-2:#45423C;--mute:#86827A;--line:#E2DED3;--line-2:#D2CDC1;
+  --black:#161514;--cream:#F5F3EC;--high:#C8432F;--watch:#B7791F;--okc:#2F7A4A;
+  --serif:"Libre Baskerville",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--ink);color:var(--cream)}
+input,textarea{caret-color:var(--ink)}
+.term ::selection{background:#F5F3EC;color:#161514}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 14px;border-radius:9px;background:var(--black);color:var(--cream);border:1px solid var(--black);font:500 14px var(--sans);text-decoration:none;cursor:pointer;transition:background .2s,transform .2s}
+.btn:hover{background:#2c2a27}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.lg{height:44px;padding:0 20px;font-size:15px;border-radius:11px}
+.btn svg{width:16px;height:16px}
+.btn.buy[aria-disabled="true"]{background:transparent;color:var(--mute);border-color:var(--line-2);cursor:default}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);transition:box-shadow .3s}
+body.scrolled .nav{box-shadow:0 1px 0 var(--line)}
+.nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:60px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font:600 17px var(--sans);letter-spacing:-.01em}
+.brand svg{width:26px;height:auto;margin-right:2px}
+.nav nav{display:flex;gap:4px}
+.nav nav a{padding:6px 12px;border-radius:8px;text-decoration:none;color:var(--ink-2);font:500 14px var(--sans);transition:background .2s,color .2s}
+.nav nav a:hover{background:var(--sunk);color:var(--ink)}
+.nav .r{display:flex;justify-content:flex-end;gap:8px}
+
+/* hero: the agent itself */
+.hero{min-height:calc(100svh - 60px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0 70px}
+.col{width:min(768px,100%);margin:0 auto}
+.live{display:inline-flex;align-items:center;gap:8px;margin:0 auto 26px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font:500 13px var(--sans);color:var(--ink-2);text-decoration:none;transition:border-color .2s}
+.live:hover{border-color:var(--line-2)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--okc);box-shadow:0 0 0 3px color-mix(in srgb,var(--okc) 18%,transparent);animation:pulse 2.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--okc) 0%,transparent)}}
+.hero h1{margin:0 0 26px;text-align:center;font:400 clamp(28px,3.2vw,38px)/1.4 var(--serif);letter-spacing:-.01em}
+.thread{display:grid;gap:18px;margin:0 0 22px}
+.thread:empty{display:none}
+.msg{display:grid;gap:8px;animation:msgin .5s var(--ease)}
+@keyframes msgin{from{opacity:0;transform:translateY(8px)}}
+.msg.u{justify-items:end}
+.msg.u .t{background:var(--sunk);border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:80%;white-space:pre-wrap;word-break:break-word}
+.msg.a{grid-template-columns:28px 1fr;align-items:start;column-gap:12px}
+.msg.a .av{width:28px;height:28px;border-radius:50%;background:var(--black);color:var(--cream);display:grid;place-items:center}
+.msg.a .av svg{width:16px;height:auto}
+.msg.a .t{color:var(--ink);padding-top:3px;white-space:pre-wrap}
+.msg.a .acts{grid-column:2;display:flex;gap:8px;flex-wrap:wrap}
+.typing{display:inline-flex;gap:4px;padding-top:10px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--mute);animation:dot 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{50%{opacity:.25}}
+.rep{grid-column:2;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.rep .hd{display:flex;align-items:center;gap:10px}
+.rep .hd img{width:34px;height:34px;border-radius:8px;object-fit:cover;background:var(--sunk)}
+.rep .hd b{font:600 16px var(--sans)}.rep .hd span{color:var(--mute);font:13px var(--mono)}
+.rep ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rep li{display:grid;grid-template-columns:10px 1fr;gap:10px;align-items:baseline;font-size:14.5px}
+.rep li i{width:8px;height:8px;border-radius:50%;background:var(--mute);transform:translateY(-1px)}
+.rep li.high i{background:var(--high)}.rep li.watch i{background:var(--watch)}.rep li.ok i{background:var(--okc)}
+.rep p{margin:0;color:var(--ink-2);font-size:14.5px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px 14px 10px 18px;box-shadow:0 1px 2px rgba(22,21,20,.04),0 12px 30px -18px rgba(22,21,20,.18);transition:border-color .2s,box-shadow .2s}
+.box:focus-within{border-color:var(--line-2);box-shadow:0 1px 2px rgba(22,21,20,.05),0 16px 40px -18px rgba(22,21,20,.25)}
+.box textarea{width:100%;border:0;outline:0;resize:none;background:transparent;font:16px/1.5 var(--sans);color:var(--ink);min-height:52px;max-height:200px}
+.box textarea::placeholder{color:var(--mute)}
+.box .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
+.box .hint{color:var(--mute);font-size:13px}
+.send{width:36px;height:36px;border-radius:50%;border:0;background:var(--black);color:var(--cream);display:grid;place-items:center;cursor:pointer;transition:opacity .2s,transform .2s}
+.send:disabled{opacity:.3;cursor:default}
+.send:not(:disabled):hover{transform:scale(1.05)}
+.send svg{width:16px;height:16px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+.chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-2);font:500 13.5px var(--sans);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.chip:hover{background:var(--surface);border-color:var(--line-2);color:var(--ink)}
+.chip svg{width:15px;height:15px}
+
+/* sections */
+.sec{padding:120px 0 0}
+.sh{max-width:640px;margin:0 0 44px}
+.sh h2{margin:0;font:400 clamp(30px,3.6vw,46px)/1.2 var(--serif);letter-spacing:-.015em}
+.sh p{margin:14px 0 0;color:var(--ink-2);font-size:17px}
+.center{text-align:center;margin-left:auto;margin-right:auto}
+
+/* watch Ocula work: pinned, steps on the left, its real reading on the right */
+.work{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center;min-height:100svh;padding-top:80px;padding-bottom:80px}
+.steps{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:4px}
+.steps li{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:14px;color:var(--mute);transition:background .4s,color .4s}
+.steps li .n{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font:500 13px var(--sans);transition:background .4s,color .4s,border-color .4s}
+.steps li b{display:block;font:600 16px var(--sans);color:inherit}
+.steps li span{font-size:14.5px}
+.steps li.on{background:var(--surface);color:var(--ink)}
+.steps li.on .n{background:var(--black);border-color:var(--black);color:var(--cream)}
+.steps li.on span{color:var(--ink-2)}
+.term{background:var(--black);color:var(--cream);border-radius:20px;padding:22px 24px;min-height:360px;box-shadow:0 30px 60px -30px rgba(22,21,20,.45);display:flex;flex-direction:column}
+.term .top{display:flex;justify-content:space-between;align-items:center;color:#9d988e;font-size:13px;margin-bottom:18px}
+.term .top b{color:var(--cream);font-weight:600}
+.term .lines{display:grid;gap:12px;font:14px/1.55 var(--mono)}
+.term .ln{display:grid;grid-template-columns:22px 1fr;gap:10px;opacity:.28;transition:opacity .5s}
+.term .ln.on{opacity:1}
+.term .ln i{font-style:normal;color:#9d988e}
+.term .ln em{font-style:normal;color:#e9a08f}.term .ln u{text-decoration:none;color:#9fd3a8}
+.term .verdict{margin-top:auto;padding-top:18px;border-top:1px solid rgba(245,243,236,.12);display:flex;justify-content:space-between;align-items:center;font:600 15px var(--sans)}
+
+/* what Ocula read today: real launches as a gallery */
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:12px;text-decoration:none;transition:transform .5s var(--ease),border-color .3s,box-shadow .3s}
+.case:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 18px 40px -26px rgba(22,21,20,.3)}
+.case .q{align-self:start;justify-self:end;background:var(--sunk);border-radius:14px 14px 4px 14px;padding:8px 12px;font-size:14px;max-width:85%}
+.case .a{display:grid;grid-template-columns:24px 1fr;gap:10px;font-size:14.5px;color:var(--ink-2)}
+.case .a .av{width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--cream);display:grid;place-items:center}.case .a .av svg{width:14px;height:auto}
+.case .a b{color:var(--ink)}
+.case .tag{justify-self:start;align-self:end;display:inline-flex;align-items:center;justify-content:center;height:24px;line-height:1;font:500 12px/1 var(--sans);padding:0 10px;border-radius:999px;background:var(--sunk);color:var(--ink-2)}
+.case .tag.ok{background:color-mix(in srgb,var(--okc) 12%,transparent);color:var(--okc)}.case .tag.held{background:color-mix(in srgb,var(--high) 10%,transparent);color:var(--high)}
+.case.big{grid-column:span 2}
+
+/* tools window sits dark on the light page */
+.ws{--ws-r:18px}
+
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative}
+.flow svg.line{position:absolute;left:0;right:0;top:22px;width:100%;height:4px;overflow:visible}
+.flow .track{stroke:var(--line-2);stroke-width:2}.flow .drawn{stroke:var(--ink);stroke-width:2}
+.fstep{position:relative;display:grid;gap:10px;text-decoration:none}
+.fstep .dot{width:44px;height:44px;border-radius:50%;background:var(--bg);border:1px solid var(--line-2);display:grid;place-items:center;font:500 14px var(--sans);transition:background .4s,color .4s,border-color .4s}
+.fstep.on .dot{background:var(--black);border-color:var(--black);color:var(--cream)}
+.fstep b{font:400 22px var(--serif)}
+.fstep span{color:var(--ink-2);font-size:14.5px}
+.fstep .viz{max-width:160px;color:var(--ink);opacity:.5;transition:opacity .4s}.fstep.on .viz{opacity:1}
+
+/* safety */
+.safe{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.sf{padding:26px 26px 26px 0}.sf+.sf{padding-left:26px;border-left:1px solid var(--line)}
+.sf .viz{max-width:200px;color:var(--ink);margin-bottom:6px}
+.sf b{display:block;font:400 22px/1.3 var(--serif)}
+.sf p{margin:8px 0 0;color:var(--ink-2);font-size:15px}
+
+/* close */
+.close{padding:140px 0 120px;text-align:center}
+.close h2{margin:0 0 26px;font:400 clamp(32px,4vw,52px)/1.2 var(--serif)}
+footer{border-top:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:40px;padding-top:56px;padding-bottom:48px}
+.fbrand p{margin:14px 0 16px;color:var(--ink-2);max-width:32ch;font-size:15px}
+.fstat{display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-size:13px}
+.fstat i{width:7px;height:7px;border-radius:50%;background:var(--okc)}
+.fcol{display:grid;gap:10px;align-content:start}
+.fcol b{font:600 13px var(--sans);color:var(--ink);margin-bottom:4px}
+.fcol a{color:var(--ink-2);text-decoration:none;font-size:14.5px;transition:color .2s}
+.fcol a:hover{color:var(--ink)}
+.fbottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:18px;padding-bottom:26px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}
+@media (max-width:900px){.fgrid{grid-template-columns:1fr 1fr;gap:30px}.fbrand{grid-column:1/-1}}
+
+@media (max-width:900px){
+  .nav nav{display:none}.nav .wrap{grid-template-columns:1fr auto}
+  .work{grid-template-columns:1fr;gap:28px;min-height:0;padding-top:20px;padding-bottom:20px}
+  .gal{grid-template-columns:1fr}.case.big{grid-column:auto}
+  .flow{grid-template-columns:1fr;gap:22px}.flow svg.line{display:none}.fstep{grid-template-columns:44px 1fr;column-gap:14px;row-gap:2px;align-items:center}.fstep span:not(.dot){grid-column:2}.fstep .viz{display:none}
+  .safe{grid-template-columns:1fr}.sf+.sf{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .sec{padding-top:90px}
+}
+@media (prefers-reduced-motion:reduce){.msg,.live i{animation:none}}
+
+/* holder access */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(22,21,20,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
+.modal[hidden]{display:none}
+.sheet{position:relative;width:min(460px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:grid;gap:14px;box-shadow:0 30px 80px -30px rgba(22,21,20,.5)}
+.sheet h3{margin:0;font:400 28px var(--serif)}
+.sheet p{margin:0;color:var(--ink-2);font-size:15.5px}
+.sheet .mmark svg{width:42px;height:auto}
+.sheet .x{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:26px;color:var(--mute);cursor:pointer}
+.merr{color:var(--high)!important;font-size:14px!important}.merr:empty{display:none}
+#mOwner summary{cursor:pointer;color:var(--mute);font-size:13.5px}
+#ownerForm{display:flex;gap:8px;margin-top:10px}
+#ownerForm input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font:14px var(--sans)}
+.nav .r{gap:8px}
+#holderBtn.on{border-color:var(--okc);color:var(--okc)}
+.ws .tool{position:relative}
+[hidden]{display:none!important}
+.ws .lock{position:absolute;inset:0;z-index:5;display:grid;place-items:start center;padding-top:110px!important;text-align:center;padding:30px;background:rgba(22,21,20,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.ws .lock div{display:grid;gap:12px;justify-items:center;max-width:380px}
+.ws .lock svg{width:34px;height:34px;color:#F5F3EC}
+.ws .lock b{font:400 24px var(--serif);color:#F5F3EC}
+.ws .lock p{margin:0;color:#b9b4aa;font-size:14.5px}
+body.holder .ws .lock{display:none}
+body:not(.holder) .ws .tabs button.lockd .tn::after{content:"";display:inline-block;width:11px;height:11px;margin-left:7px;vertical-align:-1px;background:currentColor;opacity:.55;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat}
+@media (max-width:900px){#holderBtn{display:none}}
+.rep .rk{margin-left:auto;font:600 13px var(--sans);padding:5px 11px;border-radius:999px;white-space:nowrap}
+.rep .rk.low{background:rgba(47,122,74,.12);color:var(--okc)}.rep .rk.medium{background:rgba(183,121,31,.14);color:var(--watch)}.rep .rk.high{background:rgba(200,67,47,.12);color:var(--high)}
+
+/* X link in the nav */
+.nav .xlink{width:40px;padding-left:0;padding-right:0}
+
+/* ===== Ocula · Dossier: the agent opens a case file on every launch. Manila paper, typed fields, redactions, stamps. ===== */
+:root{
+  --bg:#ECE5D3;--surface:#FBF8F0;--sunk:#E4DBC6;--ink:#161514;--ink-2:#463F33;--mute:#857B68;--line:#D6CBB3;--line-2:#C3B696;
+  --black:#161514;--cream:#F5F3EC;--high:#A8322A;--watch:#9A6A16;--okc:#2F6B45;--folder:#DCCB9F;--folder-2:#CDB985;
+  --type:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;--mono:var(--type);
+}
+body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .15 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+.lbl{display:inline-block;font:500 11.5px var(--type);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.btn{border-radius:4px;font:500 13px var(--type);letter-spacing:.02em}
+.btn.lg{border-radius:4px;font-size:14px}
+.btn.ghost{border-color:var(--ink);color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--cream)}
+.btn.buy[aria-disabled="true"]{border-style:dashed}
+
+/* nav: a letterhead */
+.nav{background:color-mix(in srgb,var(--bg) 92%,transparent)}
+body.scrolled .nav{box-shadow:0 1px 0 var(--line-2)}
+.brand{font:600 18px var(--sans)}
+.brand small{display:block;margin-left:10px;padding-left:10px;border-left:1px solid var(--line-2);font:500 10.5px var(--type);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.nav nav a{font:500 12.5px var(--type);letter-spacing:.06em;text-transform:uppercase;border-radius:3px}
+.nav nav a:hover{background:transparent;color:var(--ink);text-decoration:underline;text-underline-offset:5px}
+
+/* redaction: black bars that lift when read */
+.rd{position:relative;white-space:nowrap}
+.rd::after{content:"";position:absolute;left:-3px;right:-3px;top:.12em;bottom:.02em;background:var(--ink);transform-origin:right;transition:transform .9s var(--ease)}
+.rd.open::after{transform:scaleX(0)}
+
+/* stamps */
+.stamp{display:inline-flex;align-items:center;justify-content:center;padding:6px 14px;border:3px double currentColor;border-radius:6px;font:700 15px var(--type);letter-spacing:.18em;text-transform:uppercase;color:var(--high);transform:rotate(-4deg);mix-blend-mode:multiply;opacity:.92}
+.stamp.ok{color:var(--okc)}.stamp.idle{color:var(--mute);border-style:dashed}
+.stamp.hit{animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stamp{from{transform:rotate(-4deg) scale(1.9);opacity:0}}
+.stamp.big{position:absolute;right:44px;top:84px;font-size:13px;color:var(--okc);transform:rotate(6deg)}
+
+/* hero: the folder cover is the agent */
+.hero{min-height:auto;display:block;padding:44px 0 40px}
+.folder{position:relative;max-width:980px;margin:0 auto;filter:drop-shadow(0 30px 40px rgba(60,45,20,.18))}
+.ftab{display:inline-block;margin-left:34px;padding:10px 22px 8px;background:var(--folder);border-radius:10px 10px 0 0;font:500 12px var(--type);letter-spacing:.14em;color:#5b4c2c}
+.cover{position:relative;background:var(--folder) linear-gradient(180deg,rgba(255,255,255,.18),rgba(0,0,0,.02));border-radius:0 12px 12px 12px;padding:30px 34px 34px}
+.cover::before{content:"";position:absolute;inset:16px;border-radius:6px;background:var(--surface);box-shadow:0 1px 0 rgba(0,0,0,.04),0 0 0 1px var(--line)}
+.cover>*{position:relative}
+.cover .meta{display:flex;flex-wrap:wrap;gap:8px 26px;padding:18px 20px 16px;border-bottom:1px solid var(--line);font:13px var(--type);color:var(--mute);margin:0 0 6px}
+.cover .meta b{color:var(--ink);font-weight:500}
+.cover .lv{display:inline-flex;align-items:center;gap:8px;margin-left:auto;color:var(--okc)}
+.cover .lv i{width:7px;height:7px;border-radius:50%;background:var(--okc);animation:pulse 2.2s infinite;box-shadow:0 0 0 3px color-mix(in srgb,var(--okc) 18%,transparent)}
+.hero h1{margin:26px 20px 26px;text-align:left;font:400 clamp(30px,4vw,50px)/1.18 var(--serif);letter-spacing:-.02em}
+.hero h1 .soft{color:var(--ink-2)}
+.thread{margin:0 20px 20px}
+.box{margin:0 20px;border-radius:6px;border:1px solid var(--line-2);box-shadow:none;background:#fffdf7;padding:12px 14px 10px 16px}
+.box:focus-within{border-color:var(--ink);box-shadow:none}
+.box .fl{display:block;font:500 11px var(--type);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.box textarea{font:16px/1.55 var(--type);background:repeating-linear-gradient(transparent 0 24px,var(--line) 24px 25px);background-position:0 -1px;line-height:25px}
+.box .hint{font:12px var(--type)}
+.send{width:auto;height:36px;padding:0 14px;white-space:nowrap;flex:none;border-radius:4px;display:inline-flex;gap:8px;font:500 13px var(--type);letter-spacing:.04em;text-transform:uppercase}
+.chips{justify-content:flex-start;margin:16px 20px 0}
+.chip{border-radius:3px;border-color:var(--line-2);font:500 12.5px var(--type);height:32px}
+.chip:hover{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+/* chat as memos */
+.msg.u .t{background:transparent;border:1px dashed var(--line-2);border-radius:4px;font:15px var(--type)}
+.msg.a .av{border-radius:4px}
+.msg.a .t{font:15.5px/1.6 var(--sans)}
+.rep{border-radius:6px;border-color:var(--line-2);background:#fffdf7}
+.rep .rk{border-radius:4px;border:2px solid currentColor;background:transparent!important;font:700 11.5px var(--type);letter-spacing:.1em;text-transform:uppercase;transform:rotate(-3deg)}
+
+/* briefing memo */
+.brief{padding:70px 0 10px}
+.memo{max-width:900px;margin:0 auto;font:400 clamp(22px,2.6vw,32px)/1.55 var(--serif);color:var(--ink-2)}
+.memo .lbl{display:block;margin-bottom:16px}
+
+/* procedure: a typed case report that declassifies as you scroll */
+.sh .lbl{margin-bottom:14px}
+.steps li{border-radius:4px}
+.steps li .n{border-radius:3px;font:600 12px var(--type);width:34px}
+.steps li.on{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.steps li.on .n{background:var(--ink)}
+.term{background:#fffdf7;color:var(--ink);border-radius:4px;border:1px solid var(--line-2);box-shadow:8px 8px 0 var(--folder),0 30px 50px -30px rgba(60,45,20,.35);padding:26px 28px}
+.term .top{color:var(--mute);font:12px var(--type);letter-spacing:.1em;text-transform:uppercase;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.term .top b{color:var(--ink)}
+.term .lines{font:14px/1.6 var(--type);gap:14px}
+.term .ln{opacity:1;position:relative}
+.term .ln span{position:relative}
+.term .ln span::after{content:"";position:absolute;inset:1px -2px;background:var(--ink);transform-origin:right;transition:transform .7s var(--ease)}
+.term .ln.on span::after{transform:scaleX(0)}
+.term .ln i{color:var(--mute)}
+.term .ln em{color:var(--high)}.term .ln u{color:var(--okc)}
+.term .verdict{border-top:1px solid var(--line);font:inherit}
+.term .verdict .btn.ghost{color:var(--ink)}
+.term ::selection{background:var(--ink);color:var(--cream)}
+
+/* today's files */
+.gal{gap:22px}
+.case{position:relative;background:#fffdf7;border:1px solid var(--line-2);border-radius:3px 3px 6px 6px;padding:26px 20px 20px;box-shadow:5px 5px 0 var(--folder)}
+.case::before{content:"";position:absolute;left:18px;top:-11px;width:90px;height:11px;background:var(--folder);border-radius:6px 6px 0 0}
+.case:hover{transform:translateY(-3px) rotate(-.3deg);box-shadow:8px 8px 0 var(--folder-2)}
+.case .q{justify-self:start;background:transparent;border-radius:0;padding:0;font:500 12px var(--type);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.case .a{font-size:14.5px}
+.case .a .av{border-radius:4px}
+.case .tag{position:absolute;right:16px;bottom:16px;height:auto;padding:5px 10px;border:3px double currentColor;border-radius:5px;background:transparent!important;font:700 12px var(--type);letter-spacing:.16em;text-transform:uppercase;transform:rotate(-6deg);mix-blend-mode:multiply}
+.case .tag.ok{color:var(--okc)}.case .tag.held{color:var(--high)}
+.case .a{padding-bottom:34px}
+
+/* field kit: the tools stay a dark instrument, tucked in a folder */
+#app .ws{box-shadow:10px 10px 0 var(--folder),0 40px 80px -40px rgba(40,30,10,.5);border-radius:6px}
+
+/* operation */
+.fstep .dot{border-radius:4px;font:600 13px var(--type);background:var(--surface)}
+.fstep.on .dot{background:var(--ink)}
+.flow .drawn{stroke-dasharray:1;stroke-width:2}
+
+/* protocol */
+.safe{border-top:2px solid var(--ink)}
+.sf .pn{display:block;font:600 13px var(--type);color:var(--mute);margin-bottom:10px}
+
+/* commission */
+.close{padding:130px 0 110px}
+.close .lbl{display:block;margin-bottom:16px}
+.close p{color:var(--ink-2);margin:-10px auto 26px;max-width:46ch}
+
+/* clearance modal */
+.sheet{border-radius:6px;background:#fffdf7;box-shadow:10px 10px 0 var(--folder),0 30px 80px -30px rgba(22,21,20,.5)}
+.sheet h3{font:400 30px var(--serif)}
+#ownerForm input{border-radius:4px}
+
+footer{border-top:2px solid var(--ink)}
+.fcol b,.fbottom{font-family:var(--type);letter-spacing:.06em}
+.fcol b{text-transform:uppercase;font-size:11.5px;color:var(--mute)}
+
+@media (max-width:900px){
+  .brand small{display:none}
+  .hero{padding-top:22px}.ftab{margin-left:16px}.cover{padding:20px 14px 22px}.cover::before{inset:8px}
+  .cover .meta{padding:14px 12px}.cover .lv{margin-left:0}
+  .hero h1,.thread,.box,.chips{margin-left:10px;margin-right:10px}
+  .stamp.big{display:none}
+  .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.chip{flex:none}
+}
+@media (prefers-reduced-motion:reduce){.rd::after,.term .ln span::after{display:none}.stamp.hit{animation:none}}
+
+/* ===== workspace window: the same tools in every design, always a dark instrument ===== */
+.ws{--bg:#161514;--text:#F5F3EC;--mid:#aaa59c;--dim:#7a766f;--line:rgba(245,243,236,.09);--line2:rgba(245,243,236,.16);--panel:rgba(28,27,25,.9);
+  --acc:#F5F3EC;--acc2:rgba(245,243,236,.22);--acc3:rgba(245,243,236,.05);--high:#ff5a5f;--watch:#e8c35a;--ok:#4ade80;
+  color:var(--text);background:#161514;border:1px solid rgba(245,243,236,.1);border-radius:var(--ws-r,18px);overflow:hidden;box-shadow:0 60px 140px -50px rgba(0,0,0,.6);font:14.5px/1.55 var(--sans)}
+.ws a{color:inherit}
+.ws-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ws-bar b{color:var(--text);font-weight:500}
+.ws-bar .t{font:500 15px var(--sans);letter-spacing:0;text-transform:none;color:var(--text)}
+.ws-bar .r{text-align:right}
+.ws-bar .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:8px;box-shadow:0 0 8px var(--ok)}
+.ws-body{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:640px}
+.ws .tabs{display:flex;flex-direction:column;gap:2px;padding:12px;border-right:1px solid var(--line);margin:0;flex-wrap:nowrap}
+.ws .tabs button{display:grid;grid-template-columns:26px 1fr;column-gap:8px;text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;padding:10px 12px;color:var(--mid);cursor:pointer;transition:background .2s,color .2s;font:inherit}
+.ws .tabs button .ti{grid-row:span 2;font:500 11px var(--mono);color:var(--dim);padding-top:3px}
+.ws .tabs button .tn{font:500 14px var(--sans);color:inherit}
+.ws .tabs button .td{font-size:12px;color:var(--dim)}
+.ws .tabs button:hover{background:rgba(245,243,236,.04);color:var(--text);border-color:transparent}
+.ws .tabs button.on{background:#F5F3EC;color:#161514;border-color:#F5F3EC}.ws .tabs button.on .ti,.ws .tabs button.on .td{color:#6a665f}
+.ws .tabs .sep{height:1px;background:var(--line);margin:8px 4px}
+.ws .tabs .tside{margin-top:auto;padding:12px;font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--dim);line-height:1.9}
+.ws .panes{min-width:0}
+.ws .tool{display:none;padding:26px;min-height:640px}.ws .tool.on{display:block;animation:wsfade .4s ease}
+@keyframes wsfade{from{opacity:0;transform:translateY(6px)}}
+.ws .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.ws .tool.panel{background:transparent;border:0;border-radius:0}
+.ws .hud:before,.ws .hud:after{display:none!important}
+.ws .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:500 13.5px var(--sans);padding:11px 18px;border-radius:999px;border:1px solid #F5F3EC;background:#F5F3EC;color:#161514;cursor:pointer;white-space:nowrap;text-decoration:none}
+.ws .btn.ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.ws .btn.sm{padding:8px 14px;font-size:12.5px}
+.ws .btn.danger{background:transparent;color:#ff8a8d;border-color:rgba(255,90,95,.45)}
+.ws .btn:disabled{opacity:.45;cursor:wait}
+.ws .lbl{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ws .lbl b{color:var(--text);font-weight:500}
+.ws .mono{font-family:var(--mono)}
+.ws input,.ws textarea,.ws select{border-radius:10px!important}
+.ws input:focus,.ws textarea:focus,.ws select:focus{outline:none;border-color:#F5F3EC!important;box-shadow:0 0 0 3px rgba(245,243,236,.08)}
+.ws .snsec h4{font:600 16px var(--sans)!important;text-transform:none!important;letter-spacing:-.01em!important}
+@keyframes beat{50%{opacity:.25}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:1000px){
+  .ws-body{grid-template-columns:1fr}.ws-bar{grid-template-columns:1fr auto}.ws-bar .r{display:none}
+  .ws .tabs{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);align-items:center;scrollbar-width:none}.ws .tabs::-webkit-scrollbar{display:none}
+  .ws .tabs button{display:block;flex:none;white-space:nowrap;border-radius:999px;padding:8px 14px}.ws .tabs button .ti,.ws .tabs button .td,.ws .tabs .sep,.ws .tabs .tside{display:none}
+  .ws .tool{padding:18px;min-height:420px}.ws-body{min-height:0}
+}
+
+/* caret follows the ground: light caret inside the dark tools window */
+.ws input,.ws textarea{caret-color:#F5F3EC}
+.ws ::selection{background:#F5F3EC;color:#161514}
+/* radar rows: the checks column gets the room, long checks wrap instead of running under the verdict */
+.ws .tool .rrow{grid-template-columns:44px minmax(0,1fr) 64px minmax(0,1.5fr) 76px max-content;gap:16px}
+.ws .tool .rrow .checks{min-width:0}
+.ws .tool .rrow .ck{white-space:normal;max-width:100%;line-height:1.35}
+@media (max-width:1000px){
+  .ws .tool .rrow{grid-template-columns:40px minmax(0,1fr) 76px;row-gap:10px}
+  .ws .tool .rrow .age,.ws .tool .rrow .pg{display:none}
+  .ws .tool .rrow .checks,.ws .tool .rrow .ract{grid-column:1/-1}
+  .ws .tool .rrow .ract{justify-content:flex-start;grid-row:3}
+  .ws .tool .rrow .verdict{grid-column:3;grid-row:1;align-self:center}
+  .ws .tool .rrow .checks{grid-row:2}
+}
+
+/* scanner: rug risk, bundles, X */
+.ws .risk{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;padding:18px;border:1px solid var(--line);border-radius:14px;margin:4px 0 18px;background:rgba(245,243,236,.02)}
+.ws .risk .rg{position:relative;width:140px;height:140px}
+.ws .risk .rg svg{width:100%;height:100%}
+.ws .risk .rg .t{fill:none;stroke:rgba(245,243,236,.08);stroke-width:10}
+.ws .risk .rg .v{fill:none;stroke-width:10;stroke-linecap:round}
+.ws .risk.low .v{stroke:#4ade80}.ws .risk.medium .v{stroke:#e8c35a}.ws .risk.high .v{stroke:#ff5a5f}
+.ws .risk .rg>div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ws .risk .rg b{font:600 30px var(--sans);letter-spacing:-.02em}.ws .risk .rg span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.ws .risk.low .lbl b{color:#4ade80}.ws .risk.medium .lbl b{color:#e8c35a}.ws .risk.high .lbl b{color:#ff5a5f}
+.ws .risk ul{margin:10px 0 6px;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.ws .rnote{margin:8px 0 0;font-size:13px;color:var(--dim)}.ws .rnote.bad{color:#ff8a8d}.ws .rnote.good{color:#4ade80}
+.ws .why{font-size:11.5px;color:var(--dim);margin-top:2px}
+.ws .xrow{display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:600}
+.ws .xv{font:500 11px var(--sans);padding:2px 8px;border-radius:999px;border:1px solid rgba(74,222,128,.4);color:#4ade80}
+.ws .xnums{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:12px}
+.ws .xnums b{display:block;font:600 19px var(--sans)}.ws .xnums span{font-size:11.5px;color:var(--dim)}
+@media (max-width:700px){.ws .risk{grid-template-columns:1fr;justify-items:center;text-align:center}.ws .risk ul{text-align:left}}
+
+/* ===== visuals: small animated pictures instead of paragraphs (they inherit the design's colour) ===== */
+.viz{position:relative;width:100%;aspect-ratio:1.5;color:inherit}
+.viz svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.viz .s{stroke:currentColor;fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.viz .f{fill:currentColor}
+.viz .o2{opacity:.22}.viz .o4{opacity:.45}
+/* scanner: a document read by a moving beam */
+.v-scan .beam{animation:vbeam 2.6s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes vbeam{0%{transform:translateY(0)}50%{transform:translateY(118px)}100%{transform:translateY(0)}}
+.v-scan .ck{opacity:0;animation:vck 2.6s infinite}.v-scan .ck:nth-of-type(2){animation-delay:.35s}.v-scan .ck:nth-of-type(3){animation-delay:.7s}
+@keyframes vck{30%,80%{opacity:1}0%,20%,100%{opacity:0}}
+/* radar: rings, a sweep and real launches as blips */
+.v-radar .sweep{position:absolute;left:50%;top:50%;width:84%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from 0deg,currentColor 0deg,transparent 70deg);opacity:.22;animation:vspin 3.2s linear infinite;-webkit-mask:radial-gradient(circle,#000 69%,transparent 70%);mask:radial-gradient(circle,#000 69%,transparent 70%)}
+@keyframes vspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.v-radar .blip{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:currentColor;animation:vblip 3.2s infinite}
+.v-radar .blip.bad{background:#ef4444}
+@keyframes vblip{0%,100%{opacity:.25;transform:scale(.8)}10%{opacity:1;transform:scale(1.4)}}
+/* sniper: a reticle that locks */
+.v-snipe .ret{transform-origin:150px 100px;animation:vlock 2.8s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes vlock{0%{transform:translate(-46px,24px) scale(1.25)}45%,85%{transform:none}100%{transform:translate(-46px,24px) scale(1.25)}}
+.v-snipe .hit{transform-origin:150px 100px;animation:vhit 2.8s infinite}
+@keyframes vhit{0%,44%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+/* fee claimer: many accounts flow into one wallet */
+.v-fees .flow{stroke-dasharray:4 7;animation:vflow 1.2s linear infinite}
+@keyframes vflow{to{stroke-dashoffset:-22}}
+.v-fees .acc{animation:vpulse 2.4s infinite}
+@keyframes vpulse{50%{opacity:.35}}
+/* launchpad: a bonding curve fills to graduation */
+.v-launch .curve{stroke-dasharray:320;stroke-dashoffset:320;animation:vdraw 3.4s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vdraw{0%{stroke-dashoffset:320}60%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.v-launch .grad{transform-origin:244px 38px;animation:vgrad 3.4s infinite}
+@keyframes vgrad{0%,55%{transform:scale(0)}65%,90%{transform:scale(1)}100%{transform:scale(1);opacity:0}}
+/* launch kit: lines being written */
+.v-kit .ln{transform-origin:left;animation:vtype 3s steps(14) infinite}
+.v-kit .ln:nth-of-type(2){animation-delay:.4s}.v-kit .ln:nth-of-type(3){animation-delay:.8s}.v-kit .ln:nth-of-type(4){animation-delay:1.2s}
+@keyframes vtype{0%{transform:scaleX(0)}40%,90%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+/* agent studio: a conversation */
+.v-agent .b1{animation:vb 4s infinite}.v-agent .b2{animation:vb 4s 1.2s infinite}.v-agent .b3{animation:vb 4s 2.2s infinite}
+@keyframes vb{0%,10%{opacity:0;transform:translateY(6px)}20%,85%{opacity:1;transform:none}100%{opacity:0}}
+.v-agent .td{animation:vdot 1s infinite}.v-agent .td:nth-of-type(2){animation-delay:.15s}.v-agent .td:nth-of-type(3){animation-delay:.3s}
+@keyframes vdot{50%{opacity:.2}}
+/* AI picks: a score ring */
+.v-pick .ring{stroke-dasharray:283;stroke-dashoffset:283;animation:vscore 3s cubic-bezier(.5,0,.2,1) infinite;transform:rotate(-90deg);transform-origin:150px 100px}
+@keyframes vscore{0%{stroke-dashoffset:283}50%,90%{stroke-dashoffset:62}100%{stroke-dashoffset:62;opacity:0}}
+/* directives */
+.v-key .cross{stroke-dasharray:130;stroke-dashoffset:130;animation:vdraw2 3s infinite}
+@keyframes vdraw2{0%,20%{stroke-dashoffset:130}50%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.v-clamp .val{animation:vclamp 2.6s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes vclamp{0%{transform:translateX(-70px)}40%{transform:translateX(110px)}55%,85%{transform:translateX(64px)}100%{transform:translateX(-70px)}}
+.v-trace .tx{stroke-dasharray:6 6;animation:vflow 1s linear infinite}
+.v-trace .node{animation:vpulse 2s infinite}.v-trace .node:nth-of-type(2){animation-delay:.3s}.v-trace .node:nth-of-type(3){animation-delay:.6s}
+@media (prefers-reduced-motion:reduce){.viz *{animation:none!important}}
+
+.ws .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ws .tabs button{font:600 13.5px var(--sans);color:var(--mid);background:rgba(22,21,20,.6);border:1px solid var(--line2);border-radius:999px;padding:10px 18px;cursor:pointer;transition:all .2s}
+.ws .tabs button:hover{color:var(--text);border-color:var(--text)}
+.ws .tabs button.on{background:var(--acc);border-color:var(--acc);color:#161514}
+.ws .tool{display:none;padding:22px;min-height:380px}
+.ws .tool.on{display:block;animation:fade .4s ease}
+.ws .inrow{display:flex;gap:10px;margin-bottom:18px}
+.ws .inrow input{flex:1;min-width:0;background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:999px;padding:13px 18px;font:13px var(--mono)}
+.ws .inrow input:focus,.ws .grid2 input:focus,.ws .grid2 textarea:focus,.ws .grid2 select:focus{outline:none;border-color:var(--acc)}
+.ws .empty{color:var(--dim);margin:30px 0;text-align:center;max-width:560px;margin-inline:auto}
+.ws .note{color:var(--dim);font-size:12.5px;margin:16px 0 0}
+.ws .err{color:#ff8a8d;border:1px solid rgba(229,72,77,.35);background:rgba(229,72,77,.06);border-radius:10px;padding:12px 14px}
+.ws .load{display:flex;align-items:center;gap:12px;color:var(--mid);padding:30px 0;justify-content:center}
+.ws .load i{width:14px;height:14px;border:2px solid var(--acc2);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ws .btn:disabled{opacity:.5;cursor:wait}
+.ws .rh{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.ws .rh img{width:56px;height:56px;border-radius:12px;object-fit:cover;background:#1d1c1a;border:1px solid var(--line)}
+.ws .rh h3{margin:0;font:800 28px/1 var(--sans);letter-spacing:-.03em}
+.ws .rh h3 span{color:var(--dim);font-size:16px;margin-left:8px}
+.ws .rh .ca{font:12px var(--mono);color:var(--mid);margin-top:6px;word-break:break-all}
+.ws .rh .links{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.ws .chipl{font:500 12px var(--sans);border:1px solid var(--line2);border-radius:999px;padding:6px 12px;text-decoration:none;color:var(--mid)}
+.ws .chipl:hover{border-color:var(--acc);color:var(--text)}
+.ws .read{font:600 17px/1.5 var(--sans);margin:6px 0 16px}
+.ws .flags{display:grid;gap:8px;margin-bottom:16px}
+.ws .fl{display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:start;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#161514}
+.ws .fl b{display:block;font-size:14px}
+.ws .fl span.d{color:var(--mid);font-size:13px}
+.ws .lv{font:800 10px var(--sans);letter-spacing:.12em;border-radius:999px;padding:5px 0;text-align:center;height:fit-content;text-transform:uppercase}
+.ws .lv.high{background:var(--high);color:#F5F3EC}
+.ws .lv.watch{background:var(--watch);color:#1d1c1a}
+.ws .lv.ok{background:var(--ok);color:#04140a}
+.ws .lv.info{background:#2f2d2a;color:var(--text)}
+.ws .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:16px}
+.ws .nums div{background:#1d1c1a;padding:14px}
+.ws .nums b{display:block;font:800 22px var(--sans);letter-spacing:-.03em;margin:4px 0 2px}
+.ws .nums small{color:var(--dim);font-size:12px}
+.ws .pbar{height:3px;background:var(--line2);border-radius:3px;overflow:hidden;margin:6px 0}
+.ws .pbar i{display:block;height:100%;background:var(--acc)}
+.ws .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ws table{width:100%;border-collapse:collapse;font-size:13.5px}
+.ws td{padding:8px 4px;border-top:1px solid var(--line)}
+.ws td.r{text-align:right}
+.ws td a{color:var(--text)}
+.ws .pill{font:500 10px var(--mono);border:1px solid var(--line2);border-radius:999px;padding:2px 7px;margin-left:6px;color:var(--mid)}
+.ws .bar2{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ws .tog{display:flex;align-items:center;gap:8px;color:var(--mid);font-size:13px;cursor:pointer}
+.ws .tog input{accent-color:var(--acc)}
+.ws .rrow{display:grid;grid-template-columns:44px minmax(0,1.3fr) 70px minmax(0,1fr) 92px 120px;gap:14px;align-items:center;padding:12px 4px;border-top:1px solid var(--line)}
+.ws .rrow img,.ws .rrow .ph{width:40px;height:40px;border-radius:10px;object-fit:cover;background:#1d1c1a;border:1px solid var(--line)}
+.ws .rrow .nm b{display:block;font:800 16px var(--sans)}
+.ws .rrow .nm span{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.ws .rrow .age{font:12px var(--mono);color:var(--mid)}
+.ws .checks{display:flex;flex-wrap:wrap;gap:4px}
+.ws .ck{font:500 11px var(--sans);border-radius:999px;padding:3px 8px;border:1px solid var(--line2);color:var(--mid);white-space:nowrap}
+.ws .ck.no{border-color:rgba(229,72,77,.45);color:#ff8a8d}
+.ws .verdict{font:800 11px var(--sans);letter-spacing:.12em;text-align:center;border-radius:999px;padding:6px 0}
+.ws .verdict.p{background:rgba(63,185,80,.14);color:var(--ok);border:1px solid rgba(63,185,80,.4)}
+.ws .verdict.s{background:transparent;color:var(--dim);border:1px solid var(--line2)}
+.ws .ract{display:flex;gap:6px;justify-content:flex-end}
+.ws .ract button,.ws .ract a{font:600 12px var(--sans);border:1px solid var(--line2);background:transparent;color:var(--text);border-radius:999px;padding:6px 10px;cursor:pointer;text-decoration:none}
+.ws .ract button:hover,.ws .ract a:hover{border-color:var(--acc)}
+.ws .total{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:18px;border:1px solid var(--acc2);background:var(--acc3);border-radius:12px;margin-bottom:16px}
+.ws .total b{font:800 34px var(--sans);letter-spacing:-.03em}
+.ws .steps2{font:12.5px var(--mono);color:var(--mid);margin-top:12px;display:grid;gap:4px}
+.ws .steps2 .ok{color:var(--ok)}
+.ws .steps2 .bad{color:#ff8a8d}
+.ws .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ws .grid2 label{display:grid;gap:6px;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.ws .grid2 .full{grid-column:1/-1}
+.ws .grid2 input,.ws .grid2 textarea,.ws .grid2 select{background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:12px;padding:12px 14px;font:14px var(--sans);letter-spacing:0;text-transform:none;resize:vertical}
+.ws .kit{margin-top:22px;display:grid;gap:12px}
+.ws .kc{border:1px solid var(--line);border-radius:12px;padding:16px;background:#161514;position:relative}
+.ws .kc h5{margin:0 0 8px;font:500 11px var(--mono);letter-spacing:.14em;color:var(--acc);text-transform:uppercase}
+.ws .kc p{margin:0;white-space:pre-wrap}
+.ws .kc .cp{position:absolute;right:10px;top:10px;font:600 11px var(--sans);border:1px solid var(--line2);background:transparent;color:var(--mid);border-radius:999px;padding:4px 10px;cursor:pointer}
+.ws .kc .cp:hover{color:var(--text);border-color:var(--acc)}
+.ws .kc ol{margin:0;padding-left:18px;display:grid;gap:8px}
+.ws .studio{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:20px}
+.ws .chat{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:#161514;padding:14px;min-height:360px}
+.ws .msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;max-height:380px;margin-bottom:12px}
+.ws .m{max-width:82%;padding:10px 13px;border-radius:14px;font-size:14px;white-space:pre-wrap}
+.ws .m.u{align-self:flex-end;background:var(--text);color:#1d1c1a;border-bottom-right-radius:4px}
+.ws .m.a{align-self:flex-start;background:#22201e;border:1px solid var(--line);border-bottom-left-radius:4px}
+.ws .m.a.wait{color:var(--dim)}
+@media (max-width:1000px){.ws .nums{grid-template-columns:1fr 1fr}.ws .two,.ws .studio,.ws .grid2{grid-template-columns:1fr}.ws .rrow{grid-template-columns:40px minmax(0,1fr) 84px;row-gap:8px}.ws .rrow .age{display:none}.ws .rrow .checks{grid-column:1/-1}.ws .rrow .ract{grid-column:1/-1;justify-content:flex-start}.ws .rrow .pg{display:none}}
+@media (max-width:560px){.ws .inrow{flex-wrap:wrap}.ws .inrow input{flex-basis:100%}.ws .tool{padding:16px}}
+.ws .sn{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:22px}
+.ws .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.ws .grid3 label{display:grid;gap:5px;font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ws .grid3 input,.ws .grid3 select{background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:10px;padding:9px 11px;font:14px var(--sans);min-width:0}
+.ws .grid3 input:focus,.ws .grid3 select:focus{outline:none;border-color:var(--acc)}
+.ws .log2{font:12px/1.6 var(--mono);color:var(--mid);background:#161514;border:1px solid var(--line);border-radius:12px;padding:10px 12px;height:300px;overflow:auto;margin-top:6px}
+.ws .log2 span{color:var(--dim)}
+.ws .log2 .ok{color:var(--ok)}
+.ws .log2 .bad{color:#ff8a8d}
+.ws .log2 .dry{color:var(--acc)}
+@media (max-width:1000px){.ws .sn{grid-template-columns:1fr}.ws .grid3{grid-template-columns:1fr 1fr}}
+.ws .fmode{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line2);border-radius:999px;margin-bottom:16px}
+.ws .fmode button{font:600 13px var(--sans);background:transparent;border:0;color:var(--mid);padding:8px 14px;border-radius:999px;cursor:pointer}
+.ws .fmode button.on{background:var(--text);color:#1d1c1a}
+.ws .warnbox{border:1px solid var(--acc2);background:var(--acc3);border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--mid)}
+.ws .warnbox b{color:var(--text)}
+.ws .words{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.ws .words label{display:flex;align-items:center;gap:8px;background:#161514;border:1px solid var(--line2);border-radius:10px;padding:0 10px}
+.ws .words label:focus-within{border-color:var(--acc)}
+.ws .words span{font:500 11px var(--mono);color:var(--dim);width:18px}
+.ws .words input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);padding:10px 0;font:14px var(--mono);outline:none}
+.ws .selsm{background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 8px;font:13px var(--sans)}
+@media (max-width:700px){.ws .words{grid-template-columns:repeat(2,1fr)}}
+.ws .snhead{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.ws .snbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ws .pill2{font:600 12px var(--sans);border:1px solid var(--line2);border-radius:999px;padding:7px 12px;color:var(--mid)}
+.ws .pill2.dry{border-color:var(--acc2);color:var(--acc)}
+.ws .pill2.live{border-color:rgba(63,185,80,.5);color:var(--ok)}
+.ws .btn.danger{background:transparent;border-color:rgba(229,72,77,.5);color:#ff8a8d}
+.ws .btn.danger:hover{background:rgba(229,72,77,.12);box-shadow:none}
+.ws .snsec{margin-top:20px}
+.ws .snmode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.ws .snmode button{text-align:left;font:600 14px var(--sans);color:var(--mid);background:transparent;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;cursor:pointer}
+.ws .snmode button small{display:block;font:400 12.5px var(--sans);color:var(--dim);margin-top:3px}
+.ws .snmode button.on{color:var(--text);border-color:var(--acc);background:var(--acc3)}
+.ws .picks{display:grid;gap:8px}
+.ws .agbox{margin-top:10px;border:1px solid var(--line);border-radius:4px;padding:16px 18px;background:linear-gradient(180deg,var(--acc3),transparent)}
+.ws .agtop{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.ws .agtop p{margin:6px 0 0;color:var(--mid);font-size:13px}
+.ws .agval{display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+.ws .agval b{font:800 34px/1 var(--sans);color:var(--acc);letter-spacing:-.03em}
+.ws .agval span{font:500 12px var(--mono);color:var(--dim)}
+.ws #snMinScore{-webkit-appearance:none;appearance:none;width:100%;height:4px;margin:16px 0 8px;border-radius:4px;background:linear-gradient(90deg,var(--acc) var(--p,55%),var(--line2) var(--p,55%));outline:none;cursor:pointer}
+.ws #snMinScore::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--acc);border:3px solid #161514;box-shadow:0 0 0 1px var(--acc),0 0 16px rgba(245,243,236,0.42)}
+.ws #snMinScore::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--acc);border:3px solid #161514;box-shadow:0 0 0 1px var(--acc),0 0 16px rgba(245,243,236,0.42)}
+.ws .agticks{display:flex;justify-content:space-between;font:500 10.5px var(--mono);letter-spacing:.06em;color:var(--dim)}
+.ws .agnote{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px}
+.ws .ring{--v:0;--c:var(--acc);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--v)*1%),rgba(245,243,236,.07) 0);position:relative}
+.ws .ring:before{content:"";position:absolute;inset:4px;border-radius:50%;background:#1d1c1a}
+.ws .ring b{position:relative;font:800 16px var(--sans);color:var(--text);letter-spacing:-.02em}
+.ws .pick{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:4px;padding:10px 12px;background:rgba(0,0,0,.3)}
+.ws .pick .nm{font-weight:600}
+.ws .pick .rs{color:var(--mid);font-size:13px}
+.ws .pick .mt{color:var(--dim);font:500 11.5px var(--mono)}
+@media(max-width:640px){.ws .snmode{grid-template-columns:1fr}.ws .pick{grid-template-columns:48px minmax(0,1fr)}.ws .pick .btn{grid-column:span 2}}
+.ws .snsec h4{margin:0 0 10px;font:800 15px var(--sans);text-transform:uppercase;letter-spacing:.02em}
+.ws tr.th td{color:var(--dim);font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;border-top:0}
+.ws #snForm details summary{cursor:pointer;color:var(--mid);font-size:13px}
+.ws #snForm .grid3 label small{font:400 11px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.ws #snForm textarea{background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:10px;padding:9px 11px;font:13px var(--mono);resize:vertical;min-width:0}
+.ws .tablink{font:600 13.5px var(--sans);color:var(--acc);border:1px dashed var(--acc2);border-radius:999px;padding:10px 18px;text-decoration:none}
+.ws .tablink:hover{border-style:solid}
+.ws .lp{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:22px;align-items:start}
+.ws #lpForm{display:grid;gap:14px}
+.ws #lpForm label{display:grid;gap:6px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ws #lpForm label small{font:400 12px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.ws #lpForm input,.ws #lpForm textarea{background:#161514;border:1px solid var(--line2);color:var(--text);border-radius:12px;padding:12px 14px;font:14px var(--sans);letter-spacing:0;text-transform:none;min-width:0;resize:vertical}
+.ws #lpForm input:focus,.ws #lpForm textarea:focus{outline:none;border-color:var(--acc)}
+.ws .lpgrid{display:grid;grid-template-columns:190px 1fr;gap:16px}
+.ws .lpcol{display:grid;gap:12px;align-content:start}
+.ws .lpgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ws .drop{position:relative;aspect-ratio:1;border:1px dashed var(--acc2);border-radius:16px;background:#161514;display:grid;place-items:center;text-align:center;cursor:pointer;overflow:hidden;transition:border-color .2s,background .2s}
+.ws .drop:hover,.ws .drop.over{border-color:var(--acc);background:var(--acc3)}
+.ws .drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ws .drop b{display:block;font:800 15px var(--sans);margin-bottom:4px}
+.ws .drop span{color:var(--dim);font-size:12px}
+.ws .taxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.ws .taxes button{font:700 14px var(--sans);background:#161514;border:1px solid var(--line2);color:var(--mid);border-radius:10px;padding:11px 0;cursor:pointer}
+.ws .taxes button.on{background:var(--acc);border-color:var(--acc);color:#161514}
+.ws .lpside{position:sticky;top:90px}
+@media (max-width:1000px){.ws .lp{grid-template-columns:1fr}.ws .lpside{position:static}.ws .lpgrid{grid-template-columns:140px 1fr}.ws .lpgrid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#top"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>ocula<small>Bureau of on-chain reading</small></a>
+  <nav><a href="#work">Procedure</a><a href="#today">Today's files</a><a href="#app">Field kit</a><a href="#safety">Protocol</a></nav>
+  <div class="r"><a class="btn ghost xlink" href="https://x.com/oculaagent" target="_blank" rel="noopener" aria-label="Ocula on X" title="@oculaagent on X"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><button class="btn ghost" type="button" id="holderBtn">Holder access</button><a class="btn buy" id="buyNova" aria-disabled="true">$OCULA · Soon</a></div>
+</div></header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="folder">
+        <div class="ftab">FILE Nº <span id="nLaunch">—</span> · TODAY</div>
+        <div class="cover">
+          <div class="meta"><span>Subject: <b>every launch on Pons</b></span><span>Chain: <b>Robinhood</b></span><span>Agent: <b>Ocula</b></span><span class="lv"><i></i>Reading now</span></div>
+          <h1>Every launch gets a file.<br><span class="soft">Ocula opens it <span class="rd" data-rd>before you buy</span>.</span></h1>
+          <div class="thread" id="thread" aria-live="polite"></div>
+          <form class="box" id="ask" autocomplete="off">
+            <label class="fl" for="askIn">Request for reading</label>
+            <textarea id="askIn" rows="2" placeholder="Paste a token CA, or ask Ocula anything…"></textarea>
+            <div class="bar"><span class="hint" id="hint">Ocula reads Pons on Robinhood Chain. It never asks for your keys.</span><button class="send" id="send" type="submit" aria-label="Send" disabled>File it<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </form>
+          <div class="chips">
+            <button class="chip" type="button" data-ask="What's launching on Pons right now?">Open today's launches</button>
+            <button class="chip" type="button" data-tool="scan">Investigate a token</button>
+            <button class="chip" type="button" data-tool="snipe">Snipe a launch</button>
+            <button class="chip" type="button" data-tool="fees">Claim my fees</button>
+            <button class="chip" type="button" data-tool="launch">Launch a token</button>
+            <button class="chip" type="button" data-tool="kit">Write a launch kit</button>
+          </div>
+          <span class="stamp big st-live">Live</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="brief" id="brief">
+    <div class="wrap">
+      <p class="memo"><span class="lbl">Briefing</span>Most launches on Pons are <span class="rd" data-rd>noise</span>. Some are <span class="rd" data-rd>traps</span>: a dev who sells the whole bag, wallets bundled by one hand, an X account a week old. Ocula is the agent that reads <span class="rd" data-rd>every one of them</span>, on-chain, and writes down what it finds.</p>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap work" id="workPin">
+      <div>
+        <div class="sh" style="margin:0"><span class="lbl">Procedure</span><h2>How a file is opened.</h2><p>The same four steps for every new token, in seconds.</p></div>
+        <ol class="steps" id="steps">
+          <li><span class="n">I</span><div><b>Intake</b><span>The launch is caught the moment the factory emits it.</span></div></li>
+          <li><span class="n">II</span><div><b>The deployer</b><span>Has the dev sold? Other launches? Where do the fees go?</span></div></li>
+          <li><span class="n">III</span><div><b>The token</b><span>Creator tax, socials, bundles, and whether buyers keep coming.</span></div></li>
+          <li><span class="n">IV</span><div><b>The verdict</b><span>Cleared, held, or picked for the sniper. Stamped.</span></div></li>
+        </ol>
+      </div>
+      <div class="term" id="term">
+        <div class="top"><span><b>Case report</b> · newest launch</span><span id="termAge">live</span></div>
+        <div class="lines" id="termLines"></div>
+        <div class="verdict"><span class="stamp" id="termVerdict">…</span><a class="btn ghost" href="#app" id="termScan">Open full file</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="today">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Today's files</span><h2>The last hour on Pons, as Ocula filed it.</h2><p>Real launches. Click a file to read the full report.</p></div>
+      <div class="gal" id="gal"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="app">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Field kit</span><h2>Every tool the agent uses, issued to you.</h2><p>The Pons Launchpad is free for everyone. Every other tool opens for $OCULA holders. Keys and seeds always stay in your browser.</p></div>
+      <div class="ws">
+  <div class="ws-bar"><span>Ocula <b>Workspace</b></span><span class="t" id="wsTitle">Scanner</span><span class="r"><i class="dot"></i>Live · Robinhood Chain</span></div>
+  <div class="ws-body">
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-t="scan"><span class="ti">01</span><span class="tn">Scanner</span><span class="td">Token report</span></button>
+      <button role="tab" data-t="radar"><span class="ti">02</span><span class="tn">Launch Radar</span><span class="td">Live launches</span></button>
+      <button role="tab" data-t="snipe"><span class="ti">03</span><span class="tn">Sniper</span><span class="td">Manual &amp; agent</span></button>
+      <button role="tab" data-t="fees"><span class="ti">04</span><span class="tn">Fee Claimer</span><span class="td">One or 200 accounts</span></button>
+      <span class="sep"></span>
+      <button role="tab" data-t="launch"><span class="ti">05</span><span class="tn">Pons Launchpad</span><span class="td">Always free</span></button>
+      <button role="tab" data-t="kit"><span class="ti">06</span><span class="tn">Launch Kit</span><span class="td">AI copywriter</span></button>
+      <button role="tab" data-t="agent"><span class="ti">07</span><span class="tn">Agent Studio</span><span class="td">Design your AI</span></button>
+      <div class="tside">KEYS HELD · 0<br>SEEDS SAVED · 0<br>MODEL · OCULA</div>
+    </div>
+    <div class="panes">
+<div class="tool panel hud" data-p="launch">
+        <div class="lp">
+          <form id="lpForm" autocomplete="off">
+            <div class="lpgrid">
+              <div class="drop" id="lpDrop">
+                <input type="file" id="lpFile" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+                <img id="lpPrev" alt="" hidden>
+                <div id="lpDropTxt"><b>Upload logo</b><span>PNG, JPG, GIF or WEBP · max 5MB<br>click or drop here</span></div>
+              </div>
+              <div class="lpcol">
+                <label>Name<input name="name" maxlength="32" placeholder="e.g. Robinhood Doge" required></label>
+                <label>Ticker<input name="symbol" maxlength="10" placeholder="e.g. RDOGE" required></label>
+                <label>Or paste an image link<input name="logoUrl" placeholder="https://…" spellcheck="false"></label>
+                <div id="lpUpMsg" class="note" style="margin:0"></div>
+              </div>
+            </div>
+            <label class="full">Description<textarea name="description" rows="3" maxlength="500" placeholder="Tell the story of your token and community"></textarea></label>
+            <div class="full"><span class="lbl">Creator tax <b id="lpTaxLbl">1% (100 bps)</b></span><p class="note" style="margin:4px 0 8px">Paid to your wallet on every buy and sell on the bonding curve (max 10%).</p>
+              <div class="taxes" id="lpTaxes"><button type="button" data-tax="0">0%</button><button type="button" data-tax="1" class="on">1%</button><button type="button" data-tax="2">2%</button><button type="button" data-tax="3">3%</button><button type="button" data-tax="5">5%</button></div></div>
+            <div class="lpgrid2">
+              <label>Website<input name="website" placeholder="Website URL"></label>
+              <label>Twitter / X<input name="twitter" placeholder="https://x.com/…"></label>
+              <label>Telegram<input name="telegram" placeholder="https://t.me/…"></label>
+              <label>Discord<input name="discord" placeholder="https://discord.gg/…"></label>
+            </div>
+            <label class="full">Dev buy (optional, ETH)<span class="inrow" style="margin:6px 0 0"><input name="devBuy" inputmode="decimal" placeholder="0.0 (ETH)"><button class="btn sm ghost" type="button" id="lpMax">MAX</button></span><span id="lpDevHint" class="note" style="margin:6px 0 0"></span></label>
+            <label class="full">Snipe tax exempt wallets (optional)<small>Pons taxes buys in the first seconds after launch (up to 99%). Wallets listed here pay 0% snipe tax on this launch, e.g. your Ocula sniper wallet.</small>
+              <span class="inrow" style="margin:6px 0 0"><input name="exempt" placeholder="0x…, 0x…" spellcheck="false"><button class="btn sm ghost" type="button" id="lpAddSniper">Add my sniper wallet</button></span></label>
+          </form>
+          <aside class="lpside">
+            <div class="kc">
+              <h5>Robinhood Chain · Pons</h5>
+              <div class="mono" id="lpWallet" style="font-size:12.5px;word-break:break-all">Wallet not connected</div>
+              <table style="margin-top:10px">
+                <tr><td>Launch fee</td><td class="r" id="lpFee">…</td></tr>
+                <tr><td>Dev buy</td><td class="r" id="lpDev">0 ETH</td></tr>
+                <tr><td><b>Total</b></td><td class="r"><b id="lpTotal">…</b></td></tr>
+                <tr><td>Your balance</td><td class="r" id="lpBal">—</td></tr>
+                <tr><td>Creator tax</td><td class="r" id="lpTax2">1%</td></tr>
+              </table>
+              <div style="display:grid;gap:8px;margin-top:14px">
+                <button class="btn ghost" type="button" id="lpConnect">Connect wallet</button>
+                <button class="btn" type="button" id="lpGo">Launch token <span class="ar">→</span></button>
+              </div>
+              <div id="lpMsg" class="steps2"></div>
+            </div>
+            <div id="lpDone"></div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="tool panel hud rv" data-p="scan">
+        <form class="inrow" id="scanForm"><input id="scanCa" placeholder="Paste a Pons token address (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm" id="scanGo">Scan</button></form>
+        <div id="scanOut"><p class="empty">Paste any Pons token CA. Ocula checks the deployer, holders, first-minute buyers and the dev's other launches.</p></div>
+      </div>
+
+      <div class="tool panel hud" data-p="radar">
+        <div class="bar2"><span class="lbl">Newest Pons launches · <b id="radarHead">reading…</b></span><label class="tog"><input type="checkbox" id="onlyPass"> only launches that pass</label></div>
+        <div id="radarOut"><p class="empty">Reading the newest launches…</p></div>
+        <p class="note">PASS means clean and growing: the dev has not dumped their bag (a partial sell while still holding is fine), the dev holds under 15%, creator tax ≤ 3%, socials set, the dev is not launching many tokens, fees go to the dev, and buyers keep arriving (at least 1 new buyer a minute since launch, or 8+ new buyers in the last 15 minutes). Not advice.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="snipe">
+        <div class="snhead">
+          <div><span class="lbl">Sniper wallet</span><div class="mono" id="snAddr" style="margin-top:6px;word-break:break-all">No private key yet</div><div id="snBalLine" class="note" style="margin:4px 0 0"></div></div>
+          <div class="snbtns"><span class="pill2" id="snState">Off</span><button class="btn sm ghost" type="button" id="snDry">Start dry run (no money)</button><button class="btn sm" type="button" id="snLiveBtn">Start LIVE</button><button class="btn sm danger" type="button" id="snStop">Stop</button></div>
+        </div>
+        <div class="snmode" id="snModeSw">
+          <button type="button" data-mode="manual">Manual snipe<small>Your filters below catch every new launch in its first seconds</small></button>
+          <button type="button" data-mode="agent">Agent snipe<small>Ocula's AI scores fresh radar launches; the bot buys the ones above your minimum score</small></button>
+        </div>
+        <div id="snAgentBox" class="agbox" hidden>
+          <div class="agtop"><div><span class="lbl">Minimum Ocula score</span><p>The agent buys only picks at or above this score. Higher = fewer, stronger picks.</p></div>
+            <div class="agval"><b id="snMinVal">75</b><span>/100</span></div></div>
+          <input type="range" id="snMinScore" min="50" max="95" step="5" aria-label="Minimum Ocula score">
+          <div class="agticks"><span>50 · more buys</span><span>95 · only the best</span></div>
+          <p class="agnote">Buy size, budget, take profit, stop loss, max positions, tax limits and blocked devs/keywords from Settings still apply. Each token is bought once.</p>
+        </div>
+        <div id="snMsg" class="note"></div>
+
+        <div class="snsec"><h4>Manual buy</h4>
+          <div class="inrow" style="margin:0"><input id="mbToken" placeholder="Token CA 0x…" spellcheck="false" autocomplete="off"><input id="mbEth" placeholder="ETH (empty = buy per snipe)" style="flex:0 1 220px"><button class="btn sm" type="button" id="mbGo">Buy now</button></div>
+          <div id="mbMsg" class="note" style="margin-top:8px"></div>
+        </div>
+
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Ocula picks</h4><span style="display:flex;gap:10px;align-items:center"><span class="note" id="pkStat" style="margin:0"></span><button class="btn sm ghost" type="button" id="pkRefresh">Refresh</button></span></div>
+          <p class="note" style="margin:0 0 10px">Fresh launches (under 1 hour) that passed every radar check and scored highest with Ocula's AI. A score is a read of on-chain data, not a promise. Agent snipe buys these automatically.</p>
+          <div class="picks" id="pkList"><p class="note">Loading Ocula picks…</p></div></div>
+
+        <div class="snsec"><h4>Open positions</h4><div id="snPos"><p class="note">No positions.</p></div></div>
+
+        <div class="snsec"><div class="bar2" style="margin:0 0 6px"><h4 style="margin:0">Trade history</h4><span style="display:flex;gap:10px;align-items:center"><span id="snPnl" class="note" style="margin:0"></span><button class="btn sm ghost" type="button" id="snClearHist">Clear history</button></span></div><div id="snHist"><p class="note">No finished trades yet.</p></div></div>
+
+        <div class="snsec"><h4>Bot log</h4><div class="log2" id="snLog"></div></div>
+
+        <div class="snsec"><h4>Settings</h4>
+          <form id="snForm" autocomplete="off">
+            <p class="note" style="margin:0 0 12px">Fill these 6 fields. The rest already has safe defaults.</p>
+            <div class="grid3">
+              <label>1. Sniper wallet private key<small>A dedicated wallet, not your dev wallet. Stays in this browser only. Empty = keep the saved one</small><input name="privateKey" type="password" placeholder="0x…"></label>
+              <label>2. Buy per token (ETH)<small>ETH spent on each snipe</small><input name="buyEth"></label>
+              <label>3. Total budget (ETH)<small>Stops buying after this much</small><input name="maxTotalSpendEth"></label>
+              <label>4. Take profit (%)<small>Sells when up this much</small><input name="takeProfitPercent"></label>
+              <label>5. Stop loss (%)<small>Sells when down this much</small><input name="stopLossPercent"></label>
+              <label style="grid-column:span 3">6. Only snipe tokens from these devs (0x addresses, comma separated)<small>Put your own dev wallet to snipe your own launch. Empty = snipe every new token</small><textarea name="allowedDeployers" rows="2"></textarea></label>
+            </div>
+            <details style="margin-top:14px"><summary>Advanced settings (fine to leave)</summary>
+              <div class="grid3" style="margin-top:12px">
+                <label>Max hold (seconds)<small>Force sell after this. 0 = never</small><input name="maxHoldSeconds"></label>
+                <label>Max open positions<small>Tokens held at the same time</small><input name="maxOpenPositions"></label>
+                <label>Gas reserve (ETH)<small>Balance never spent on buys</small><input name="gasReserveEth"></label>
+                <label>Slippage (%)<small>Price move tolerance</small><input name="slippagePercent"></label>
+                <label>Max creator tax (%)<small>Skip tokens with a higher dev tax</small><input name="maxCreatorTaxPercent"></label>
+                <label>Max snipe tax (%)<small>Waits until the snipe tax drops to this</small><input name="maxSnipeTaxPercent"></label>
+                <label>Max launch age (seconds)<small>Skip launches older than this</small><input name="maxLaunchAgeSeconds"></label>
+                <label>Require socials<small>Skip tokens with no X/Telegram/website on-chain</small><select name="requireSocials"><option value="0">No</option><option value="1">Yes</option></select></label>
+                <label>Max other launches by the dev (24h)<small>Skip serial launchers. 0 = not checked</small><input name="maxDeployerLaunches"></label>
+                <label>Name/ticker keywords<small>Only buy names with one of these. Empty = all</small><textarea name="keywords" rows="2"></textarea></label>
+                <label>Blocked keywords<small>Skip names with these words</small><textarea name="blockedKeywords" rows="2"></textarea></label>
+                <label>Blocked devs<small>Dev addresses never bought</small><textarea name="blockedDeployers" rows="2"></textarea></label>
+              </div>
+            </details>
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="snSave">Save settings</button><button class="btn ghost" type="button" id="snNewWallet">Make a new wallet</button><button class="btn ghost" type="button" id="snExport">Export key</button><button class="btn ghost" type="button" id="snWithdraw">Withdraw ETH</button><button class="btn ghost" type="button" id="snForget">Remove key</button></div>
+          </form>
+        </div>
+        <p class="note">Same engine as the Ocula sniper bot, running in this tab: it reads every new Pons launch from the chain, waits for the anti-snipe tax, buys, then sells on take profit, stop loss or max hold. The private key is kept only in this browser and signs here; Ocula only relays the signed transactions. Keep the tab open while it runs.</p>
+      </div>
+
+      <div class="tool panel hud" data-p="fees">
+        <div class="fmode"><button type="button" data-m="one" class="on">One wallet</button><button type="button" data-m="seed">Many accounts (seed phrase)</button></div>
+        <div id="feeOne">
+          <form class="inrow" id="feeForm"><input id="feeWallet" placeholder="Your creator wallet (0x…)" spellcheck="false" autocomplete="off"><button class="btn sm ghost" type="button" id="feeConnect">Connect wallet</button><button class="btn sm" id="feeGo">Check</button></form>
+          <div id="feeOut"><p class="empty">See the creator fees waiting for you on every Pons token you launched, then claim them in one go from your own wallet. Ocula never sees your key.</p></div>
+        </div>
+        <div id="feeSeed" hidden>
+          <div class="warnbox"><b>Your seed never leaves this browser.</b> The accounts are made here and every transaction is signed here; Ocula only receives the account addresses and the already-signed transactions. The seed is not saved: it is gone when you close or reload the page. Still, a seed controls every account of the wallet. Only type it on a device you trust.</div>
+          <div class="bar2" style="margin-top:14px"><span class="lbl">Seed phrase</span><span style="display:flex;gap:14px;align-items:center"><label class="tog"><input type="checkbox" id="showWords"> show words</label><select id="wordCount" class="selsm"><option value="12">12 words</option><option value="24">24 words</option></select></span></div>
+          <div class="words" id="words"></div>
+          <p class="note" style="margin:8px 0 0">Tip: paste the whole phrase into the first box, it fills every box.</p>
+          <div class="grid3" style="grid-template-columns:120px 1fr 160px">
+            <label>Accounts<input id="seedCount" value="100" inputmode="numeric"></label>
+            <label>Send all fees to<input id="seedDest" placeholder="Account 1 of this seed" spellcheck="false"></label>
+            <label>Skip below (ETH)<input id="seedMin" value="0.0003" inputmode="decimal"></label>
+          </div>
+          <div style="display:flex;gap:10px;margin:14px 0 6px;flex-wrap:wrap"><button class="btn" type="button" id="seedScan">Scan accounts <span class="ar">→</span></button><button class="btn ghost" type="button" id="seedForget">Forget seed</button></div>
+          <div id="seedOut"></div>
+          <p class="note">Gas for accounts with no ETH is sent from Account 1, so keep a little ETH there. Accounts are the standard MetaMask / Rabby ones (Account 1, 2, 3…).</p>
+        </div>
+      </div>
+
+      <div class="tool panel hud" data-p="kit">
+        <form id="kitForm" class="grid2">
+          <label>Token name<input name="name" maxlength="40" placeholder="Moon Cat" required></label>
+          <label>Ticker<input name="ticker" maxlength="12" placeholder="$MCAT" required></label>
+          <label class="full">The idea<textarea name="idea" maxlength="400" rows="3" placeholder="A cat astronaut that only lands on tokens with real holders." required></textarea></label>
+          <label>Tone<select name="tone"><option>bold</option><option>funny</option><option>mysterious</option><option>premium</option><option>degen</option></select></label>
+          <div class="full"><button class="btn" id="kitGo">Write my launch kit <span class="ar">→</span></button></div>
+        </form>
+        <div id="kitOut"></div>
+      </div>
+
+      <div class="tool panel hud" data-p="agent">
+        <div class="studio">
+          <form id="agentForm" class="grid2" style="grid-template-columns:1fr">
+            <label>Agent name<input name="name" maxlength="40" placeholder="Ocula" value="Ocula"></label>
+            <label>Persona<textarea name="persona" maxlength="600" rows="6">An android AI agent that reads Robinhood Chain for its holders. Calm, sharp, a little dry. Short sentences. Always points to on-chain facts, never hypes.</textarea></label>
+            <p class="note" style="margin:0">Design your token's AI agent and talk to it. When you like it, we launch it with the fee engine, site and admin panel.</p>
+            <a class="btn sm ghost" href="#contact">Launch it with Ocula <span class="ar">→</span></a>
+          </form>
+          <div class="chat">
+            <div class="msgs" id="msgs"><div class="m a">Write a persona on the left, then say hi.</div></div>
+            <form class="inrow" id="chatForm" style="margin:0"><input id="chatIn" maxlength="500" placeholder="Talk to your agent…" autocomplete="off"><button class="btn sm" id="chatGo">Send</button></form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    </div>
+  </section>
+
+  <section class="sec" id="flow">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Operation</span><h2>From idea to fees.</h2><p>Launching your own token? The bureau covers every step.</p></div>
+      <div class="flow" id="flowRow">
+        <svg class="line" viewBox="0 0 1000 4" preserveAspectRatio="none" aria-hidden="true"><path class="track" d="M22 2H978"/><path class="drawn" id="drawn" d="M22 2H978" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/></svg>
+        <a class="fstep" href="#app" data-open="kit"><span class="dot">1</span><b>Write</b><span>Launch Kit writes the lore, bio and posts.</span><div class="viz v-kit"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><rect class="s o4" x="70" y="34" width="160" height="132" rx="8"/>
+<rect class="f ln" x="88" y="58" width="96" height="9" rx="4.5"/><rect class="f o4 ln" x="88" y="82" width="124" height="6" rx="3"/><rect class="f o4 ln" x="88" y="98" width="110" height="6" rx="3"/><rect class="f o4 ln" x="88" y="114" width="118" height="6" rx="3"/><rect class="f o2" x="88" y="140" width="40" height="10" rx="5"/></svg></div></a>
+        <a class="fstep" href="#app" data-open="launch"><span class="dot">2</span><b>Launch</b><span>Pons Launchpad, from your own wallet.</span><div class="viz v-launch"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><path class="s o2" d="M40 170H260M40 170V30"/><path class="s o2" d="M40 38H260" stroke-dasharray="3 5"/>
+<path class="s curve" d="M40 168C120 166 180 140 244 38" style="stroke-width:2.2"/><circle class="s grad" cx="244" cy="38" r="12"/><circle class="f grad" cx="244" cy="38" r="5"/></svg></div></a>
+        <a class="fstep" href="#app" data-open="snipe"><span class="dot">3</span><b>Snipe</b><span>Buy first at 0% snipe tax.</span><div class="viz v-snipe"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="f o4" cx="150" cy="100" r="7"/><circle class="s hit" cx="150" cy="100" r="16"/>
+<g class="ret"><circle class="s" cx="150" cy="100" r="40"/><path class="s" d="M150 48v22M150 130v22M98 100h22M180 100h22"/></g></svg></div></a>
+        <a class="fstep" href="#app" data-open="radar"><span class="dot">4</span><b>Watch</b><span>Scanner and Radar on your token.</span><div class="viz v-radar"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="s o2" cx="150" cy="100" r="84"/><circle class="s o2" cx="150" cy="100" r="56"/><circle class="s o2" cx="150" cy="100" r="28"/><path class="s o2" d="M66 100h168M150 16v168"/></svg><div class="sweep"></div><div class="blips" data-blips></div></div></a>
+        <a class="fstep" href="#app" data-open="fees"><span class="dot">5</span><b>Claim</b><span>Creator fees, one wallet or a hundred.</span><div class="viz v-fees"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="f acc" cx="40" cy="40" r="5" style="animation-delay:0.0s"/><path class="s o4 flow" d="M46 40C 170 40 180 100 236 100"/><circle class="f acc" cx="62" cy="40" r="5" style="animation-delay:0.2s"/><path class="s o4 flow" d="M68 40C 170 40 180 100 236 100"/><circle class="f acc" cx="84" cy="40" r="5" style="animation-delay:0.4s"/><path class="s o4 flow" d="M90 40C 170 40 180 100 236 100"/><circle class="f acc" cx="40" cy="80" r="5" style="animation-delay:0.6s"/><path class="s o4 flow" d="M46 80C 170 80 180 100 236 100"/><circle class="f acc" cx="62" cy="80" r="5" style="animation-delay:0.8s"/><path class="s o4 flow" d="M68 80C 170 80 180 100 236 100"/><circle class="f acc" cx="84" cy="80" r="5" style="animation-delay:1.0s"/><path class="s o4 flow" d="M90 80C 170 80 180 100 236 100"/><circle class="f acc" cx="40" cy="120" r="5" style="animation-delay:1.2s"/><path class="s o4 flow" d="M46 120C 170 120 180 100 236 100"/><circle class="f acc" cx="62" cy="120" r="5" style="animation-delay:1.4s"/><path class="s o4 flow" d="M68 120C 170 120 180 100 236 100"/><circle class="f acc" cx="84" cy="120" r="5" style="animation-delay:1.6s"/><path class="s o4 flow" d="M90 120C 170 120 180 100 236 100"/>
+<circle class="s" cx="250" cy="100" r="18"/><circle class="f" cx="250" cy="100" r="7"/></svg></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="safety">
+    <div class="wrap">
+      <div class="sh"><span class="lbl">Protocol</span><h2>Rules the agent cannot break.</h2></div>
+      <div class="safe">
+        <div class="sf"><span class="pn">§1</span><div class="viz v-key"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><circle class="s o4" cx="130" cy="100" r="22"/><path class="s o4" d="M152 100h70M200 100v16M214 100v12"/><path class="s cross" d="M90 160L210 40" style="stroke-width:2.4"/></svg></div><b>Ocula never holds your keys.</b><p>Keys and seeds stay in your browser. Ocula only relays transactions you already signed.</p></div>
+        <div class="sf"><span class="pn">§2</span><div class="viz v-clamp"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><path class="s o2" d="M50 100H250"/><path class="s" d="M90 76v48M86 76h8M86 124h8M210 76v48M206 76h8M206 124h8" style="stroke-width:2"/>
+<g class="val"><circle class="f" cx="150" cy="100" r="9"/></g></svg></div><b>The agent works inside limits.</b><p>Decisions stay inside limits written in code. Anything outside them is clamped.</p></div>
+        <div class="sf"><span class="pn">§3</span><div class="viz v-trace"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet"><rect class="s o4" x="40" y="80" width="56" height="40" rx="6"/><rect class="s o4" x="122" y="80" width="56" height="40" rx="6"/><rect class="s" x="204" y="80" width="56" height="40" rx="6"/>
+<path class="s tx" d="M96 100h26M178 100h26"/><circle class="f node" cx="68" cy="100" r="4"/><circle class="f node" cx="150" cy="100" r="4"/><circle class="f node" cx="232" cy="100" r="4"/></svg></div><b>Every number is evidence.</b><p>Each figure traces back to a transaction or contract call anyone can check.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" id="contact">
+    <div class="wrap">
+      <span class="lbl">Commission</span>
+      <h2>Want an agent of your own?</h2>
+      <p>We build AI agent tokens with their own site, chat and fee engine, like $UNIT.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn lg" href="https://x.com/oculaagent" target="_blank" rel="noopener">Message us on X</a><a class="btn lg ghost" href="#top" id="backChat">Ask Ocula first</a></div>
+    </div>
+  </section>
+</main>
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <button class="x" type="button" id="mClose" aria-label="Close">×</button>
+  <span class="mmark"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg></span>
+  <h3 id="mTitle">Clearance</h3>
+  <p id="mText"></p>
+  <button class="btn lg" type="button" id="mSign" hidden>Connect wallet &amp; sign</button>
+  <p class="merr" id="mErr"></p>
+  <details id="mOwner"><summary>Owner? Use your studio key</summary><form id="ownerForm"><input id="ownerKey" type="password" placeholder="Studio key" autocomplete="current-password"><button class="btn" type="submit">Unlock</button></form></details>
+</div></div>
+<footer>
+  <div class="wrap fgrid">
+    <div class="fbrand">
+      <a class="brand" href="#top"><svg viewBox="40 68 176 118" aria-hidden="true"><path d="M44 156A84 84 0 0 1 212 156H182A54 54 0 0 0 74 156Z" fill="currentColor"/><path d="M102 156A26 26 0 1 0 154 156A26 26 0 1 0 102 156Z" fill="currentColor"/></svg>ocula</a>
+      <p>The agent that opens a file on every Pons launch on Robinhood Chain.</p>
+      <span class="fstat"><i></i>On duty · block <span id="nBlock">—</span></span>
+    </div>
+    <div class="fcol"><b>Field kit</b><a href="#app" data-open="scan">Scanner</a><a href="#app" data-open="radar">Launch Radar</a><a href="#app" data-open="snipe">Sniper</a><a href="#app" data-open="fees">Fee Claimer</a><a href="#app" data-open="launch">Pons Launchpad</a><a href="#app" data-open="kit">Launch Kit</a><a href="#app" data-open="agent">Agent Studio</a></div>
+    <div class="fcol"><b>Bureau</b><a href="#work">Procedure</a><a href="#today">Today's files</a><a href="#safety">Protocol</a><a href="#contact">Commission an agent</a></div>
+    <div class="fcol"><b>Contact</b><a href="https://x.com/oculaagent" target="_blank" rel="noopener">X · @oculaagent</a></div>
+  </div>
+  <div class="wrap fbottom"><span>© 2026 Ocula · Classification: public</span><span>Not financial advice. Files describe on-chain data only.</span></div>
+</footer>
+
+<script src="/vendor/gsap.min.js"></script>
+<script src="/vendor/ScrollTrigger.min.js"></script>
+<script type="module">
+// holder pass: sent with every request to this site (the server decides what it unlocks)
+(() => {
+  const f = window.fetch.bind(window);
+  window.fetch = (input, init = {}) => {
+    const url = typeof input === "string" ? input : input.url, same = url.startsWith("/") || url.startsWith(location.origin);
+    let pass = null; try { pass = localStorage.getItem("ocula.pass"); } catch {}
+    if (same && pass) { const h = new Headers(init.headers || (typeof input !== "string" ? input.headers : undefined)); h.set("x-ocula-pass", pass); init = { ...init, headers: h }; }
+    return f(input, init);
+  };
+})();
+// ---------- shared page behaviour (every design) ----------
+const g = (id) => document.getElementById(id), nf = (n) => Number(n).toLocaleString("en-US");
+const hesc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const setText = (id, v) => { const el = g(id); if (el) el.textContent = v; };
+
+// split headlines into masked lines; reveal everything once, staggered per section
+document.querySelectorAll("[data-split]").forEach((el) => { el.innerHTML = el.innerHTML.split(/<br\s*\/?>/i).map((l) => `<span class="ln"><span>${l}</span></span>`).join(""); });
+document.querySelectorAll("main section").forEach((sec) => sec.querySelectorAll(".rv,[data-split]").forEach((el, i) => el.style.setProperty("--d", Math.min(i, 9) * 80 + "ms")));
+const rio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); rio.unobserve(e.target); } }), { threshold: 0.12 });
+document.querySelectorAll(".rv,[data-split]").forEach((el) => (RM ? el.classList.add("in") : rio.observe(el)));
+
+// manifesto: words light up with scroll
+const mani = g("mani"), KEY = /^(noise|traps|on-chain|plain|words|never|watches)/i;
+let words = [];
+if (mani) {
+  mani.innerHTML = mani.textContent.trim().split(/(\s+)/).map((w) => (/\s/.test(w) ? w : `<span class="w${KEY.test(w.replace(/[.,—]/g, "")) ? " k" : ""}">${hesc(w)}</span>`)).join("");
+  words = [...mani.querySelectorAll(".w")];
+}
+const maniSec = g("manifesto");
+function maniScroll() {
+  if (!maniSec || !words.length) return;
+  const r = maniSec.getBoundingClientRect(), span = r.height - innerHeight;
+  const p = Math.max(0, Math.min(1, -r.top / (span || 1)));
+  const n = RM ? words.length : Math.round(p * 1.2 * words.length);
+  words.forEach((w, i) => w.classList.toggle("on", i < n));
+}
+
+// page scroll: progress, header state, velocity (some designs feed it to the 3D object)
+let lastY = scrollY, velocity = 0;
+function pageScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  document.documentElement.style.setProperty("--sp", max > 0 ? (scrollY / max).toFixed(4) : 0);
+  document.body.classList.toggle("scrolled", scrollY > 40);
+  velocity = Math.min(1, Math.abs(scrollY - lastY) / 60); lastY = scrollY;
+  maniScroll();
+  window.onDesignScroll?.();
+}
+addEventListener("scroll", pageScroll, { passive: true });
+
+// live numbers
+async function status() {
+  try {
+    const j = await (await fetch("/api/status")).json();
+    for (const id of ["nLaunch", "nLaunch2"]) setText(id, nf(j.index.recent));
+    for (const id of ["nPicks", "nPicks2"]) setText(id, j.picks);
+    if (j.index.indexedTo) for (const id of ["nBlock", "nBlock2"]) setText(id, "#" + nf(j.index.indexedTo));
+    setText("hdrStat", j.index.ready ? "Online" : "Syncing");
+  } catch { setText("hdrStat", "Offline"); }
+}
+status(); setInterval(() => !document.hidden && status(), 6000);
+async function ticker() {
+  try {
+    const j = await (await fetch("/api/radar")).json(), rows = j.rows || [];
+    if (!rows.length) return;
+    setText("nPass", Math.round((rows.filter((r) => r.pass).length / rows.length) * 100) + "%");
+    // radar pictures: every blip is a real launch (angle from its address, distance from its age)
+    document.querySelectorAll("[data-blips]").forEach((box) => {
+      box.innerHTML = rows.slice(0, 14).map((r) => {
+        const ang = (parseInt(r.token.slice(2, 8), 16) % 360) * Math.PI / 180, rad = 8 + Math.min(1, r.ageSec / 3600) * 34;
+        return `<i class="blip${r.pass ? "" : " bad"}" style="left:${50 + Math.cos(ang) * rad * 0.66}%;top:${50 + Math.sin(ang) * rad}%;animation-delay:${((ang / (2 * Math.PI)) * 3.2).toFixed(2)}s" title="$${hesc(r.symbol)}"></i>`;
+      }).join("");
+    });
+    const tk = g("tick"); if (!tk) return;
+    const items = rows.slice(0, 18).map((r) => {
+      const age = r.ageSec < 3600 ? Math.max(1, Math.round(r.ageSec / 60)) + "m" : Math.round(r.ageSec / 3600) + "h";
+      return `<span><b>$${hesc(r.symbol)}</b> ${age} · tax ${r.taxPct}% · curve ${r.progressPct.toFixed(1)}% · ${r.pass ? "<i>passed</i>" : `<em>${hesc(r.checks.find((c) => !c.ok)?.text || "flagged")}</em>`}</span>`;
+    }).join("");
+    tk.innerHTML = items + items;
+  } catch {}
+}
+ticker(); setInterval(() => !document.hidden && ticker(), 15000);
+
+// command bar: a CA scans, a word opens a tool
+const WORDS = [[/scan|check|rug|report/, "scan"], [/radar|new|launches|feed/, "radar"], [/snip|buy|bot|pick/, "snipe"], [/fee|claim|seed/, "fees"], [/kit|lore|tagline|bio|post/, "kit"], [/agent|chat|persona/, "agent"], [/launch|create|deploy|token/, "launch"]];
+g("cmd")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const v = g("cmdIn").value.trim(), low = v.toLowerCase(), tab = (t) => document.querySelector(`#tabs [data-t="${t}"]`)?.click();
+  if (/^0x[0-9a-f]{40}$/i.test(v)) { tab("scan"); g("app").scrollIntoView({ behavior: "smooth" }); g("scanCa").value = v; g("scanForm").requestSubmit(); return; }
+  const hit = WORDS.find(([re]) => re.test(low));
+  if (hit) { tab(hit[1]); g("app").scrollIntoView({ behavior: "smooth" }); }
+  else { g("cmdIn").value = ""; g("cmdIn").placeholder = "Try a 0x… address, or: radar, snipe, claim"; }
+});
+addEventListener("keydown", (e) => { if (e.key === "/" && g("cmdIn") && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); g("cmdIn").focus(); } });
+
+// workspace title follows the open tool
+const wsT = () => { const b = document.querySelector("#tabs button.on"); if (b && g("wsTitle")) g("wsTitle").textContent = b.querySelector(".tn")?.textContent || b.textContent; };
+new MutationObserver(wsT).observe(g("tabs"), { attributes: true, subtree: true, attributeFilter: ["class"] });
+// ---------- Ocula as an agent you talk to ----------
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const el = (id) => document.getElementById(id);
+const MARK = document.querySelector(".brand svg").outerHTML;
+const CA_RE = /^0x[0-9a-fA-F]{40}$/;
+const shortCa = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+const ago = (s) => (s < 60 ? Math.max(1, Math.round(s)) + "s" : s < 3600 ? Math.round(s / 60) + "m" : Math.round(s / 3600) + "h");
+
+// ---------- the chat ----------
+const thread = el("thread"), input = el("askIn"), send = el("send"), chatLog = [];
+const grow = () => { input.style.height = "auto"; input.style.height = Math.min(200, input.scrollHeight) + "px"; send.disabled = !input.value.trim(); };
+input.addEventListener("input", grow);
+input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); el("ask").requestSubmit(); } });
+function addUser(text) { thread.insertAdjacentHTML("beforeend", `<div class="msg u"><div class="t">${hesc(text)}</div></div>`); }
+function addNova() {
+  thread.insertAdjacentHTML("beforeend", `<div class="msg a"><span class="av">${MARK}</span><div class="t"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
+  const m = thread.lastElementChild; m.scrollIntoView({ block: "nearest", behavior: REDUCE ? "auto" : "smooth" }); return m;
+}
+const actBtn = (a) => a.unlock ? `<button class="btn" type="button" data-unlock>${hesc(a.label)}</button>` : a.scan ? `<a class="btn ghost" href="#app" data-scan="${hesc(a.scan)}">${hesc(a.label)}</a>`
+  : a.snipe ? `<a class="btn ghost" href="#app" data-open="snipe" data-snipe-ca="${hesc(a.snipe)}">${hesc(a.label)}</a>`
+  : `<a class="btn ghost" href="#app" data-open="${hesc(a.tool)}">${hesc(a.label)}</a>`;
+function fill(m, text, actions = [], extra = "") {
+  m.querySelector(".t").textContent = text;
+  if (extra) m.insertAdjacentHTML("beforeend", extra);
+  if (actions.length) m.insertAdjacentHTML("beforeend", `<div class="acts">${actions.map(actBtn).join("")}</div>`);
+}
+async function scanFlow(ca) {
+  addUser(ca); const m = addNova();
+  try {
+    const r = await fetch("/api/scan?ca=" + ca), j = await r.json();
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); refreshMe(); return; }
+    if (!r.ok) throw new Error(j.error || "Scan failed.");
+    const t = j.facts?.token || {}, flags = (j.flags || []).slice().sort((a, b) => ["high", "watch", "ok", "info"].indexOf(a.level) - ["high", "watch", "ok", "info"].indexOf(b.level)).slice(0, 4);
+    const logo = String(t.logo || "").replace(/^ipfs:\/\//, "https://gateway.pinata.cloud/ipfs/");
+    const card = `<div class="rep"><div class="hd">${/^https:\/\//.test(logo) ? `<img src="${hesc(logo)}" alt="" onerror="this.remove()">` : ""}<div><b>${hesc(t.name || "Token")} · $${hesc(t.symbol || "?")}</b><br><span>${shortCa(ca)}</span></div>${j.risk ? `<span class="rk ${j.risk.level}">${j.risk.score}% rug risk</span>` : ""}</div>
+      <ul>${flags.map((f) => `<li class="${hesc(f.level)}"><i></i><span><b>${hesc(f.title)}</b> — ${hesc(f.detail)}</span></li>`).join("")}</ul></div>`;
+    const text = j.summary || (flags[0] ? `${flags[0].title}.` : "Here is what the chain shows.");
+    fill(m, text, [{ scan: ca, label: "Full report" }, { snipe: ca, label: "Snipe it" }], card); refreshMe();
+    chatLog.push({ role: "user", content: "Scan " + ca }, { role: "assistant", content: `${t.symbol}: ${text}` });
+  } catch (e) { fill(m, e.message || "Ocula could not read that token."); }
+}
+async function chatFlow(text) {
+  addUser(text); chatLog.push({ role: "user", content: text }); const m = addNova();
+  try {
+    const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: chatLog }) }), j = await r.json();
+    if (r.status === 402) { fill(m, j.error, [{ unlock: true, label: "Unlock with $OCULA" }]); chatLog.pop(); refreshMe(); return; }
+    if (!r.ok) throw new Error(j.error || "Ocula could not answer.");
+    fill(m, j.reply, j.actions || []); chatLog.push({ role: "assistant", content: j.reply }); refreshMe();
+  } catch (e) { fill(m, e.message); chatLog.pop(); }
+}
+el("ask").addEventListener("submit", (e) => {
+  e.preventDefault(); const v = input.value.trim(); if (!v) return;
+  input.value = ""; grow();
+  CA_RE.test(v) ? scanFlow(v) : chatFlow(v);
+});
+document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+  if (c.dataset.ask) { input.value = c.dataset.ask; grow(); el("ask").requestSubmit(); return; }
+  if (c.dataset.tool === "scan") { input.placeholder = "Paste the token CA (0x…) and press Enter"; input.focus(); return; }
+  document.querySelector(`#tabs [data-t="${c.dataset.tool}"]`)?.click(); el("app").scrollIntoView({ behavior: REDUCE ? "auto" : "smooth" });
+}));
+// "Snipe it" fills the sniper's manual buy with the token
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-snipe-ca]"); if (a) setTimeout(() => { const mb = el("mbToken"); if (mb) mb.value = a.dataset.snipeCa; }, 50); });
+el("backChat").addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: 0, behavior: REDUCE ? "auto" : "smooth" }); setTimeout(() => input.focus(), 500); });
+
+// ---------- holder access ----------
+const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z"/></svg>';
+let me = { holder: false, launched: false, trialsLeft: 3 };
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+// a lock over every tool but the launchpad
+document.querySelectorAll(".ws .tool[data-p]").forEach((t) => {
+  if (t.dataset.p === "launch") return;
+  const name = document.querySelector(`#tabs [data-t="${t.dataset.p}"] .tn`)?.textContent || "This tool";
+  t.insertAdjacentHTML("afterbegin", `<div class="lock"><div>${LOCK_SVG}<b>${hesc(name)} is for $OCULA holders</b><p>Hold at least 0.1% of $OCULA and unlock it with your wallet. The Pons Launchpad stays free for everyone.</p><button class="btn" type="button" data-unlock style="background:#F5F3EC;color:#161514;border-color:#F5F3EC">Unlock</button></div></div>`);
+});
+document.querySelectorAll("#tabs button[data-t]").forEach((b) => b.dataset.t !== "launch" && b.classList.add("lockd"));
+async function refreshMe() {
+  try { me = await (await fetch("/api/me")).json(); } catch {}
+  document.body.classList.toggle("holder", !!me.holder);
+  const hb = el("holderBtn");
+  hb.textContent = me.holder ? (me.owner ? "Owner access" : "Holder · " + shortCa(me.address || "0x0000000000")) : "Holder access";
+  hb.classList.toggle("on", !!me.holder);
+  el("hint").textContent = me.holder ? "Holder access · ask Ocula anything." : `${me.trialsLeft} free read${me.trialsLeft === 1 ? "" : "s"} left today · hold $OCULA for unlimited.`;
+}
+const modal = el("modal");
+function openModal() {
+  el("mErr").textContent = "";
+  el("mText").textContent = me.launched
+    ? "Hold at least 0.1% of $OCULA supply. Connect the wallet that holds it and sign a short message. Signing is free and sends nothing."
+    : "Holder access opens when $OCULA launches. Until then the tools stay locked. The Pons Launchpad is free for everyone, today.";
+  el("mSign").hidden = !me.launched || !window.ethereum;
+  if (me.launched && !window.ethereum) el("mErr").textContent = "No browser wallet found. Open this page in MetaMask, Rabby or another wallet browser.";
+  if (me.holder) { el("mText").textContent = "You're unlocked. Every Ocula tool is open in this browser for 24 hours."; el("mSign").hidden = true; }
+  modal.hidden = false;
+}
+const closeModal = () => (modal.hidden = true);
+el("holderBtn").addEventListener("click", openModal);
+el("mClose").addEventListener("click", closeModal);
+modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", (e) => { if (e.target.closest("[data-unlock]")) { e.preventDefault(); openModal(); } });
+async function unlockWith(body) {
+  const r = await fetch("/api/auth", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }), j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "Could not unlock.");
+  store.set("ocula.pass", j.pass); await refreshMe(); openModal();
+}
+el("mSign").addEventListener("click", async () => {
+  el("mErr").textContent = "";
+  try {
+    const [address] = await window.ethereum.request({ method: "eth_requestAccounts" });
+    const message = `Unlock Ocula\nWallet: ${address}\nIssued: ${Date.now()}`;
+    const signature = await window.ethereum.request({ method: "personal_sign", params: [message, address] });
+    await unlockWith({ address, message, signature });
+  } catch (e) { el("mErr").textContent = e.message || "Signing was cancelled."; }
+});
+el("ownerForm").addEventListener("submit", async (e) => { e.preventDefault(); el("mErr").textContent = ""; try { await unlockWith({ ownerKey: el("ownerKey").value.trim() }); el("ownerKey").value = ""; } catch (er) { el("mErr").textContent = er.message; } });
+refreshMe().then(() => { if (!me.holder && !location.hash) document.querySelector('#tabs [data-t="launch"]')?.click(); });
+
+// header button: "Buy $OCULA" once the token address is configured on the server
+fetch("/api/status").then((r) => r.json()).then((j) => {
+  const b = el("buyNova"); if (!j.novaToken || !b) return;
+  b.textContent = "Buy $OCULA"; b.removeAttribute("aria-disabled");
+  b.href = "https://ponsfamily.com/launchpad/" + j.novaToken; b.target = "_blank"; b.rel = "noopener";
+}).catch(() => {});
+
+// ---------- live data: the work panel and today's gallery ----------
+let live = { rows: [], picks: new Set() }, workStep = -1;
+function verdictOf(r) {
+  const picked = live.picks.has(r.token.toLowerCase());
+  return picked ? { tag: "picked", cls: "ok", text: "Picked for the sniper" } : r.pass ? { tag: "Cleared", cls: "ok", text: "Cleared every check" } : { tag: "Held", cls: "held", text: "Held · " + r.checks.filter((c) => !c.ok).map((c) => c.text).join(", ") };
+}
+function paintWork() {
+  const r = live.rows[0]; if (!r) return;
+  const v = verdictOf(r), dev = r.devLaunches24h;
+  const lines = [
+    `New launch <b>$${hesc(r.symbol)}</b> · ${ago(r.ageSec)} ago · ${shortCa(r.token)}`,
+    r.devRugged ? `<em>Dev dumped: sold ${r.devSoldPct}%, holds ${r.devHoldPct}%</em>` : r.devSold ? `Dev sold ${r.devSoldPct}%, still holds ${r.devHoldPct}%` : dev ? `<em>Deployer launched ${dev} other token${dev > 1 ? "s" : ""} in 24h</em>` : `<u>Dev has not sold · first launch in 24h</u>`,
+    `${r.feesToDev ? "Creator fees go to the deployer" : "<em>Creator fees go to another wallet</em>"}`,
+    `Creator tax ${r.taxPct}% · ${r.socials ? `<u>${r.socials} social link${r.socials > 1 ? "s" : ""}</u>` : "<em>no socials</em>"} · curve ${r.progressPct.toFixed(1)}%`,
+  ];
+  el("termLines").innerHTML = lines.map((l, i) => `<div class="ln${i <= workStep || workStep < 0 && REDUCE ? " on" : ""}"><i>${i + 1}</i><span>${l}</span></div>`).join("");
+  el("termVerdict").textContent = workStep >= 3 || REDUCE ? v.text : "Reading…";
+  el("termAge").textContent = "block " + Number(r.block).toLocaleString("en-US");
+  el("termScan").dataset.scan = r.token;
+}
+function setWork(s) {
+  if (s === workStep) return; workStep = s;
+  document.querySelectorAll("#steps li").forEach((li, i) => li.classList.toggle("on", i === s));
+  paintWork();
+}
+function paintGallery() {
+  el("gal").innerHTML = live.rows.slice(0, 6).map((r, i) => {
+    const v = verdictOf(r);
+    return `<a class="case${i === 0 ? " big" : ""}" href="#app" data-scan="${r.token}"><span class="q">What about $${hesc(r.symbol)}?</span>
+      <div class="a"><span class="av">${MARK}</span><span><b>${hesc(v.text)}.</b> Tax ${r.taxPct}%, ${r.socials} social link${r.socials === 1 ? "" : "s"}, curve ${r.progressPct.toFixed(1)}%, launched ${ago(r.ageSec)} ago.</span></div>
+      <span class="tag ${v.cls}">${hesc(v.tag)}</span></a>`;
+  }).join("");
+}
+async function loadLive() {
+  try {
+    const [rd, pk] = await Promise.all([fetch("/api/radar").then((r) => r.json()), fetch("/api/picks?peek=1").then((r) => r.json()).catch(() => ({ picks: [] }))]);
+    live = { rows: rd.rows || [], picks: new Set((pk.picks || []).map((p) => p.token.toLowerCase())) };
+    paintWork(); paintGallery(); ScrollTrigger.refresh();
+  } catch {}
+}
+loadLive(); setInterval(() => !document.hidden && loadLive(), 15000);
+
+// ---------- motion: calm, like the references; one pinned moment ----------
+gsap.registerPlugin(ScrollTrigger);
+const mm = gsap.matchMedia();
+mm.add("(prefers-reduced-motion: no-preference)", () => {
+  gsap.from([".live", ".hero h1", ".box", ".chips"], { y: 18, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.09 });
+  ScrollTrigger.batch(".sh, .case, .sf, #app .ws, .term", { start: "top 88%", once: true, onEnter: (els) => gsap.fromTo(els, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
+});
+mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
+  // the reading happens while you scroll: four steps, four lines, then the verdict
+  ScrollTrigger.create({ trigger: "#workPin", start: "top top", end: "+=180%", pin: true, onUpdate: (st) => setWork(Math.min(3, Math.floor(st.progress * 4.4))) });
+  const steps = [...document.querySelectorAll(".fstep")];
+  gsap.to("#drawn", { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: "#flowRow", start: "top 75%", end: "bottom 55%", scrub: 1, onUpdate: (st) => steps.forEach((s, i) => s.classList.toggle("on", st.progress >= i / (steps.length - 1) - 0.02)) } });
+});
+mm.add("(max-width: 900px), (prefers-reduced-motion: reduce)", () => {
+  setWork(3); document.querySelectorAll(".fstep").forEach((s) => s.classList.add("on"));
+});
+addEventListener("load", () => ScrollTrigger.refresh());
+document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+// ---------- dossier: redactions lift, verdicts get stamped ----------
+const rdo = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { const els = [...e.target.querySelectorAll("[data-rd]")]; els.forEach((r, i) => setTimeout(() => r.classList.add("open"), 500 + i * 450)); rdo.unobserve(e.target); } }), { threshold: 0.5 });
+document.querySelectorAll(".hero h1, .memo").forEach((b) => (REDUCE ? b.querySelectorAll("[data-rd]").forEach((r) => r.classList.add("open")) : rdo.observe(b)));
+let lastStamp = "";
+const _paintWork = paintWork;
+paintWork = function () {
+  _paintWork();
+  const v = el("termVerdict"), t = v.textContent, word = /^Reading/.test(t) ? "Reading" : /^Held/.test(t) ? "Held" : /^Picked/.test(t) ? "Picked" : "Cleared";
+  v.title = t; v.textContent = word;
+  v.className = "stamp " + (word === "Reading" ? "idle" : word === "Held" ? "" : "ok");
+  if (word !== lastStamp && word !== "Reading") { void v.offsetWidth; v.classList.add("hit"); }
+  lastStamp = word;
+};
+paintWork();
+const _paintGallery = paintGallery;
+paintGallery = function () {
+  _paintGallery();
+  document.querySelectorAll("#gal .case .q").forEach((q, i) => { q.textContent = q.textContent.replace(/^What about (\$\S+)\?$/, `File ${String(i + 1).padStart(2, "0")} · $1`); });
+};
+
+// ---------- tools ----------
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const short = (a) => (a ? a.slice(0, 6) + "…" + a.slice(-4) : "");
+const fmt = (v, d = 2) => Number(v).toLocaleString("en-US", { maximumFractionDigits: d });
+const EXPLORER = "https://robinhoodchain.blockscout.com/";
+const safeUrl = (u) => (/^https:\/\/[^\s"'<>]+$/.test(u || "") ? u : "");
+const img = (u) => { u = String(u || ""); if (u.startsWith("ipfs://")) u = "https://gateway.pinata.cloud/ipfs/" + u.slice(7); return safeUrl(u); };
+const loading = (t) => `<div class="load"><i></i>${esc(t)}</div>`;
+async function api(url, opts) {
+  const r = await fetch(url, opts); let j = {};
+  try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.error || "Request failed (" + r.status + ").");
+  return j;
+}
+
+// tabs
+const VISOR = { launch: "LAUNCH", scan: "SCANNER", radar: "RADAR", snipe: "SNIPER", fees: "CLAIM", kit: "LAUNCH", agent: "AGENT" };
+let radarTimer = null;
+function openTab(t, scroll, quiet) {
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+  document.querySelectorAll(".tool").forEach((p) => p.classList.toggle("on", p.dataset.p === t));
+  window.nova?.say(VISOR[t]);
+  clearInterval(radarTimer);
+  if (t === "radar") { loadRadar(); radarTimer = setInterval(loadRadar, 10_000); }
+  if (scroll) $("app").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!quiet) history.replaceState(null, "", "#" + t);
+}
+$("tabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.t); });
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-open]"); if (a) { e.preventDefault(); openTab(a.dataset.open, true); } });
+
+// scanner
+const STEPS = ["Reading the Pons factory record", "Following every transfer since launch", "Checking the deployer's other launches", "Looking at the first minute of trading", "Ocula is writing the summary"];
+async function runScan(ca) {
+  ca = ca.trim(); $("scanCa").value = ca;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(ca)) { $("scanOut").innerHTML = `<p class="err">Paste a token contract address (0x… 42 characters).</p>`; return; }
+  $("scanGo").disabled = true;
+  let i = 0; $("scanOut").innerHTML = loading(STEPS[0]);
+  const t = setInterval(() => { i = Math.min(STEPS.length - 1, i + 1); const l = $("scanOut").querySelector(".load"); if (l) l.innerHTML = "<i></i>" + STEPS[i]; window.nova?.pulse(0.3); }, 1700);
+  try { renderScan(await api("/api/scan?ca=" + ca)); }
+  catch (e) { $("scanOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { clearInterval(t); $("scanGo").disabled = false; }
+}
+// rug risk, bundled wallets and the X check, above the AI read
+function riskBlock(r) {
+  const k = r.risk; if (!k) return "";
+  const b = r.facts.bundle || {}, x = r.facts.x || {}, nfmt = (n) => Number(n).toLocaleString("en-US");
+  const xs = !x.linked ? `<p class="rnote">No X account is set on-chain.</p>`
+    : x.found === false ? `<p class="rnote bad">The linked account @${esc(x.handle)} does not exist.</p>`
+    : !x.found ? `<p class="rnote">Could not read @${esc(x.handle || "")} right now.</p>`
+    : `<div class="xrow"><a href="https://x.com/${esc(x.handle)}" target="_blank" rel="noopener nofollow">@${esc(x.handle)}</a>${x.verified ? '<span class="xv">verified</span>' : ""}</div>
+       <div class="xnums"><div><b>${nfmt(x.followers)}</b><span>followers</span></div><div><b>${x.ageDays}d</b><span>account age</span></div><div><b>${nfmt(x.posts)}</b><span>posts</span></div>
+       ${x.post ? `<div><b>${nfmt(x.post.likes)}</b><span>likes on post</span></div><div><b>${x.post.views ? nfmt(x.post.views) : "–"}</b><span>views</span></div>` : ""}</div>
+       <p class="rnote ${x.ageDays < 7 || x.followers < 100 || (x.post && x.post.likes > x.followers * 1.5 && x.post.likes > 50) ? "bad" : "good"}">${
+         x.post && x.post.likes > x.followers * 1.5 && x.post.likes > 50 ? "Likes far exceed the followers: engagement may be bought." :
+         x.ageDays < 7 ? "A brand-new account. Treat the hype with care." : x.followers < 100 ? "A small audience so far." : "Reach and age look organic."}</p>`;
+  return `<div class="risk ${k.level}">
+    <div class="rg"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="t"/><circle cx="60" cy="60" r="50" class="v" pathLength="100" stroke-dasharray="${k.score} 100" transform="rotate(-90 60 60)"/></svg><div><b>${k.score}%</b><span>rug risk</span></div></div>
+    <div class="rw"><span class="lbl">Rug risk · <b>${k.level}</b></span><ul>${k.reasons.length ? k.reasons.slice(0, 6).map((x) => `<li>${esc(x)}</li>`).join("") : "<li>No red flags in the on-chain data.</li>"}</ul><p class="rnote">A read of on-chain signals, not a guarantee.</p></div>
+  </div>
+  <div class="two">
+    <div><span class="lbl">Bundled wallets · <b>${b.count || 0}</b> · hold ${fmt(b.holdsPct || 0)}%</span>${b.wallets?.length ? `<table>${b.wallets.slice(0, 8).map((w) => `<tr><td><a href="${EXPLORER}address/${w.address}" target="_blank" rel="noopener">${short(w.address)}</a><div class="why">${w.reasons.map(esc).join(" · ")}</div></td><td class="r">${fmt(w.holdsPct)}%<div class="why">bought ${fmt(w.boughtPct)}%</div></td></tr>`).join("")}</table>` : `<p class="rnote good">No wallets look tied to the deployer or to each other.</p>`}</div>
+    <div><span class="lbl">X check</span>${xs}</div>
+  </div>`;
+}
+function renderScan(r) {
+  const f = r.facts, t = f.token, p = f.pons, d = f.deployer, h = f.holders, e = f.early, tr = f.trading;
+  const socials = Object.entries(t.socials || {}).map(([k, v]) => (safeUrl(v) ? `<a class="chipl" href="${esc(v)}" target="_blank" rel="noopener nofollow">${esc(k)}</a>` : "")).join("");
+  const logo = img(t.logo);
+  $("scanOut").innerHTML = `
+  <div class="rh">${logo ? `<img src="${esc(logo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}
+    <div><h3>${esc(t.name)}<span>$${esc(t.symbol)}</span></h3><div class="ca">${esc(t.address)} · ${fmt(t.ageHours, 1)}h old</div></div>
+    <div class="links">${socials}<a class="chipl" href="${EXPLORER}token/${esc(t.address)}" target="_blank" rel="noopener">explorer</a><a class="chipl" href="https://ponsfamily.com/launchpad/${esc(t.address)}" target="_blank" rel="noopener">pons</a></div></div>
+  ${riskBlock(r)}
+  <span class="lbl">Ocula's read</span>
+  <p class="read">${r.summary ? esc(r.summary) : `<span style="color:var(--dim);font-weight:500">${esc(r.summaryError || "")}</span>`}</p>
+  <div class="flags">${r.flags.map((x) => `<div class="fl"><span class="lv ${esc(x.level)}">${esc(x.level)}</span><div><b>${esc(x.title)}</b><span class="d">${esc(x.detail)}</span></div></div>`).join("")}</div>
+  <div class="nums">
+    <div><span class="lbl">Holders</span><b>${h.count}</b><small>top 10 hold ${fmt(h.top10Pct)}%</small></div>
+    <div><span class="lbl">Deployer</span><b>${fmt(d.holdsPct)}%</b><small>bought ${fmt(d.boughtPct)}% · out ${fmt(d.soldPct)}%</small></div>
+    <div><span class="lbl">First minute</span><b>${e.wallets}</b><small>wallets took ${fmt(e.boughtPct)}%, hold ${fmt(e.stillHoldPct)}%</small></div>
+    <div><span class="lbl">Trades</span><b>${tr.buys} / ${tr.sells}</b><small>buys / sells</small></div>
+    <div><span class="lbl">Volume in</span><b>${fmt(tr.volumeInETH, 3)}</b><small>ETH bought · ${fmt(tr.volumeOutETH, 3)} sold</small></div>
+    <div><span class="lbl">Last hour</span><b>${tr.lastHour.buys} / ${tr.lastHour.sells}</b><small>${fmt(tr.lastHour.inETH, 3)} in · ${fmt(tr.lastHour.outETH, 3)} out ETH</small></div>
+    <div><span class="lbl">Creator tax</span><b>${fmt(p.creatorTaxPct)}%</b><small>${p.snipeTaxNowPct ? "snipe tax now " + fmt(p.snipeTaxNowPct) + "%" : "no snipe tax now"}</small></div>
+    <div><span class="lbl">Graduation</span><b>${p.graduated ? "Done" : fmt(p.progressPct, 1) + "%"}</b><div class="pbar"><i style="width:${p.graduated ? 100 : Math.min(100, p.progressPct)}%"></i></div><small>${fmt(p.curveETH, 3)} / ${fmt(p.graduationETH)} ETH</small></div>
+  </div>
+  <div class="two">
+    <div><span class="lbl">Top holders</span>${h.top.length ? `<table>${h.top.map((x, i) => `<tr><td style="width:26px;color:var(--dim)">${i + 1}</td><td><a href="${EXPLORER}address/${x.address}" target="_blank" rel="noopener">${short(x.address)}</a>${x.dev ? '<span class="pill">deployer</span>' : ""}${x.contract ? '<span class="pill">contract</span>' : ""}</td><td class="r">${fmt(x.pct)}%</td></tr>`).join("")}</table>` : `<p class="note">No one holds outside the curve.</p>`}</div>
+    <div><span class="lbl">Deployer</span><table>
+      <tr><td>Wallet</td><td class="r"><a href="${EXPLORER}address/${d.address}" target="_blank" rel="noopener">${short(d.address)}</a></td></tr>
+      <tr><td>Fees go to</td><td class="r">${d.feeRecipientIsDeployer ? "the deployer" : short(d.feeRecipient)}</td></tr>
+      <tr><td>Other Pons launches</td><td class="r">${d.otherLaunches}</td></tr>
+      <tr><td>Graduated / look abandoned</td><td class="r">${d.otherLaunchesGraduated} / ${d.otherLaunchesDead}</td></tr>
+      ${d.recent.map((x) => `<tr><td><a href="#" data-scan="${x.token}">$${esc(x.symbol)}</a></td><td class="r">${x.graduated ? "graduated" : fmt(x.curveETH, 3) + " ETH on curve"}</td></tr>`).join("")}
+    </table></div>
+  </div>
+  <p class="note" style="text-align:right">Block ${f.scannedAtBlock}${r.cached ? " · cached" : ""} · ${fmt(r.ms / 1000, 1)}s</p>`;
+}
+$("scanForm").addEventListener("submit", (e) => { e.preventDefault(); runScan($("scanCa").value); });
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-scan]"); if (a) { e.preventDefault(); openTab("scan", true); runScan(a.dataset.scan); } });
+
+// radar
+let radarRows = [];
+async function loadRadar() {
+  try {
+    const j = await api("/api/radar");
+    radarRows = j.rows; $("radarHead").textContent = "block " + j.head.toLocaleString("en-US"); drawRadar();
+  } catch (e) { if (!radarRows.length) $("radarOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+}
+function age(s) { return s < 60 ? s + "s" : s < 3600 ? Math.floor(s / 60) + "m" : Math.floor(s / 3600) + "h"; }
+function drawRadar() {
+  const rows = $("onlyPass").checked ? radarRows.filter((r) => r.pass) : radarRows;
+  $("radarOut").innerHTML = rows.length ? rows.map((r) => {
+    const logo = img(r.logo);
+    return `<div class="rrow">${logo ? `<img src="${esc(logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph'}))">` : `<div class="ph"></div>`}
+      <div class="nm"><b>$${esc(r.symbol)}</b><span>${esc(r.name)}</span><div class="pbar"><i style="width:${r.graduated ? 100 : r.progressPct}%"></i></div></div>
+      <span class="age">${age(r.ageSec)} ago${r.snipePct ? `<br>tax ${fmt(r.snipePct)}%` : ""}</span>
+      <div class="checks">${r.checks.map((c) => `<span class="ck${c.ok ? "" : " no"}">${c.ok ? "✓" : "✕"} ${esc(c.text)}</span>`).join("")}</div>
+      <span class="verdict ${r.pass ? "p" : "s"}">${r.pass ? "PASS" : "SKIP"}</span>
+      <div class="ract"><button data-scan="${r.token}">Scan</button><a href="https://ponsfamily.com/launchpad/${r.token}" target="_blank" rel="noopener">Pons</a></div></div>`;
+  }).join("") : `<p class="empty">No launch passes right now. Untick the filter to see everything.</p>`;
+}
+$("onlyPass").addEventListener("change", drawRadar);
+
+// fee claimer (read from the server, claim in the visitor's wallet)
+const CHAIN = { chainId: "0x1237", chainName: "Robinhood Chain", nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 }, rpcUrls: ["https://rpc.mainnet.chain.robinhood.com"], blockExplorerUrls: [EXPLORER] };
+let feeData = null, ethersLib = null;
+const getEthers = async () => (ethersLib ||= await import("/vendor/ethers.min.js"));
+async function connect() {
+  if (!window.ethereum) throw new Error("No wallet found. Install MetaMask or Rabby, or paste your address to just check.");
+  const [acc] = await window.ethereum.request({ method: "eth_requestAccounts" });
+  try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN.chainId }] }); }
+  catch (e) { if (e.code === 4902 || /Unrecognized|not been added/i.test(e.message || "")) await window.ethereum.request({ method: "wallet_addEthereumChain", params: [CHAIN] }); else throw e; }
+  return acc;
+}
+async function checkFees(w) {
+  w = w.trim(); $("feeWallet").value = w;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(w)) { $("feeOut").innerHTML = `<p class="err">Paste a wallet address (0x… 42 characters).</p>`; return; }
+  $("feeGo").disabled = true; $("feeOut").innerHTML = loading("Finding every Pons token this wallet launched");
+  try { feeData = await api("/api/fees?wallet=" + w); drawFees(); }
+  catch (e) { $("feeOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { $("feeGo").disabled = false; }
+}
+function drawFees() {
+  const d = feeData, pend = d.rows.filter((r) => r.pendingETH > 0);
+  $("feeOut").innerHTML = `
+    <div class="total"><div><span class="lbl">Claimable now</span><br><b>${fmt(d.totalETH, 6)} ETH</b></div>
+      <div style="text-align:right"><span class="lbl">${d.launched} token${d.launched === 1 ? "" : "s"} launched · ${pend.length} with fees on the curve · ${fmt(d.escrowETH, 6)} ETH in escrow</span><br>
+      <button class="btn" id="claimAll" style="margin-top:10px" ${d.totalETH > 0 ? "" : "disabled"}>Claim all in my wallet <span class="ar">→</span></button></div></div>
+    ${d.rows.length ? `<table>${d.rows.map((r) => `<tr><td><a href="#" data-scan="${r.token}">$${esc(r.symbol)}</a> <span style="color:var(--dim)">${esc(r.name)}</span></td><td class="r">${r.graduated ? '<span class="pill">graduated</span>' : ""} ${fmt(r.pendingETH, 6)} ETH</td></tr>`).join("")}</table>` : `<p class="note">This wallet has not launched a Pons token, so it has no curves to sweep.</p>`}
+    <div class="steps2" id="claimLog"></div>
+    <p class="note">Claiming sends one transaction per token with fees, then one to the escrow. Gas is paid by your wallet. Only the fee recipient wallet can claim.</p>`;
+  $("claimAll")?.addEventListener("click", claimAll);
+}
+async function claimAll() {
+  const log = (t, c = "") => { $("claimLog").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`); };
+  const btn = $("claimAll"); btn.disabled = true;
+  try {
+    const acc = await connect();
+    if (acc.toLowerCase() !== feeData.wallet.toLowerCase()) throw new Error(`Your wallet is connected as ${short(acc)}. Switch to ${short(feeData.wallet)} to claim its fees.`);
+    const { BrowserProvider, Contract } = await getEthers();
+    const signer = await new BrowserProvider(window.ethereum).getSigner();
+    for (const r of feeData.rows.filter((x) => x.pendingETH > 0)) {
+      log(`sweeping $${r.symbol}…`);
+      const tx = await new Contract(r.curve, ["function sweepFees(uint256 minBuybackTokensOut)"], signer).sweepFees(0);
+      await tx.wait(); log(`$${r.symbol} swept · ${short(tx.hash)}`, "ok");
+    }
+    const st = await api("/api/status");
+    const esc_ = new Contract(st.escrow, ["function balanceOf(address) view returns (uint256)", "function claim()"], signer);
+    if ((await esc_.balanceOf(acc)) > 0n) { log("claiming from the escrow…"); const tx = await esc_.claim(); await tx.wait(); log(`claimed · ${short(tx.hash)}`, "ok"); }
+    log("done. The ETH is in your wallet.", "ok"); window.nova?.pulse(1);
+    setTimeout(() => checkFees(feeData.wallet), 2500);
+  } catch (e) { log(e.shortMessage || e.info?.error?.message || e.message, "bad"); btn.disabled = false; }
+}
+$("feeForm").addEventListener("submit", (e) => { e.preventDefault(); checkFees($("feeWallet").value); });
+$("feeConnect").addEventListener("click", async () => { try { checkFees(await connect()); } catch (e) { $("feeOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; } });
+
+// launch kit
+$("kitForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)); $("kitGo").disabled = true;
+  $("kitOut").innerHTML = loading("Ocula is writing your launch kit"); const t = setInterval(() => window.nova?.pulse(0.3), 400);
+  try {
+    const k = await api("/api/kit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f) });
+    const card = (title, body, copy) => `<div class="kc"><h5>${title}</h5><button class="cp" type="button" data-copy="${esc(copy)}">Copy</button>${body}</div>`;
+    const list = (a) => `<ol>${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`;
+    $("kitOut").innerHTML = `<div class="kit">
+      ${card("Tagline", `<p>${esc(k.tagline)}</p>`, k.tagline)}
+      ${card("X bio", `<p>${esc(k.bio)}</p>`, k.bio)}
+      ${card("Lore", `<p>${esc(k.lore)}</p>`, k.lore)}
+      ${card("Thread", list(k.thread), k.thread.join("\n\n"))}
+      ${card("Posts", list(k.posts), k.posts.join("\n\n"))}
+      ${card("Launch post", `<p>${esc(k.launchPost)}</p>`, k.launchPost)}</div>`;
+  } catch (e2) { $("kitOut").innerHTML = `<p class="err" style="margin-top:18px">${esc(e2.message)}</p>`; }
+  finally { clearInterval(t); $("kitGo").disabled = false; }
+});
+document.addEventListener("click", async (e) => { const b = e.target.closest("[data-copy]"); if (!b) return; try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); } catch {} });
+
+// agent studio
+let chat = [];
+$("chatForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = $("chatIn").value.trim(); if (!text) return;
+  const f = Object.fromEntries(new FormData($("agentForm")));
+  if (!chat.length) $("msgs").innerHTML = "";
+  chat.push({ role: "user", content: text }); $("chatIn").value = "";
+  $("msgs").insertAdjacentHTML("beforeend", `<div class="m u">${esc(text)}</div><div class="m a wait" id="wait">…</div>`);
+  $("msgs").scrollTop = 1e9; $("chatGo").disabled = true; window.nova?.pulse(0.6);
+  try {
+    const r = await api("/api/agent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...f, messages: chat }) });
+    chat.push({ role: "assistant", content: r.reply });
+    $("wait").outerHTML = `<div class="m a"><b style="color:var(--acc)">${esc(f.name || "Agent")}</b>\n${esc(r.reply)}</div>`;
+  } catch (e2) { chat.pop(); $("wait").outerHTML = `<div class="m a" style="color:#ff8a8d">${esc(e2.message)}</div>`; }
+  finally { $("chatGo").disabled = false; $("msgs").scrollTop = 1e9; }
+});
+$("agentForm").addEventListener("input", () => { chat = []; });
+
+// open from the address bar: #radar, #fees, … or ?ca=0x… for a scan
+const qca = new URLSearchParams(location.search).get("ca");
+const startTab = (location.hash || "").slice(1);
+if (qca) { openTab("scan", false, true); runScan(qca); } else openTab(VISOR[startTab] ? startTab : "scan", false, true);
+if (qca || VISOR[startTab]) setTimeout(() => $("app").scrollIntoView({ block: "start" }), 300);
+
+// ---------- sniper: the same engine as the Ocula sniper bot, the private key stays in this browser ----------
+const PONS_FACTORY = "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e";
+const SK = { key: "nova.sniper.key", cfg: "nova.sniper.cfg2", pos: "nova.sniper.pos2", hist: "nova.sniper.hist" };
+const sstore = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+// same defaults as sniper-config.example.json
+const SN_DEF = { buyEth: "0.005", maxTotalSpendEth: "0.05", takeProfitPercent: 50, stopLossPercent: 30, allowedDeployers: [], maxHoldSeconds: 0, maxOpenPositions: 3, gasReserveEth: "0.001", slippagePercent: 15, maxCreatorTaxPercent: 3, maxSnipeTaxPercent: 1, maxLaunchAgeSeconds: 30, requireSocials: 0, maxDeployerLaunches: 0, keywords: [], blockedKeywords: ["test"], blockedDeployers: [], mode: "manual", agentMinScore: 75 };
+const SN_NUM = ["slippagePercent", "maxCreatorTaxPercent", "maxSnipeTaxPercent", "maxLaunchAgeSeconds", "maxOpenPositions", "takeProfitPercent", "stopLossPercent", "maxHoldSeconds", "requireSocials", "maxDeployerLaunches"];
+const SN_ETH = ["buyEth", "maxTotalSpendEth", "gasReserveEth"];
+const SN_LIST = ["keywords", "blockedKeywords", "allowedDeployers", "blockedDeployers"];
+const SN_ABI = {
+  curve: ["function buy(uint256 quoteIn, uint256 minTokensOut, address recipient) payable returns (uint256 tokensOut)", "function sell(uint256 tokensIn, uint256 minQuoteOut, address recipient) returns (uint256 quoteOut)", "function creatorTaxBps() view returns (uint256)", "function currentSnipeTaxBps(address recipient) view returns (uint256)", "function graduated() view returns (bool)", "event CurveSell(address indexed seller, address indexed recipient, uint256 tokensIn, uint256 quoteOut, uint256 fee, uint256 tax)"],
+  token: ["function name() view returns (string)", "function symbol() view returns (string)", "function balanceOf(address) view returns (uint256)", "function allowance(address,address) view returns (uint256)", "function approve(address,uint256) returns (bool)", "function getTokenInfo() view returns (address tokenDeployer, string tokenLogo, string tokenDescription, tuple(string twitter, string telegram, string discord, string website, string farcaster) tokenSocials)"],
+  factory: ["function getLaunchedToken(address token) view returns (tuple(address token, address curve, address deployer, address creatorFeeRecipient, address pairToken, uint256 graduationThreshold, uint256 initialLiquidity, uint24 poolFee, int24 tickSpacing, uint16 creatorTaxBps, bool buybackEnabled, uint8 phase, uint256 sweptQuote, uint256 sweptTokens, bool exists))"],
+};
+const SN_LAUNCHED = "0x" + "0".repeat(64); // set once ethers loads
+let snCfg = { ...SN_DEF, ...sstore.get(SK.cfg, {}) }, snPositions = sstore.get(SK.pos, []), snHistory = sstore.get(SK.hist, []);
+let Eth = null, snP = null, snW = null, snMode = null, snSpent = 0n, snNext = 0, snWaiting = [], snBuySent = new Set(), snTimer = null, snLastPos = 0, snTopic = null, snTx = Promise.resolve();
+const snQ = (fn) => (snTx = snTx.then(fn, fn)); // one transaction at a time so nonces never clash
+const snEth = (w) => Number(Eth.formatEther(BigInt(w))).toLocaleString("en-US", { maximumFractionDigits: 6 });
+const snShort = (e) => (e?.shortMessage || e?.info?.error?.message || e?.message || String(e)).slice(0, 160);
+function snLog(t, c = "") { const el = $("snLog"); el.insertAdjacentHTML("afterbegin", `<div class="${c}">[${new Date().toLocaleTimeString("en-GB")}] ${esc(t)}</div>`); while (el.children.length > 300) el.lastChild.remove(); }
+const savePos = () => { sstore.set(SK.pos, snPositions); snDrawPos(); };
+
+async function snBoot() {
+  if (Eth) return;
+  Eth = await getEthers();
+  snP = new Eth.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1, pollingInterval: 1000 });
+  snTopic = Eth.id("TokenLaunched(address,address,address,address,uint256,uint256)");
+  let k = null; try { k = localStorage.getItem(SK.key); } catch {}
+  snW = k ? new Eth.Wallet(k, snP) : null;
+  snFill(); snDrawWallet(); snDrawPos(); snDrawHist();
+}
+async function snDrawWallet() {
+  $("snAddr").textContent = snW ? snW.address : "No private key yet. Paste one in Settings, or make a new wallet.";
+  if (!snW) return ($("snBalLine").textContent = "");
+  try { $("snBalLine").textContent = snEth(await snP.getBalance(snW.address)) + " ETH"; } catch { $("snBalLine").textContent = "balance unreadable"; }
+}
+function snFill() {
+  for (const el of $("snForm").elements) {
+    if (!el.name || el.name === "privateKey") continue;
+    const v = snCfg[el.name]; el.value = Array.isArray(v) ? v.join(", ") : v ?? "";
+  }
+}
+// same validation as the bot dashboard
+$("snForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = $("snForm").elements, next = { ...snCfg };
+  for (const n of SN_NUM) { const v = Number(f[n].value); if (!Number.isFinite(v) || v < 0) return snMsg(`${n} must be a number >= 0`, true); next[n] = v; }
+  for (const n of SN_ETH) { const v = f[n].value.trim(); if (!/^\d+(\.\d{1,18})?$/.test(v)) return snMsg(`${n} must be an ETH amount like 0.005`, true); next[n] = v; }
+  for (const n of SN_LIST) next[n] = f[n].value.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  if ([...next.keywords, ...next.blockedKeywords].some((k) => /^0x[0-9a-fA-F]{40}$/.test(k))) return snMsg("Keywords cannot be wallet addresses. Dev addresses go in field 6 (or Blocked devs).", true);
+  const key = f.privateKey.value.trim();
+  if (key) {
+    if (!/^(0x)?[0-9a-fA-F]{64}$/.test(key)) return snMsg("The private key must be 64 hex characters.", true);
+    if (snMode) return snMsg("Stop the bot before changing the key.", true);
+    snW = new Eth.Wallet(key.startsWith("0x") ? key : "0x" + key, snP);
+    try { localStorage.setItem(SK.key, snW.privateKey); } catch {}
+    f.privateKey.value = "";
+  }
+  snCfg = next; sstore.set(SK.cfg, snCfg); snDrawWallet(); snMsg("Settings saved.");
+});
+function snMsg(t, bad) { $("snMsg").innerHTML = `<span style="color:${bad ? "#ff8a8d" : "var(--ok)"}">${esc(t)}</span>`; }
+$("snNewWallet").addEventListener("click", () => {
+  if (snMode) return snMsg("Stop the bot first.", true);
+  if (snW && !confirm("Replace the saved sniper wallet with a new one? Export the old key first if it holds funds.")) return;
+  const w = Eth.Wallet.createRandom(); snW = w.connect(snP); try { localStorage.setItem(SK.key, w.privateKey); } catch {}
+  snDrawWallet(); snLog("new sniper wallet " + w.address + ". Fund it, and back up the key with Export key.");
+});
+$("snExport").addEventListener("click", () => { if (!snW) return; if (confirm("Show the private key? Anyone who sees it can take the funds.")) prompt("Sniper wallet private key:", snW.privateKey); });
+$("snForget").addEventListener("click", async () => {
+  if (!snW) return; if (snMode) return snMsg("Stop the bot first.", true);
+  const bal = await snP.getBalance(snW.address).catch(() => 0n);
+  if (!confirm(bal > 0n ? `This wallet still holds ${snEth(bal)} ETH. Export the key first or it is lost. Remove anyway?` : "Remove the key from this browser?")) return;
+  try { localStorage.removeItem(SK.key); } catch {} snW = null; snDrawWallet();
+});
+$("snWithdraw").addEventListener("click", async () => {
+  if (!snW) return;
+  const to = (prompt("Send all ETH from the sniper wallet to (0x…):") || "").trim();
+  if (!Eth.isAddress(to)) return to && alert("That is not an address.");
+  await snQ(async () => {
+    try {
+      const bal = await snP.getBalance(snW.address), fee = await snP.getFeeData(), gp = (fee.maxFeePerGas || fee.gasPrice) * 2n, cost = 21000n * gp;
+      if (bal <= cost) throw new Error("Balance is too small to cover gas.");
+      const tx = await snW.sendTransaction({ to, value: bal - cost, gasLimit: 21000n, maxFeePerGas: gp, maxPriorityFeePerGas: fee.maxPriorityFeePerGas ?? 0n });
+      snLog(`WITHDRAW ${snEth(bal - cost)} ETH -> ${to} (${tx.hash})`); await tx.wait(); snDrawWallet();
+    } catch (e) { snLog("withdraw failed: " + snShort(e), "bad"); }
+  });
+});
+
+// ---------- buying ----------
+const lower = (a) => (a || []).map((s) => s.toLowerCase());
+const devCount = new Map();
+async function devLaunches(dev) {
+  const c = devCount.get(dev); if (c !== undefined) return c;
+  try { const j = await api("/api/dev?addr=" + dev); devCount.set(dev, j.launches24h); return j.launches24h; } catch { return 0; }
+}
+/** Same checks as the bot: the reason a launch is skipped, or null; retry when only the anti-snipe tax is in the way. */
+async function snReject(l) {
+  const dev = l.deployer.toLowerCase();
+  if (l.pairToken !== Eth.ZeroAddress) return { reason: "not paired with ETH", symbol: "?" };
+  if (lower(snCfg.blockedDeployers).includes(dev)) return { reason: "deployer is blocked", symbol: "?" };
+  // an agent pick is chosen by Ocula instead of by field 6, the launch age and the keyword list
+  if (!l.agent && snCfg.allowedDeployers.length && !lower(snCfg.allowedDeployers).includes(dev)) return { reason: "deployer not in field 6", symbol: "?" };
+  const t = new Eth.Contract(l.token, SN_ABI.token, snP), c = new Eth.Contract(l.curve, SN_ABI.curve, snP);
+  const [name, symbol, tax, snipe, grad, lb, head] = await Promise.all([t.name(), t.symbol(), c.creatorTaxBps(), c.currentSnipeTaxBps(snW.address), c.graduated(), l.agent ? null : snP.getBlock(l.block), l.agent ? null : snP.getBlock("latest")]);
+  const text = `${name} ${symbol}`.toLowerCase(), age = l.agent ? 0 : head.timestamp - lb.timestamp;
+  let reason = null;
+  if (grad) reason = "already graduated";
+  else if (!l.agent && age > snCfg.maxLaunchAgeSeconds) reason = `too late (${age}s old)`;
+  else if (Number(tax) > snCfg.maxCreatorTaxPercent * 100) reason = `creator tax ${Number(tax) / 100}% too high`;
+  else if (lower(snCfg.blockedKeywords).some((k) => text.includes(k))) reason = "name matches blocked keywords";
+  else if (!l.agent && snCfg.keywords.length && !lower(snCfg.keywords).some((k) => text.includes(k))) reason = "name matches no keyword";
+  if (!reason && snCfg.requireSocials) { const ti = await t.getTokenInfo(); if (!Object.values(ti[3].toObject()).some((v) => String(v).trim())) reason = "no socials set"; }
+  if (!reason && snCfg.maxDeployerLaunches) { const n = await devLaunches(dev); if (n > snCfg.maxDeployerLaunches) reason = `deployer launched ${n} other tokens in 24h (limit ${snCfg.maxDeployerLaunches})`; }
+  if (reason) return { reason, symbol };
+  if (Number(snipe) > snCfg.maxSnipeTaxPercent * 100) return { reason: `snipe tax ${Number(snipe) / 100}% still active`, symbol, retry: true };
+  return { reason: null, symbol };
+}
+async function snSnipe(l) {
+  if (snPositions.some((p) => p.token === l.token) || snBuySent.has(l.token)) return;
+  let r;
+  try { r = await snReject(l); }
+  catch (e) {
+    if (!snWaiting.some((w) => w.token === l.token)) { snWaiting.push(l); snLog(`wait  ${l.token}: ${snShort(e)}, retrying until max launch age`); }
+    if (Date.now() - (l.seenAt ||= Date.now()) > (l.agent ? 120 : snCfg.maxLaunchAgeSeconds) * 1000) { snWaiting = snWaiting.filter((w) => w.token !== l.token); snLog(`skip  ${l.token}: could not be read in time`); }
+    return;
+  }
+  const was = snWaiting.some((w) => w.token === l.token);
+  if (r.retry) { if (!was) { snWaiting.push(l); snLog(`wait  $${r.symbol} ${l.token}: ${r.reason}, retrying until it drops`); } return; }
+  snWaiting = snWaiting.filter((w) => w.token !== l.token);
+  if (r.reason) return snLog(`skip  $${r.symbol} ${l.token}: ${r.reason}`);
+  if (snPositions.length >= snCfg.maxOpenPositions) return snLog(`skip  $${r.symbol}: ${snPositions.length} positions already open`);
+  const BUY = Eth.parseEther(snCfg.buyEth), RES = Eth.parseEther(snCfg.gasReserveEth);
+  if (snSpent + BUY > Eth.parseEther(snCfg.maxTotalSpendEth)) return snLog(`skip  $${r.symbol}: total budget used up`);
+  const bal = await snP.getBalance(snW.address), live = snMode === "live";
+  // a wallet a little short still buys with what it has, like the bot; skip only under half of the buy size
+  const spendable = bal > RES ? bal - RES : 0n, buyWei = bal < BUY + RES && live ? spendable : BUY;
+  if (buyWei * 2n < BUY) return snLog(`skip  $${r.symbol}: wallet balance ${snEth(bal)} ETH is too low`);
+  const curve = new Eth.Contract(l.curve, SN_ABI.curve, snW);
+  let out;
+  try { out = await curve.buy.staticCall(buyWei, 0n, snW.address, { value: buyWei }); }
+  catch (e) {
+    if (!live) { snSpent += BUY; return snLog(`DRY   would buy $${r.symbol} ${l.token} with ${snCfg.buyEth} ETH (fund the wallet to see the token amount)`, "dry"); }
+    if (!snWaiting.some((w) => w.token === l.token)) snWaiting.push(l);
+    return snLog(`wait  $${r.symbol}: buy simulation failed (${snShort(e)}), retrying until max launch age`);
+  }
+  if (!live) { snSpent += BUY; return snLog(`DRY   would buy $${r.symbol} ${l.token} with ${snCfg.buyEth} ETH -> ${Number(Eth.formatEther(out)).toLocaleString("en-US")} tokens`, "dry"); }
+  const minOut = (out * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n;
+  await snQ(async () => {
+    try {
+      snBuySent.add(l.token); snSpent += buyWei;
+      const tx = await curve.buy(buyWei, minOut, snW.address, { value: buyWei });
+      snPositions.push({ token: l.token, curve: l.curve, symbol: r.symbol, costWei: buyWei.toString(), boughtAt: Date.now(), buyTx: tx.hash }); savePos();
+      const rc = await tx.wait();
+      if (rc.status !== 1) { snSpent -= buyWei; snPositions = snPositions.filter((p) => p.token !== l.token); savePos(); snBuySent.delete(l.token); snWaiting.push(l); return snLog(`FAIL  buy $${r.symbol} reverted (${tx.hash}), retrying with a fresh price`, "bad"); }
+      snLog(`BUY   $${r.symbol} ${l.token} for ${Eth.formatEther(buyWei)} ETH (${tx.hash})`, "ok"); window.nova?.pulse(1); snDrawWallet();
+      const a = await new Eth.Contract(l.token, SN_ABI.token, snW).approve(l.curve, Eth.MaxUint256); await a.wait();
+    } catch (e) { snLog(`buy $${r.symbol} failed: ${snShort(e)}`, "bad"); }
+  });
+}
+
+// ---------- selling ----------
+async function snSellPos(pos, trigger) {
+  return snQ(async () => {
+    const me = snW.address, t = new Eth.Contract(pos.token, SN_ABI.token, snW), c = new Eth.Contract(pos.curve, SN_ABI.curve, snW);
+    const bal = await t.balanceOf(me);
+    if (bal === 0n) return snClose(pos, "sold outside the bot", null, null);
+    if ((await t.allowance(me, pos.curve)) < bal) { const a = await t.approve(pos.curve, Eth.MaxUint256); await a.wait(); }
+    const q = await c.sell.staticCall(bal, 0n, me);
+    const tx = await c.sell(bal, (q * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n, me);
+    const rc = await tx.wait();
+    if (rc.status !== 1) return snLog(`FAIL  sell $${pos.symbol} reverted (${tx.hash}), will retry`, "bad");
+    // book what the curve really paid out
+    let got = q; for (const lg of rc.logs) { try { const ev = c.interface.parseLog(lg); if (ev?.name === "CurveSell" && lg.address.toLowerCase() === pos.curve.toLowerCase()) got = ev.args.quoteOut; } catch {} }
+    const pnl = Number(((got - BigInt(pos.costWei)) * 10000n) / BigInt(pos.costWei)) / 100;
+    snClose(pos, trigger, got, tx.hash);
+    snLog(`SELL  $${pos.symbol} (${trigger}) for ${Eth.formatEther(got)} ETH, ${pnl >= 0 ? "+" : ""}${pnl}% (${tx.hash})`, pnl >= 0 ? "ok" : "bad"); snDrawWallet();
+  });
+}
+function snClose(pos, reason, got, tx) {
+  snPositions = snPositions.filter((p) => p.token !== pos.token); savePos();
+  snHistory.unshift({ token: pos.token, symbol: pos.symbol, costWei: pos.costWei, receivedWei: got === null ? null : got.toString(), boughtAt: pos.boughtAt, closedAt: Date.now(), reason, tx });
+  sstore.set(SK.hist, snHistory); snDrawHist();
+}
+async function snManage() {
+  const me = snW.address;
+  for (const pos of [...snPositions]) {
+    try {
+      const t = new Eth.Contract(pos.token, SN_ABI.token, snP), c = new Eth.Contract(pos.curve, SN_ABI.curve, snP);
+      const [bal, grad] = await Promise.all([t.balanceOf(me), c.graduated()]);
+      if (bal === 0n) { snClose(pos, "sold outside the bot", null, null); snLog(`CLOSE $${pos.symbol}: no tokens left in the wallet`); continue; }
+      if (grad) { snClose(pos, "graduated", null, null); snLog(`GRAD  $${pos.symbol} graduated to the DEX. Sell ${pos.token} there manually.`); continue; }
+      const q = await c.sell.staticCall(bal, 0n, me).catch(() => null);
+      if (q === null) continue;
+      const cost = BigInt(pos.costWei), pnl = Number(((q - cost) * 10000n) / cost) / 100;
+      pos.valueWei = q.toString(); pos.pnlPercent = pnl;
+      const held = (Date.now() - pos.boughtAt) / 1000;
+      let trig = null;
+      if (pnl >= snCfg.takeProfitPercent) trig = "take profit"; else if (pnl <= -snCfg.stopLossPercent) trig = "stop loss"; else if (snCfg.maxHoldSeconds > 0 && held >= snCfg.maxHoldSeconds) trig = "max hold time";
+      if (trig && snMode === "live") snSellPos(pos, trig).catch((e) => snLog(`sell $${pos.symbol} failed: ${snShort(e)}`, "bad"));
+    } catch {}
+  }
+  savePos();
+}
+
+// ---------- main loop: new launches straight from the factory, like the bot ----------
+async function snLoop() {
+  if (!snMode) return;
+  try {
+    if (snCfg.mode === "agent") await snAgentTick();
+    const head = snCfg.mode === "agent" ? 0 : await snP.getBlockNumber();
+    if (!snNext) snNext = head + 1;
+    if (snCfg.mode !== "agent" && head >= snNext) {
+      const logs = await snP.getLogs({ address: PONS_FACTORY, topics: [snTopic], fromBlock: snNext, toBlock: Math.min(head, snNext + 4000) });
+      snNext = Math.min(head, snNext + 4000) + 1;
+      for (const lg of logs) {
+        const l = { token: Eth.getAddress("0x" + lg.topics[1].slice(26)), curve: Eth.getAddress("0x" + lg.topics[2].slice(26)), deployer: Eth.getAddress("0x" + lg.topics[3].slice(26)), pairToken: Eth.getAddress("0x" + lg.data.slice(26, 66)), block: lg.blockNumber };
+        snSnipe(l);
+      }
+    }
+    for (const w of [...snWaiting]) snSnipe(w);
+    if (Date.now() - snLastPos > 3000) { snLastPos = Date.now(); snManage(); }
+  } catch (e) { snLog("rpc: " + snShort(e), "bad"); }
+  snTimer = setTimeout(snLoop, 700);
+}
+// ---------- agent snipe: buy what Ocula's AI picks from the radar ----------
+let snPicks = [], snPicksAt = 0, snPicksErr = "", snPicksInfo = null;
+const snTried = new Set();
+async function snFetchPicks(refresh) {
+  try { const j = await api("/api/picks" + (refresh ? "?refresh=1" : "")); snPicks = j.picks; snPicksErr = j.error || ""; snPicksAt = Date.now(); snPicksInfo = j; } catch (e) { snPicksErr = e.message; }
+  snDrawPicks();
+}
+async function snAgentTick() {
+  if (Date.now() - snPicksAt < 5000) return;
+  await snFetchPicks();
+  for (const p of snPicks) {
+    if (p.score < snCfg.agentMinScore || snTried.has(p.token) || snHistory.some((h) => h.token === p.token) || snPositions.some((x) => x.token === p.token)) continue;
+    snTried.add(p.token);
+    snLog(`AGENT Ocula picked $${p.symbol} (score ${p.score}): ${p.reason}`, "ok");
+    snSnipe({ token: p.token, curve: p.curve, deployer: p.deployer, pairToken: Eth.ZeroAddress, agent: true });
+  }
+}
+function snDrawPicks() {
+  const min = snCfg.agentMinScore;
+  $("pkStat").textContent = snPicksErr ? snPicksErr : snPicksAt ? `updated ${new Date(snPicksAt).toLocaleTimeString("en-GB")}` : "";
+  $("pkList").innerHTML = snPicks.length ? snPicks.map((p) => `<div class="pick"><div class="ring" style="--v:${p.score};--c:${p.score >= 80 ? "var(--ok)" : p.score >= 70 ? "var(--acc)" : "var(--mid)"}" title="Ocula score ${p.score}/100"><b>${p.score}</b></div>
+      <div><div class="nm"><a href="#" data-scan="${p.token}">$${esc(p.symbol)}</a> <span style="color:var(--dim);font-weight:400">${esc(p.name)}</span>${p.score >= min ? ' <span class="pill2 dry" style="padding:2px 8px;font-size:11px">agent buys</span>' : ""}</div>
+      <div class="rs">${esc(p.reason)}</div><div class="mt">${Math.round(p.ageSec / 60)}m old · curve ${p.progressPct.toFixed(1)}% · ${fmt(p.curveETH, 4)} ETH · tax ${p.taxPct}% · ${p.token.slice(0, 8)}…</div></div>
+      <button class="btn sm ghost" type="button" data-pkbuy="${p.token}">Manual buy</button></div>`).join("")
+    : `<p class="note">${!snPicksAt ? "Loading Ocula picks…" : snPicksInfo?.checkedLastHour ? `Ocula scored ${snPicksInfo.checkedLastHour} fresh launch${snPicksInfo.checkedLastHour > 1 ? "es" : ""} in the last hour; the best got ${snPicksInfo.bestLastHour}/100, under the ${snPicksInfo.minScore} needed to be a pick. It checks again every 15 seconds.` : "Ocula is scoring the newest launches that passed the radar checks. Picks show here as soon as one scores high enough."}</p>`;
+  if (snPicks.length && snPicksInfo?.checkedLastHour) $("pkList").insertAdjacentHTML("beforeend", `<p class="note" style="margin:4px 0 0">Ocula scored ${snPicksInfo.checkedLastHour} fresh launches in the last hour; ${snPicks.length} made the cut.</p>`);
+}
+$("pkRefresh").addEventListener("click", async () => {
+  const b = $("pkRefresh"), before = JSON.stringify(snPicks.map((p) => [p.token, p.score]));
+  b.disabled = true; b.textContent = "Ocula is checking…";
+  await snBoot(); await snFetchPicks(true);
+  const same = before === JSON.stringify(snPicks.map((p) => [p.token, p.score]));
+  b.disabled = false; b.textContent = "Refresh";
+  $("pkStat").textContent = (same ? "no better launch yet · " : "updated · ") + new Date().toLocaleTimeString("en-GB");
+});
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-pkbuy]"); if (!b) return;
+  $("mbToken").value = b.dataset.pkbuy; $("mbToken").scrollIntoView({ behavior: "smooth", block: "center" }); $("mbToken").focus();
+});
+// the picks list refreshes while the sniper tab is on screen
+setInterval(() => { if (!snMode && $("pkList").offsetParent) snBoot().then(snFetchPicks); }, 10_000);
+function snSetMode(m) {
+  if (snMode) return snMsg("Stop the bot before switching mode.", true);
+  snCfg.mode = m === "agent" ? "agent" : "manual"; sstore.set(SK.cfg, snCfg);
+  document.querySelectorAll("#snModeSw button").forEach((b) => b.classList.toggle("on", b.dataset.mode === snCfg.mode));
+  $("snAgentBox").hidden = snCfg.mode !== "agent";
+}
+document.querySelectorAll("#snModeSw button").forEach((b) => b.addEventListener("click", () => snSetMode(b.dataset.mode)));
+function snMinShow(v) { $("snMinVal").textContent = v; $("snMinScore").style.setProperty("--p", ((v - 50) / 45) * 100 + "%"); }
+$("snMinScore").value = snCfg.agentMinScore; snMinShow(snCfg.agentMinScore);
+$("snMinScore").addEventListener("input", (e) => snMinShow(+e.target.value));
+$("snMinScore").addEventListener("change", (e) => { snCfg.agentMinScore = Math.round(+e.target.value); sstore.set(SK.cfg, snCfg); snDrawPicks(); });
+document.querySelectorAll("#snModeSw button").forEach((b) => b.classList.toggle("on", b.dataset.mode === snCfg.mode));
+$("snAgentBox").hidden = snCfg.mode !== "agent";
+
+async function snStart(mode) {
+  await snBoot();
+  if (!snW) return snMsg("Paste a private key in Settings (field 1) and save, or make a new wallet.", true);
+  if (snMode) return snMsg("Already running. Stop it first.", true);
+  if (mode === "live" && !confirm(`LIVE buys for real: ${snCfg.buyEth} ETH per token, up to ${snCfg.maxTotalSpendEth} ETH. Keep this tab open. Start?`)) return;
+  snMode = mode; snSpent = 0n; snNext = 0; snWaiting = []; snTried.clear(); snPicksAt = 0;
+  $("snState").textContent = mode === "live" ? "LIVE: real buys & sells" : "Dry run: no transactions"; $("snState").className = "pill2 " + mode;
+  snLog(`Pons sniper ${mode === "live" ? "LIVE" : "DRY RUN"} · ${snCfg.mode === "agent" ? `AGENT mode: buys Ocula picks scoring ${snCfg.agentMinScore}+` : "manual mode: your filters"} · wallet ${snW.address} · buy ${snCfg.buyEth} ETH each, budget ${snCfg.maxTotalSpendEth} ETH, max ${snCfg.maxOpenPositions} positions · TP +${snCfg.takeProfitPercent}% / SL -${snCfg.stopLossPercent}% / hold ${snCfg.maxHoldSeconds || "∞"}s`, mode === "live" ? "ok" : "dry");
+  window.nova?.say(mode === "live" ? "LIVE" : "DRY RUN");
+  snLoop();
+}
+function snStop() { if (!snMode) return; snMode = null; clearTimeout(snTimer); $("snState").textContent = "Off"; $("snState").className = "pill2"; snLog("stopped"); window.nova?.say("SNIPER"); }
+$("snDry").addEventListener("click", () => snStart("dry"));
+$("snLiveBtn").addEventListener("click", () => snStart("live"));
+$("snStop").addEventListener("click", snStop);
+
+// ---------- manual buy / sell ----------
+$("mbGo").addEventListener("click", async () => {
+  await snBoot();
+  const ca = $("mbToken").value.trim(), m = (t, bad) => ($("mbMsg").innerHTML = `<span style="color:${bad ? "#ff8a8d" : "var(--ok)"}">${esc(t)}</span>`);
+  if (!snW) return m("Save a private key first.", true);
+  if (!Eth.isAddress(ca)) return m("Paste a token CA (0x…).", true);
+  const amt = $("mbEth").value.trim() || snCfg.buyEth;
+  if (!/^\d+(\.\d{1,18})?$/.test(amt)) return m("ETH must be an amount like 0.005.", true);
+  try {
+    const rec = await new Eth.Contract(PONS_FACTORY, SN_ABI.factory, snP).getLaunchedToken(ca);
+    if (!rec.exists) return m("That token was not launched on Pons.", true);
+    const curve = new Eth.Contract(rec.curve, SN_ABI.curve, snW), token = new Eth.Contract(ca, SN_ABI.token, snP);
+    const [symbol, grad, snipe] = await Promise.all([token.symbol(), curve.graduated(), curve.currentSnipeTaxBps(snW.address)]);
+    if (grad) return m(`$${symbol} already graduated to the DEX, buy it there.`, true);
+    if (Number(snipe) > snCfg.maxSnipeTaxPercent * 100) return m(`Anti-snipe tax on $${symbol} is still ${Number(snipe) / 100}% (limit ${snCfg.maxSnipeTaxPercent}%). Wait a few seconds and try again.`, true);
+    const wei = Eth.parseEther(amt), bal = await snP.getBalance(snW.address);
+    if (bal < wei + Eth.parseEther(snCfg.gasReserveEth)) return m(`The sniper wallet has ${snEth(bal)} ETH. It needs ${amt} ETH plus the ${snCfg.gasReserveEth} ETH gas reserve.`, true);
+    if (!confirm(`Buy $${symbol} for ${amt} ETH now?`)) return;
+    const out = await curve.buy.staticCall(wei, 0n, snW.address, { value: wei });
+    await snQ(async () => {
+      const tx = await curve.buy(wei, (out * BigInt(Math.round((100 - snCfg.slippagePercent) * 100))) / 10000n, snW.address, { value: wei });
+      m(`Buying $${symbol}… ${tx.hash}`);
+      const rc = await tx.wait(); if (rc.status !== 1) throw new Error("buy reverted (price moved)");
+      snPositions.push({ token: Eth.getAddress(ca), curve: rec.curve, symbol, costWei: wei.toString(), boughtAt: Date.now(), buyTx: tx.hash }); savePos();
+      snLog(`BUY   $${symbol} ${ca} (manual) for ${amt} ETH (${tx.hash})`, "ok"); m(`Bought $${symbol}. The bot manages it with your take profit and stop loss while it runs.`);
+      const a = await new Eth.Contract(ca, SN_ABI.token, snW).approve(rec.curve, Eth.MaxUint256); await a.wait(); snDrawWallet();
+    });
+  } catch (e) { m(snShort(e), true); }
+});
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-snsell]"); if (!b) return;
+  const pos = snPositions.find((p) => p.token === b.dataset.snsell); if (!pos || !snW) return;
+  if (!confirm(`Sell all $${pos.symbol} now?`)) return;
+  b.disabled = true; try { await snSellPos(pos, "manual"); } catch (er) { snLog(`sell $${pos.symbol} failed: ${snShort(er)}`, "bad"); b.disabled = false; }
+});
+
+// ---------- tables ----------
+const REASONS = { "take profit": "Take profit", "stop loss": "Stop loss", "max hold time": "Hold time over", manual: "Manual sell", graduated: "Graduated to DEX (sell manually)", "sold outside the bot": "Sold outside the bot" };
+function snDrawPos() {
+  if (!Eth) return;
+  $("snPos").innerHTML = snPositions.length ? `<table><tr class="th"><td>Token</td><td>Cost</td><td>Value now</td><td>PnL</td><td>Bought</td><td></td></tr>${snPositions.map((p) => `<tr><td><a href="#" data-scan="${p.token}">$${esc(p.symbol)}</a></td><td>${snEth(p.costWei)} ETH</td><td>${p.valueWei ? snEth(p.valueWei) + " ETH" : "…"}</td><td style="color:${(p.pnlPercent ?? 0) >= 0 ? "var(--ok)" : "var(--high)"}">${p.pnlPercent === undefined ? "…" : (p.pnlPercent >= 0 ? "+" : "") + p.pnlPercent + "%"}</td><td>${new Date(p.boughtAt).toLocaleTimeString("en-GB")}</td><td class="r"><button class="btn sm danger" type="button" data-snsell="${p.token}">Sell now</button></td></tr>`).join("")}</table>` : `<p class="note">No positions.</p>`;
+}
+function snDrawHist() {
+  if (!Eth) return;
+  const known = snHistory.filter((t) => t.receivedWei !== null);
+  const total = known.reduce((s, t) => s + BigInt(t.receivedWei) - BigInt(t.costWei), 0n);
+  $("snPnl").textContent = known.length ? `Total PnL ${total >= 0n ? "+" : "-"}${snEth(total < 0n ? -total : total)} ETH over ${known.length} trades` : "";
+  $("snHist").innerHTML = snHistory.length ? `<table><tr class="th"><td>Token</td><td>Cost</td><td>Got</td><td>PnL</td><td>Reason</td><td>Closed</td><td></td></tr>${snHistory.map((t, i) => {
+    const pnl = t.receivedWei === null ? null : Number(((BigInt(t.receivedWei) - BigInt(t.costWei)) * 10000n) / BigInt(t.costWei)) / 100;
+    return `<tr><td>$${esc(t.symbol)}</td><td>${snEth(t.costWei)} ETH</td><td>${t.receivedWei === null ? "-" : snEth(t.receivedWei) + " ETH"}</td><td style="color:${(pnl ?? 0) >= 0 ? "var(--ok)" : "var(--high)"}">${pnl === null ? "-" : (pnl >= 0 ? "+" : "") + pnl + "%"}</td><td>${esc(REASONS[t.reason] || t.reason)}</td><td>${new Date(t.closedAt).toLocaleString("en-GB")}</td><td class="r"><button class="btn sm ghost" type="button" data-sndel="${i}">Delete</button></td></tr>`;
+  }).join("")}</table>` : `<p class="note">No finished trades yet.</p>`;
+}
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-sndel]"); if (!b) return; snHistory.splice(+b.dataset.sndel, 1); sstore.set(SK.hist, snHistory); snDrawHist(); });
+$("snClearHist").addEventListener("click", () => { if (snHistory.length && confirm("Delete the whole trade history?")) { snHistory = []; sstore.set(SK.hist, snHistory); snDrawHist(); } });
+document.querySelector('#tabs button[data-t="snipe"]').addEventListener("click", () => snBoot());
+if (location.hash === "#snipe") snBoot();
+
+// ---------- fee claimer: many accounts of one seed, derived and signed only in this browser ----------
+const SEED_PATH = "m/44'/60'/0'/0"; // MetaMask / Rabby accounts: Account 1 = index 0
+let seedAccs = [], seedRows = [], seedProv = null, seedBusy = false;
+document.querySelectorAll(".fmode button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".fmode button").forEach((x) => x.classList.toggle("on", x === b));
+  $("feeOne").hidden = b.dataset.m !== "one"; $("feeSeed").hidden = b.dataset.m !== "seed";
+}));
+function drawWords(n) {
+  const old = [...document.querySelectorAll("#words input")].map((i) => i.value);
+  $("words").innerHTML = Array.from({ length: n }, (_, i) => `<label><span>${i + 1}</span><input type="password" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(old[i] || "")}"></label>`).join("");
+}
+drawWords(12);
+$("wordCount").addEventListener("change", (e) => drawWords(+e.target.value));
+$("words").addEventListener("paste", (e) => {
+  const t = (e.clipboardData?.getData("text") || "").trim().toLowerCase().split(/\s+/);
+  if (t.length < 2) return;
+  e.preventDefault();
+  if (t.length === 24 || t.length === 12) { $("wordCount").value = String(t.length); drawWords(t.length); }
+  document.querySelectorAll("#words input").forEach((inp, i) => (inp.value = t[i] || ""));
+});
+$("showWords").addEventListener("change", (e) => document.querySelectorAll("#words input").forEach((i) => (i.type = e.target.checked ? "text" : "password")));
+function forgetSeed() {
+  document.querySelectorAll("#words input").forEach((i) => (i.value = "")); seedAccs = []; seedRows = [];
+  $("seedOut").innerHTML = `<p class="note">Seed cleared from this page.</p>`;
+}
+$("seedForget").addEventListener("click", forgetSeed);
+
+$("seedScan").addEventListener("click", async () => {
+  if (seedBusy) return;
+  const E2 = await getEthers();
+  const phrase = [...document.querySelectorAll("#words input")].map((i) => i.value.trim().toLowerCase()).join(" ");
+  if (!E2.Mnemonic.isValidMnemonic(phrase)) return ($("seedOut").innerHTML = `<p class="err">These words are not a valid seed phrase. Check the spelling and the order.</p>`);
+  const n = Math.min(200, Math.max(1, parseInt($("seedCount").value) || 100));
+  seedProv ||= new E2.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1, pollingInterval: 1500 });
+  seedBusy = true; $("seedScan").disabled = true;
+  $("seedOut").innerHTML = loading(`Making ${n} accounts in your browser`);
+  try {
+    await new Promise((r) => setTimeout(r, 30));
+    const root = E2.HDNodeWallet.fromPhrase(phrase, undefined, SEED_PATH);
+    seedAccs = Array.from({ length: n }, (_, i) => root.deriveChild(i).connect(seedProv));
+    if (!E2.isAddress($("seedDest").value.trim())) $("seedDest").value = seedAccs[0].address;
+    $("seedOut").innerHTML = loading(`Reading fees for ${n} accounts (only addresses are sent)`);
+    const j = await api("/api/fees-many", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ wallets: seedAccs.map((a) => a.address) }) });
+    seedRows = j.accounts.map((r, i) => ({ ...r, i })); seedEscrow = j.escrow; drawSeed();
+  } catch (e) { $("seedOut").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { seedBusy = false; $("seedScan").disabled = false; }
+});
+let seedEscrow = null, seedAll = false;
+function drawSeed() {
+  const E2 = ethersLib, min = E2.parseEther(String(parseFloat($("seedMin").value) || 0));
+  const total = seedRows.reduce((s, r) => s + BigInt(r.totalWei), 0n);
+  const ready = seedRows.filter((r) => BigInt(r.totalWei) >= min && BigInt(r.totalWei) > 0n);
+  const launched = seedRows.filter((r) => r.tokens.length).length;
+  const rows = seedAll ? seedRows : seedRows.filter((r) => r.tokens.length || BigInt(r.escrowWei) > 0n);
+  $("seedOut").innerHTML = `
+    <div class="total"><div><span class="lbl">Claimable across ${seedRows.length} accounts</span><br><b>${fmt(Number(E2.formatEther(total)), 6)} ETH</b></div>
+      <div style="text-align:right"><span class="lbl">${launched} accounts launched tokens · ${ready.length} above the minimum</span><br>
+      <button class="btn" id="seedClaim" style="margin-top:10px" ${ready.length ? "" : "disabled"}>Claim all ${ready.length} accounts <span class="ar">→</span></button></div></div>
+    <label class="tog" style="margin-bottom:8px"><input type="checkbox" id="seedShowAll" ${seedAll ? "checked" : ""}> show accounts with nothing to claim</label>
+    ${rows.length ? `<table>${rows.map((r) => `<tr><td style="color:var(--dim);width:72px">Acc ${r.i + 1}</td><td class="mono" style="font-size:12px">${short(seedAccs[r.i].address)}</td>
+      <td>${r.tokens.map((t) => `<a href="#" data-scan="${t.token}">$${esc(t.symbol)}</a>`).join(" ") || '<span style="color:var(--dim)">—</span>'}</td>
+      <td class="r">${fmt(Number(E2.formatEther(BigInt(r.totalWei))), 6)} ETH</td><td class="r" style="color:var(--dim)">gas ${fmt(Number(E2.formatEther(BigInt(r.ethWei))), 5)}</td></tr>`).join("")}</table>` : `<p class="note">None of these accounts launched a Pons token.</p>`}
+    <div class="steps2" id="seedLog"></div>`;
+  $("seedShowAll").onchange = (e) => { seedAll = e.target.checked; drawSeed(); };
+  $("seedClaim")?.addEventListener("click", seedClaimAll);
+}
+$("seedMin").addEventListener("input", () => seedRows.length && drawSeed());
+
+async function seedClaimAll() {
+  const E2 = ethersLib, log = (t, c = "") => $("seedLog").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`);
+  const dest = $("seedDest").value.trim();
+  if (!E2.isAddress(dest)) return log("Fill in a valid wallet to send the fees to.", "bad");
+  const min = E2.parseEther(String(parseFloat($("seedMin").value) || 0));
+  const todo = seedRows.filter((r) => BigInt(r.totalWei) >= min && BigInt(r.totalWei) > 0n);
+  if (!confirm(`Claim fees from ${todo.length} accounts and send them to ${short(dest)}? Each account signs its own transactions in this browser.`)) return;
+  $("seedClaim").disabled = true; seedBusy = true;
+  const funder = seedAccs[0], escrowAbi = ["function balanceOf(address) view returns (uint256)", "function claim()"];
+  let done = 0, got = 0n;
+  try {
+    for (const r of todo) {
+      const acc = seedAccs[r.i], label = `Acc ${r.i + 1}`, sweeps = r.tokens.filter((t) => BigInt(t.pendingWei) > 0n);
+      try {
+        const fee = await seedProv.getFeeData(), gp = (fee.maxFeePerGas || fee.gasPrice) * 3n / 2n;
+        const need = (BigInt(sweeps.length) * 600_000n + 150_000n + 30_000n) * gp;
+        const has = await seedProv.getBalance(acc.address);
+        if (has < need && acc.address !== funder.address) {
+          const top = need - has;
+          log(`${label}: sending ${fmt(Number(E2.formatEther(top)), 6)} ETH gas from Acc 1`);
+          const t = await funder.sendTransaction({ to: acc.address, value: top }); await t.wait();
+        }
+        for (const t of sweeps) {
+          const tx = await new E2.Contract(t.curve, ["function sweepFees(uint256 minBuybackTokensOut)"], acc).sweepFees(0);
+          await tx.wait(); log(`${label}: swept $${t.symbol}`);
+        }
+        const esc_ = new E2.Contract(seedEscrow, escrowAbi, acc), owed = await esc_.balanceOf(acc.address);
+        if (owed > 0n) { const tx = await esc_.claim(); await tx.wait(); log(`${label}: claimed ${fmt(Number(E2.formatEther(owed)), 6)} ETH`, "ok"); got += owed; }
+        if (owed > 0n && acc.address.toLowerCase() !== dest.toLowerCase()) {
+          const tx = await acc.sendTransaction({ to: dest, value: owed }); await tx.wait();
+          log(`${label}: sent ${fmt(Number(E2.formatEther(owed)), 6)} ETH → ${short(dest)}`, "ok");
+        }
+        done++;
+      } catch (e) { log(`${label}: ${e.shortMessage || e.info?.error?.message || e.message}`, "bad"); }
+    }
+    log(`done: ${done}/${todo.length} accounts, ${fmt(Number(E2.formatEther(got)), 6)} ETH claimed.`, "ok"); window.nova?.pulse(1);
+  } finally { seedBusy = false; }
+}
+
+
+// ---------- launchpad: the LOCKEY Pons launch, signed in the visitor's own wallet ----------
+const LP = {
+  factory: "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",
+  launchAndBuy: "0xe33E9E479dF8802cb0866d5d05258bEc4cF62948",
+  fallbackLogo: "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+};
+const LP_PARAMS = "(string name,string symbol,string logo,string description,(string twitter,string telegram,string discord,string website,string farcaster) socials,address creatorFeeRecipient,uint16 creatorTaxBps,bool buybackEnabled,bytes32 expectedEconomics,bytes32 salt)";
+const LP_ABI = [
+  `function launchToken(${LP_PARAMS} params, uint256 launchConfigId, address pairToken) payable returns (address token, address curve)`,
+  `function launchToken(${LP_PARAMS} params, uint256 launchConfigId, address pairToken, address[] snipeTaxExemptions) payable returns (address token, address curve)`,
+  "function previewLaunchEconomics(uint256 launchConfigId, address pairToken) view returns (bytes32)",
+  "function launchFee() view returns (uint256)",
+  "event TokenLaunched(address indexed token, address indexed curve, address indexed deployer, address pairToken, uint256 launchConfigId, uint256 graduationThreshold)",
+];
+const LP_ROUTER = [`function launchAndBuy(${LP_PARAMS} params, uint256 launchConfigId, address pairToken, uint256 quoteIn, uint256 minTokensOut, address recipient, address[] snipeTaxExemptions) payable returns (address token, address curve, uint256 tokensOut)`];
+let lpE = null, lpRead = null, lpFee = null, lpEcon = null, lpAcc = null, lpBalWei = null, lpLogo = "", lpUploading = false, lpTax = 1;
+const lpF = () => $("lpForm").elements;
+const lpMsg = (t, c = "") => $("lpMsg").insertAdjacentHTML("beforeend", `<div class="${c}">&gt; ${esc(t)}</div>`);
+
+async function lpBoot() {
+  if (lpE) return;
+  lpE = await getEthers();
+  lpRead = new lpE.JsonRpcProvider(location.origin + "/rpc", 4663, { staticNetwork: true, batchMaxCount: 1 });
+  const f = new lpE.Contract(LP.factory, LP_ABI, lpRead);
+  try { [lpFee, lpEcon] = await Promise.all([f.launchFee(), f.previewLaunchEconomics(0n, lpE.ZeroAddress)]); } catch { lpFee = lpE.parseEther("0.0005"); }
+  lpSummary();
+}
+function lpDevWei() { const v = lpF().devBuy.value.trim(); try { return v && Number(v) > 0 ? lpE.parseEther(v) : 0n; } catch { return null; } }
+function lpSummary() {
+  if (!lpE) return;
+  const dev = lpDevWei(), fee = lpFee ?? lpE.parseEther("0.0005");
+  $("lpFee").textContent = lpE.formatEther(fee) + " ETH";
+  $("lpDev").textContent = dev === null ? "not a number" : lpE.formatEther(dev) + " ETH";
+  $("lpTotal").textContent = dev === null ? "…" : lpE.formatEther(fee + dev) + " ETH";
+  $("lpBal").textContent = lpBalWei === null || lpBalWei === undefined ? "—" : Number(lpE.formatEther(lpBalWei)).toFixed(5) + " ETH";
+  $("lpTax2").textContent = lpTax + "%";
+  const short_ = lpBalWei != null && dev !== null && lpBalWei < fee + dev;
+  $("lpBal").style.color = short_ ? "var(--high)" : "";
+}
+$("lpForm").addEventListener("input", (e) => { if (e.target.name === "symbol") e.target.value = e.target.value.toUpperCase(); if (e.target.name === "logoUrl") lpLinkLogo(); lpSummary(); });
+$("lpTaxes").addEventListener("click", (e) => { const b = e.target.closest("[data-tax]"); if (!b) return; lpTax = +b.dataset.tax; $("lpTaxes").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); $("lpTaxLbl").textContent = `${lpTax}% (${lpTax * 100} bps)`; lpSummary(); });
+
+// logo: upload (Catbox, then GitHub backup on the server) or a pasted link
+function lpShow(src) { const i = $("lpPrev"); if (src) { i.src = src; i.hidden = false; $("lpDropTxt").hidden = true; } else { i.hidden = true; $("lpDropTxt").hidden = false; } }
+function lpLinkLogo() {
+  const u = lpF().logoUrl.value.trim();
+  if (!u) { if (!lpUploading && !lpLogo) lpShow(null); return; }
+  if (!/^https:\/\/[^\s"'<>]+$/.test(u)) { $("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">Paste a full image link that starts with https://</span>`; return; }
+  lpLogo = u; lpShow(u); $("lpUpMsg").textContent = "Using the pasted link.";
+}
+async function lpUpload(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) return ($("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">File size exceeds 5MB limit</span>`);
+  lpShow(URL.createObjectURL(file)); lpUploading = true; lpLogo = ""; lpF().logoUrl.value = "";
+  $("lpUpMsg").innerHTML = `<span class="load" style="padding:0;justify-content:flex-start"><i></i>Uploading image…</span>`;
+  try {
+    const r = await fetch("/api/upload", { method: "POST", headers: { "content-type": file.type || "application/octet-stream" }, body: file });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || (r.status === 413 ? "Image too large for the server." : "Upload failed (" + r.status + ")."));
+    lpLogo = j.url; $("lpUpMsg").innerHTML = `Hosted at <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a>`;
+  } catch (e) { lpShow(null); $("lpUpMsg").innerHTML = `<span style="color:#ff8a8d">${esc(e.message)}</span>`; }
+  finally { lpUploading = false; }
+}
+$("lpDrop").addEventListener("click", () => $("lpFile").click());
+$("lpFile").addEventListener("change", (e) => lpUpload(e.target.files?.[0]));
+$("lpDrop").addEventListener("dragover", (e) => { e.preventDefault(); $("lpDrop").classList.add("over"); });
+$("lpDrop").addEventListener("dragleave", () => $("lpDrop").classList.remove("over"));
+$("lpDrop").addEventListener("drop", (e) => { e.preventDefault(); $("lpDrop").classList.remove("over"); lpUpload(e.dataTransfer.files?.[0]); });
+
+// wallet
+async function lpConnect() {
+  await lpBoot();
+  lpAcc = lpE.getAddress(await connect());
+  $("lpWallet").textContent = lpAcc; $("lpConnect").textContent = "Connected";
+  lpBalWei = await lpRead.getBalance(lpAcc).catch(() => null); lpSummary();
+  return lpAcc;
+}
+$("lpConnect").addEventListener("click", () => lpConnect().catch((e) => lpMsg(e.message, "bad")));
+$("lpMax").addEventListener("click", async () => {
+  await lpBoot(); $("lpDevHint").textContent = "";
+  if (!lpAcc) return ($("lpDevHint").textContent = "Connect your EVM wallet (Robinhood Chain) first.");
+  lpBalWei = await lpRead.getBalance(lpAcc);
+  const safe = lpBalWei - lpFee - lpE.parseEther("0.001");
+  if (safe <= 0n) return ($("lpDevHint").textContent = `Balance ${Number(lpE.formatEther(lpBalWei)).toFixed(5)} ETH only covers the launch fee (${lpE.formatEther(lpFee)} ETH + 0.001 gas buffer). Top up ETH on Robinhood Chain.`);
+  lpF().devBuy.value = lpE.formatEther(safe); lpSummary();
+});
+$("lpAddSniper").addEventListener("click", async () => {
+  let k = null; try { k = localStorage.getItem("nova.sniper.key"); } catch {}
+  if (!k) return lpMsg("No Ocula sniper wallet in this browser yet. Make one in the Sniper tab.", "bad");
+  const E2 = await getEthers(), a = new E2.Wallet(k).address, inp = lpF().exempt;
+  if (!inp.value.toLowerCase().includes(a.toLowerCase())) inp.value = [inp.value.trim(), a].filter(Boolean).join(", ");
+});
+
+// launch (same parameters and checks as LOCKEY)
+$("lpGo").addEventListener("click", async () => {
+  $("lpMsg").innerHTML = "";
+  await lpBoot();
+  const f = lpF(), name = f.name.value.trim(), symbol = f.symbol.value.trim();
+  if (!name || !symbol) return lpMsg("Fill in the name and the ticker.", "bad");
+  if (lpUploading) return lpMsg("The logo is still uploading. Wait until it finishes.", "bad");
+  const ex = f.exempt.value.split(/[\s,]+/).filter(Boolean), badEx = ex.find((a) => !lpE.isAddress(a));
+  if (badEx) return lpMsg(`Snipe tax exempt wallet "${badEx}" is not a valid 0x address.`, "bad");
+  const dev = lpDevWei(); if (dev === null) return lpMsg("Dev buy must be an ETH amount like 0.01.", "bad");
+  try {
+    const acc = lpAcc || (await lpConnect());
+    const fee = lpFee ?? lpE.parseEther("0.0005"), total = fee + dev;
+    lpBalWei = await lpRead.getBalance(acc).catch(() => lpBalWei); lpSummary();
+    if (lpBalWei != null && lpBalWei < total) return lpMsg("Insufficient ETH balance for launch fee + dev buy.", "bad");
+    const exempt = [...new Set(ex.map((a) => lpE.getAddress(a)))];
+    const params = {
+      name, symbol, logo: lpLogo || LP.fallbackLogo, description: f.description.value.trim(),
+      socials: { twitter: f.twitter.value.trim(), telegram: f.telegram.value.trim(), discord: f.discord.value.trim(), website: f.website.value.trim(), farcaster: "" },
+      creatorFeeRecipient: acc, creatorTaxBps: Math.min(Math.max(Math.round(lpTax * 100), 0), 1000), buybackEnabled: false,
+      expectedEconomics: lpEcon || lpE.ZeroHash, salt: lpE.hexlify(crypto.getRandomValues(new Uint8Array(32))),
+    };
+    if (!confirm(`Launch $${symbol} on Pons for ${lpE.formatEther(total)} ETH${dev > 0n ? " (incl. dev buy)" : ""}?`)) return;
+    const signer = await new lpE.BrowserProvider(window.ethereum).getSigner();
+    $("lpGo").disabled = true; lpMsg("Confirm the transaction in your wallet…");
+    let tx;
+    if (dev > 0n) tx = await new lpE.Contract(LP.launchAndBuy, LP_ROUTER, signer).launchAndBuy(params, 0n, lpE.ZeroAddress, dev, 0n, acc, exempt, { value: total });
+    else {
+      const fc = new lpE.Contract(LP.factory, LP_ABI, signer);
+      tx = exempt.length ? await fc["launchToken(" + LP_PARAMS + ",uint256,address,address[])"](params, 0n, lpE.ZeroAddress, exempt, { value: fee })
+                         : await fc["launchToken(" + LP_PARAMS + ",uint256,address)"](params, 0n, lpE.ZeroAddress, { value: fee });
+    }
+    lpMsg(`Sent ${tx.hash}. Waiting for the chain…`);
+    const rc = await tx.wait();
+    if (rc.status !== 1) throw new Error("The launch transaction reverted.");
+    const iface = new lpE.Interface(LP_ABI); let token = null, curve = null;
+    for (const lg of rc.logs) { try { const ev = iface.parseLog(lg); if (ev?.name === "TokenLaunched") { token = ev.args.token; curve = ev.args.curve; break; } } catch {} }
+    if (!token) for (const lg of rc.logs) if (lg.address.toLowerCase() === LP.factory.toLowerCase() && lg.topics[1]) { token = lpE.getAddress("0x" + lg.topics[1].slice(26)); break; }
+    lpMsg(`$${symbol} launched!`, "ok"); window.nova?.pulse(1); window.nova?.say("LAUNCHED");
+    $("lpDone").innerHTML = `<div class="kc" style="margin-top:12px;border-color:var(--acc2)"><h5>Launched</h5><p style="margin:0 0 8px"><b>${esc(name)}</b> <span style="color:var(--dim)">$${esc(symbol)}</span></p>
+      <div class="mono" style="font-size:12px;word-break:break-all">${esc(token || "")}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"><a class="btn sm" href="https://ponsfamily.com/launchpad/${esc(token)}" target="_blank" rel="noopener">Open on Pons ↗</a>
+      <a class="btn sm ghost" href="${EXPLORER}tx/${esc(tx.hash)}" target="_blank" rel="noopener">Transaction ↗</a><a class="btn sm ghost" href="#" data-scan="${esc(token)}">Scan it</a><a class="btn sm ghost" href="#app" data-open="fees">Claim its fees later</a></div></div>`;
+    lpBalWei = await lpRead.getBalance(acc).catch(() => lpBalWei); lpSummary();
+  } catch (e) { lpMsg(e.shortMessage || e.info?.error?.message || e.message, "bad"); }
+  finally { $("lpGo").disabled = false; }
+});
+document.querySelector('#tabs button[data-t="launch"]').addEventListener("click", () => lpBoot());
+if (location.hash === "#launch") lpBoot();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+ "when": "24 Oct 2026 \u00b7 19:02 WIB",
+ "oc": {
+  "ca": "0xDDEC469bd035fB42Db868367D50E059Afdd53892",
+  "tiles": [
+   {
+    "v": 48,
+    "label": "holders"
+   },
+   {
+    "v": 65,
+    "label": "unique buyers"
+   },
+   {
+    "v": 0.9004226190064945,
+    "d": 2,
+    "suf": " ETH",
+    "label": "on the curve"
+   },
+   {
+    "v": 0,
+    "d": 0,
+    "suf": "%",
+    "label": "sold by the dev"
+   },
+   {
+    "v": 0,
+    "label": "bundled wallets"
+   },
+   {
+    "v": 20.6901,
+    "d": 1,
+    "suf": "%",
+    "label": "held by the top 10"
+   },
+   {
+    "v": 13,
+    "suf": "/100",
+    "label": "rug risk"
+   },
+   {
+    "v": 4895176.439658139,
+    "label": "$OCULA burned"
+   }
+  ],
+  "progress": 21.4,
+  "curveETH": "0.90",
+  "gradETH": "4.2"
+ },
+ "radar": {
+  "total": 1335,
+  "n": 24,
+  "segs": [
+   {
+    "k": "rug",
+    "v": 18,
+    "label": "dev already sold everything"
+   },
+   {
+    "k": "slow",
+    "v": 4,
+    "label": "not growing"
+   },
+   {
+    "k": "ok",
+    "v": 2,
+    "label": "cleared every check"
+   }
+  ]
+ },
+ "trap": {
+  "symbol": "OMF",
+  "age": "7 min",
+  "buyers": 30,
+  "lines": [
+   "The dev sold the whole bag: 54.10% out, 0% left",
+   "26 bundled wallets bought 11.6%, now hold 0.0%",
+   "28 of 30 buyers already sold"
+  ],
+  "verdict": "Held \u00b7 rug risk 65/100"
+ },
+ "pick": {
+  "symbol": "SCOTIA",
+  "age": "10 min",
+  "line": "Growing: 57 new buyers in the last 15 min.",
+  "checks": [
+   "Dev has not sold",
+   "Dev holds 0.86%",
+   "Creator tax 1.2%",
+   "Socials: twitter",
+   "No other launch by this dev in 24h",
+   "Fees go to the dev",
+   "Growing: 57 new buyers in the last 15 min"
+  ]
+ },
+ "burn": {
+  "tokens": "4,895,176",
+  "line": "$50 of buybacks so far \u00b7 last tx 0x9ebe6d3b\u2026"
+ }
+}

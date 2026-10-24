@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA Labs</title>
+<meta name="description" content="AI tools and launch services for Pons on Robinhood Chain.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f0b04a' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23f2f1ee'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#f0b04a;--acc2:rgba(240,176,74,.35);--bg:#050505;--bg2:rgba(17,17,17,.72);--line:#222;--line2:#2e2e2e;--text:#f2f1ee;--mid:#a3a3a0;--dim:#6b6b68;--ok:#3fb950;--watch:#f2b84b;--high:#e5484d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{overflow-x:clip;position:relative;z-index:1}
+a{color:inherit}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.7) 100%)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.ey{font:500 11px "JetBrains Mono";letter-spacing:.18em;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.ey:before{content:"";width:18px;height:1px;background:var(--acc)}
+
+nav{position:sticky;top:0;z-index:10;background:rgba(5,5,5,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{font:800 16px "Inter Tight";letter-spacing:-.01em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo span{color:var(--dim)}
+.links{display:flex;gap:28px;font-size:14px;color:var(--mid)}
+.links a{text-decoration:none;transition:color .2s}.links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px Inter;padding:13px 22px;border-radius:999px;border:1px solid var(--text);background:var(--text);color:#050505;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 40px -10px rgba(240,176,74,.5)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--acc)}
+.btn.sm{padding:9px 16px;font-size:13px}
+
+/* hero */
+.hero{min-height:calc(100vh - 64px);display:grid;grid-template-columns:1.05fr .95fr;align-items:center;padding:40px 0}
+.badge{display:inline-flex;align-items:center;gap:9px;font:800 11px "Inter Tight";letter-spacing:.18em;border:1px solid var(--line2);background:rgba(10,10,10,.6);border-radius:999px;padding:8px 13px}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc);animation:beat 1.6s infinite}
+@keyframes beat{50%{opacity:.35}}
+h1{font:800 clamp(44px,6.4vw,92px)/.9 "Inter Tight",sans-serif;letter-spacing:-.05em;text-transform:uppercase;margin:22px 0 22px}
+h1 b{color:var(--acc);font-weight:inherit}
+h1 em{font-style:normal;color:#5c5c59}
+.lead{color:var(--mid);max-width:520px;margin:0 0 28px;font-size:17px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.think{margin-top:34px;max-width:520px;border:1px solid var(--line);background:rgba(8,8,8,.7);backdrop-filter:blur(6px);border-radius:14px;padding:14px 16px;font:400 13px/1.6 "JetBrains Mono";color:var(--mid);min-height:76px}
+.think .h{display:flex;justify-content:space-between;color:var(--dim);font-size:10.5px;letter-spacing:.16em;margin-bottom:6px}
+.think .h b{color:var(--acc);font-weight:500}
+.think .cur{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;margin-left:2px;animation:beat 1s steps(1) infinite}
+.scrollhint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font:500 10px "JetBrains Mono";letter-spacing:.2em;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:8px}
+.scrollhint i{width:1px;height:34px;background:linear-gradient(var(--acc),transparent);animation:drop 2s infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* marquee */
+.marq{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(5,5,5,.7);overflow:hidden;position:relative;z-index:1}
+.marq .track{display:flex;gap:48px;padding:18px 0;width:max-content;animation:mq 38s linear infinite;font:800 15px "Inter Tight";letter-spacing:.06em;text-transform:uppercase;color:#7a7a77}
+.marq .track span{display:flex;align-items:center;gap:48px}
+.marq .track span:after{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+section{padding:120px 0 0;position:relative}
+h2{font:800 clamp(34px,4.4vw,60px)/.95 "Inter Tight";letter-spacing:-.045em;text-transform:uppercase;margin:14px 0 14px}
+h2 b{color:var(--acc);font-weight:inherit}
+.sub{color:var(--mid);max-width:560px;margin:0 0 34px;font-size:16px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:86vh}
+.split.rev .col{order:2}
+
+/* services */
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.svc{grid-column:span 2;position:relative;background:var(--bg2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;overflow:hidden;transition:border-color .3s,transform .3s}
+.svc.wide{grid-column:span 3}
+.svc:before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(240,176,74,.13),transparent 45%);opacity:0;transition:opacity .3s;pointer-events:none}
+.svc:hover{border-color:var(--acc2);transform:translateY(-3px)}
+.svc:hover:before{opacity:1}
+.svc .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.num{font:500 12px "JetBrains Mono";color:var(--dim)}
+.st{font:800 10px "Inter Tight";letter-spacing:.16em;border-radius:999px;padding:5px 10px;border:1px solid var(--acc2);color:var(--acc)}
+.st.live{border-color:rgba(63,185,80,.45);color:var(--ok)}
+.svc h3{margin:0;font:800 26px/1.02 "Inter Tight";letter-spacing:-.035em;text-transform:uppercase}
+.svc p{margin:0;color:var(--mid);font-size:14px}
+.svc ul{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:14px}
+.svc li{display:flex;gap:10px}
+.svc li:before{content:"";flex:0 0 5px;height:5px;margin-top:9px;background:var(--acc);border-radius:50%}
+.svc .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+.svc .foot b{color:var(--text);font-weight:600}
+
+/* scan demo */
+.report{background:rgba(8,8,8,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:20px;font-size:13.5px;box-shadow:0 40px 120px -40px rgba(240,176,74,.25)}
+.report .bar{display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line);font:12px "JetBrains Mono";color:var(--dim)}
+.report .bar i{width:8px;height:8px;border-radius:50%;background:#333}
+.report .bar i:first-child{background:var(--acc)}
+.report .ai{font:600 16px/1.5 "Inter Tight";margin:6px 0 14px;min-height:96px}
+.report .row{display:grid;grid-template-columns:66px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line);opacity:0;transform:translateX(10px);transition:all .5s}
+.report .row.in{opacity:1;transform:none}
+.lv{font:800 10px "Inter Tight";letter-spacing:.12em;border-radius:999px;padding:4px 0;text-align:center;height:fit-content}
+.lv.h{background:var(--high);color:#fff}.lv.w{background:var(--watch);color:#111}.lv.i{background:#2a2a2a;color:var(--text)}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kv div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kv b{display:block;font:800 20px "Inter Tight";letter-spacing:-.02em}
+.kv span{font-size:11.5px;color:var(--dim)}
+
+/* steps + rules */
+.steps{display:grid;gap:0;counter-reset:s}
+.step{display:grid;grid-template-columns:56px 1fr;gap:16px;padding:22px 0;border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step .n{font:800 34px/1 "Inter Tight";color:var(--acc);letter-spacing:-.04em}
+.step b{display:block;font:800 20px "Inter Tight";text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
+.step p{margin:0;color:var(--mid);font-size:14px}
+.rules{display:grid;gap:12px}
+.rule{background:var(--bg2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:grid;grid-template-columns:40px 1fr;gap:14px}
+.rule .x{width:34px;height:34px;border-radius:50%;border:1px solid var(--acc2);display:grid;place-items:center;color:var(--acc);font:800 15px "Inter Tight"}
+.rule b{display:block;font:800 19px/1.1 "Inter Tight";text-transform:uppercase;letter-spacing:-.02em;margin-bottom:6px}
+.rule p{margin:0;color:var(--mid);font-size:14px}
+
+.cta{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 0}
+.cta h2{font-size:clamp(44px,7vw,104px);margin:18px 0 18px}
+.cta p{color:var(--mid);margin:0 auto 30px;max-width:520px;font-size:17px}
+.cta .ey:after{content:"";width:18px;height:1px;background:var(--acc)}
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);font-size:13px;background:var(--bg)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding:46vh 0 60px}
+  .links{display:none}
+  .split{grid-template-columns:1fr;min-height:auto}
+  .split .stage{display:none}
+  .split.rev .col{order:0}
+  .svc,.svc.wide{grid-column:span 6}
+  .scrollhint{display:none}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  nav .btn{display:none}
+  .kv{grid-template-columns:1fr 1fr}
+  section{padding-top:90px}
+}
+@media (prefers-reduced-motion:reduce){.marq .track{animation:none}.rv{transition:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="vignette"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="#f0b04a" stroke-width="1.6"/><circle cx="16" cy="16" r="4.5" fill="currentColor"/><circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-opacity=".25"/></svg>NOVA <span>LABS</span></a>
+    <div class="links"><a href="#services">Services</a><a href="#scanner">Scanner</a><a href="#how">How it works</a><a href="#rules">Rules</a></div>
+    <a class="btn sm" href="#contact">Order a service</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <header class="hero" data-k='{"s":0,"x":0.43,"y":-0.02,"sc":1,"ry":-0.3,"op":1,"mx":0,"my":0.3,"msc":0.62}'>
+      <div>
+        <span class="badge"><i></i>NOVA ONLINE</span>
+        <h1>The AI agent <b>that reads</b> the chain <em>for you.</em></h1>
+        <p class="lead">NOVA Labs builds the tools Pons traders check before they ape, and the AI agents creators launch with. Every number comes from Robinhood Chain. No key ever leaves your wallet.</p>
+        <div class="ctas">
+          <a class="btn" href="#scanner">Scan a token free</a>
+          <a class="btn ghost" href="#services">See services</a>
+        </div>
+        <div class="think" aria-live="polite">
+          <div class="h"><span>NOVA · THINKING</span><b>SAMPLE SCAN</b></div>
+          <span id="typed"></span><span class="cur"></span>
+        </div>
+      </div>
+      <div></div>
+    </header>
+  </div>
+  <div class="scrollhint">SCROLL<i></i></div>
+
+  <div class="marq" aria-hidden="true">
+    <div class="track">
+      <span>Token scanner</span><span>AI agent tokens</span><span>Fee engines</span><span>Launch kits</span><span>Sniper filters</span><span>On-chain receipts</span><span>Fee claimer</span><span>Robinhood Chain</span>
+      <span>Token scanner</span><span>AI agent tokens</span><span>Fee engines</span><span>Launch kits</span><span>Sniper filters</span><span>On-chain receipts</span><span>Fee claimer</span><span>Robinhood Chain</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="services" data-k='{"s":4,"x":0,"y":0,"sc":1.1,"ry":0,"op":0.14,"mx":0,"my":0,"msc":0.9}'>
+      <div class="ey rv">Services</div>
+      <h2 class="rv">Five tools. <b>One agent.</b></h2>
+      <p class="sub rv">Pick one or run the whole stack. Each one already runs on mainnet.</p>
+      <div class="grid">
+        <article class="svc wide rv">
+          <div class="top"><span class="num">01</span><span class="st">READY</span></div>
+          <h3>NOVA Token Scanner</h3>
+          <p>Paste a Pons CA. Get a full report in seconds, with a plain-English read from NOVA.</p>
+          <ul>
+            <li>Deployer sold or moved tokens, even through a router</li>
+            <li>Holder concentration and top 10 wallets</li>
+            <li>First-minute buyers and whether they still hold</li>
+            <li>Deployer history: serial launcher or not</li>
+          </ul>
+          <div class="foot"><span>For traders</span><b>Free · 20 scans/hour</b></div>
+        </article>
+        <article class="svc wide rv">
+          <div class="top"><span class="num">02</span><span class="st live">LIVE · $UNIT</span></div>
+          <h3>AI Agent Token</h3>
+          <p>Launch a token with its own AI agent. It talks to holders and splits creator fees on-chain.</p>
+          <ul>
+            <li>3D site, agent chat room and live thought log</li>
+            <li>Fee engine: AI picks the split inside fixed limits</li>
+            <li>Every round signed with a public receipt hash</li>
+            <li>Admin panel, lore and X content kit included</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Setup fee + small fee share</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">03</span><span class="st">READY</span></div>
+          <h3>Pons Sniper</h3>
+          <p>Self-hosted sniper with NOVA filters. It only buys launches that pass the checks.</p>
+          <ul>
+            <li>Waits for the anti-snipe tax to drop</li>
+            <li>Skips serial launchers and tokens with no socials</li>
+            <li>Take profit, stop loss, max hold</li>
+          </ul>
+          <div class="foot"><span>Runs on your machine</span><b>License</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">04</span><span class="st">READY</span></div>
+          <h3>Launch Kit</h3>
+          <p>Everything around the launch, done in one go.</p>
+          <ul>
+            <li>Narrative and lore</li>
+            <li>Logo, banner and hosted logo link</li>
+            <li>Landing page and X content bank</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Per package</b></div>
+        </article>
+        <article class="svc rv">
+          <div class="top"><span class="num">05</span><span class="st">READY</span></div>
+          <h3>Fee Claimer</h3>
+          <p>One dashboard to claim creator fees across many tokens and wallets.</p>
+          <ul>
+            <li>Sweeps curves and claims the escrow</li>
+            <li>Many wallets from one seed</li>
+            <li>Installed on your machine only</li>
+          </ul>
+          <div class="foot"><span>For serial creators</span><b>License</b></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="scanner" data-k='{"s":2,"x":-0.5,"y":-0.02,"sc":1,"ry":0.45,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split rev">
+        <div class="col">
+          <div class="ey rv">Live sample</div>
+          <h2 class="rv">Paste a CA. <b>NOVA reads it.</b></h2>
+          <p class="sub rv">Flags come from code, straight from the chain. NOVA only writes the summary, and it never says buy, sell or safe.</p>
+          <div class="report rv" id="report">
+            <div class="bar"><i></i><i></i><i></i><span>scan 0x61e1…d6f5 · HOLDUSA</span></div>
+            <div class="ey" style="margin-bottom:4px">NOVA's read</div>
+            <p class="ai" id="aiText"></p>
+            <div class="row"><span class="lv h">HIGH</span><span>Deployer sold or moved tokens: 1.59% of supply left the deployer wallet.</span></div>
+            <div class="row"><span class="lv w">WATCH</span><span>Heavy early buying: 10 wallets took 10.3% in the first minute.</span></div>
+            <div class="row"><span class="lv i">INFO</span><span>Trading so far: 22 buys, 17 sells.</span></div>
+            <div class="kv"><div><b>3</b><span>holders</span></div><div><b>10.3%</b><span>first minute</span></div><div><b>~10s</b><span>scan time</span></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section id="how" data-k='{"s":1,"x":0.48,"y":-0.02,"sc":1,"ry":-0.45,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split">
+        <div class="col">
+          <div class="ey rv">How it works</div>
+          <h2 class="rv">From DM <b>to launch.</b></h2>
+          <div class="steps">
+            <div class="step rv"><span class="n">01</span><div><b>DM</b><p>Tell us which service you want and your launch date.</p></div></div>
+            <div class="step rv"><span class="n">02</span><div><b>Brief</b><p>Name, ticker, lore and look. You get a preview first.</p></div></div>
+            <div class="step rv"><span class="n">03</span><div><b>Build</b><p>Site, agent and engine, tested on mainnet before you launch.</p></div></div>
+            <div class="step rv"><span class="n">04</span><div><b>Hand over</b><p>You run everything from one admin panel. We stay on call.</p></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section id="rules" data-k='{"s":3,"x":-0.5,"y":-0.02,"sc":1,"ry":0.45,"op":1,"mx":0,"my":0,"msc":0.8}'>
+      <div class="split rev">
+        <div class="col">
+          <div class="ey rv">House rules</div>
+          <h2 class="rv">What we <b>never</b> do.</h2>
+          <div class="rules">
+            <div class="rule rv"><span class="x">×</span><div><b>Hold your keys</b><p>Your keys stay in your wallet or on your own server. We never ask for them in chat.</p></div></div>
+            <div class="rule rv"><span class="x">×</span><div><b>Let AI touch money freely</b><p>The AI picks inside limits set in code. Anything outside the limits is clamped.</p></div></div>
+            <div class="rule rv"><span class="x">×</span><div><b>Make up numbers</b><p>Every figure traces back to a transaction or contract call anyone can check.</p></div></div>
+          </div>
+        </div>
+        <div class="stage"></div>
+      </div>
+    </section>
+
+    <section class="cta" id="contact" data-k='{"s":0,"x":0,"y":-0.05,"sc":1.25,"ry":0,"op":0.3,"mx":0,"my":0,"msc":1}'>
+      <div class="ey rv">Launching on Pons?</div>
+      <h2 class="rv">Let NOVA <b>run it.</b></h2>
+      <p class="rv">Send a DM with the service you want. You get a preview before you pay.</p>
+      <div class="ctas rv" style="justify-content:center">
+        <a class="btn" href="#">DM on X</a>
+        <a class="btn ghost" href="#">Telegram</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><span>NOVA Labs · AI tools for Pons on Robinhood Chain</span><span>Not financial advice. Reports describe on-chain data only.</span></div>
+</footer>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+camera.position.set(0, 0, 7);
+
+const AMBER = new THREE.Color("#f0b04a");
+const uni = { uPulse: { value: 0 } };
+
+// ---------- materials ----------
+const shell = new THREE.MeshPhysicalMaterial({ color: "#0b0b0c", metalness: 0.6, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.55 });
+const satin = new THREE.MeshPhysicalMaterial({ color: "#151517", metalness: 0.85, roughness: 0.42, envMapIntensity: 0.6 });
+const glow = new THREE.MeshBasicMaterial({ color: AMBER, toneMapped: false });
+
+// visor display: a canvas drawn every frame
+const VC = document.createElement("canvas"); VC.width = 1024; VC.height = 300;
+const vx = VC.getContext("2d");
+const vtex = new THREE.CanvasTexture(VC); vtex.colorSpace = THREE.SRGBColorSpace; vtex.anisotropy = 4;
+const visorMat = new THREE.MeshPhysicalMaterial({ color: "#020202", metalness: 0.3, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02, emissive: "#ffffff", emissiveMap: vtex, emissiveIntensity: 1.25, envMapIntensity: 0.8 });
+
+// ---------- the android bust ----------
+const bust = new THREE.Group(); scene.add(bust); bust.userData.base = 0.74;
+const head = new THREE.Group(); bust.add(head);
+head.position.y = 0.42;
+
+const prof = new THREE.SplineCurve([
+  [0, -1.02], [0.3, -1.0], [0.55, -0.88], [0.69, -0.62], [0.76, -0.25], [0.79, 0.12], [0.77, 0.48], [0.68, 0.8], [0.5, 1.02], [0.26, 1.13], [0, 1.16],
+].map(([x, y]) => new THREE.Vector2(x, y))).getPoints(80);
+const skull = new THREE.Mesh(new THREE.LatheGeometry(prof, 128), shell);
+head.add(skull);
+
+// visor: a band of a slightly larger sphere at eye level
+const visor = new THREE.Mesh(new THREE.SphereGeometry(0.805, 128, 48, Math.PI / 2 - 0.92, 1.84, 1.26, 0.56), visorMat);
+visor.scale.set(1, 1, 1.015); visor.position.y = 0.12;
+head.add(visor);
+// visor rim
+const rimGeo = (y, a) => new THREE.TorusGeometry(0.79, 0.008, 8, 128, a);
+for (const yy of [0.12 + Math.cos(1.26) * 0.805, 0.12 + Math.cos(1.82) * 0.805]) {
+  const r = Math.sqrt(0.805 ** 2 - (yy - 0.12) ** 2) + 0.004;
+  const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.006, 8, 128, 1.84), glow);
+  t.rotation.x = Math.PI / 2; t.rotation.z = Math.PI / 2 - 0.92 - Math.PI / 2 + Math.PI; t.position.y = yy;
+  t.rotation.z = -(Math.PI / 2 + 0.92); head.add(t); t.material = new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.55, toneMapped: false });
+}
+// crest groove over the top
+const crest = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.012, 8, 128, Math.PI * 0.62), new THREE.MeshBasicMaterial({ color: "#2a2a2a" }));
+crest.rotation.y = Math.PI / 2; crest.rotation.z = Math.PI * 0.19; crest.position.y = 0.0; crest.scale.set(1, 1.2, 0.9);
+
+// ear modules
+for (const side of [-1, 1]) {
+  const ear = new THREE.Group(); ear.position.set(side * 0.765, 0.02, -0.04); ear.rotation.z = Math.PI / 2; head.add(ear);
+  ear.add(new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.23, 0.12, 64), satin));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.012, 12, 64), glow); ring.rotation.x = Math.PI / 2; ring.position.y = side * 0.062; ear.add(ring);
+  const dot = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 32), glow); dot.position.y = side * 0.065; ear.add(dot);
+}
+// jaw line
+const jaw = new THREE.Mesh(new THREE.TorusGeometry(0.63, 0.006, 8, 128, Math.PI * 1.1), new THREE.MeshBasicMaterial({ color: "#2c2c2c" }));
+jaw.rotation.x = Math.PI / 2 + 0.25; jaw.rotation.z = -Math.PI * 0.05 - Math.PI * 0.5; jaw.position.set(0, -0.55, 0.04);
+head.add(jaw);
+
+// neck + shoulders
+const neck = new THREE.Group(); bust.add(neck); neck.position.y = -0.72;
+neck.add(new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.33, 0.62, 64), satin));
+for (let i = 0; i < 3; i++) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.3 + i * 0.015, 0.018, 12, 64), shell); r.rotation.x = Math.PI / 2; r.position.y = 0.16 - i * 0.16; neck.add(r); }
+const torso = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 48, 0, Math.PI * 2, 0, Math.PI * 0.55), shell);
+torso.scale.set(1.45, 0.82, 0.78); torso.position.y = -1.8; bust.add(torso);
+const collar = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 16, 96), satin); collar.rotation.x = Math.PI / 2; collar.scale.set(1, 0.8, 1); collar.position.y = -1.03; bust.add(collar);
+const core = new THREE.Mesh(new THREE.CircleGeometry(0.075, 48), glow); core.position.set(0, -1.32, 0.66); core.rotation.x = -0.35; bust.add(core);
+const coreRing = new THREE.Mesh(new THREE.RingGeometry(0.1, 0.115, 48), new THREE.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.5, toneMapped: false })); coreRing.position.copy(core.position); coreRing.rotation.copy(core.rotation); bust.add(coreRing);
+// panel seams on the torso
+for (const sx of [-1, 1]) { const l = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.005, 6, 96, 0.7), new THREE.MeshBasicMaterial({ color: "#2a2a2a" })); l.scale.copy(torso.scale); l.position.copy(torso.position); l.rotation.set(0, sx * 0.55, Math.PI / 2 - 0.35); bust.add(l); }
+
+// ---------- lights ----------
+scene.add(new THREE.AmbientLight("#ffffff", 0.08));
+const key = new THREE.DirectionalLight("#ffffff", 1.1); key.position.set(-3, 3, 4); scene.add(key);
+const rimL = new THREE.DirectionalLight(AMBER, 3.2); rimL.position.set(4, 1.5, -3); scene.add(rimL);
+const rimR = new THREE.DirectionalLight("#ffffff", 1.6); rimR.position.set(-4, 2, -3); scene.add(rimR);
+const visorLight = new THREE.PointLight(AMBER, 0.9, 2.2); visorLight.position.set(0, 0.55, 1.2); bust.add(visorLight);
+// soft amber halo behind the head
+function haloTex() { const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, "rgba(240,176,74,.35)"); g.addColorStop(.4, "rgba(240,176,74,.09)"); g.addColorStop(1, "rgba(240,176,74,0)"); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); }
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+halo.scale.set(5.5, 5.5, 1); halo.position.set(0, 0.4, -1.5); bust.add(halo);
+
+// ---------- visor screens ----------
+let mode = 0, lookX = 0, lookY = 0, blinkAt = 2, blink = 1;
+const A = "#f0b04a";
+function glowStroke(fn, blur = 22) { vx.save(); vx.shadowColor = A; vx.shadowBlur = blur; fn(); vx.restore(); }
+function rr(x, y, w, h, r) { vx.beginPath(); vx.roundRect(x, y, w, h, r); }
+function drawVisor(t) {
+  const W = 1024, H = 300, p = uni.uPulse.value;
+  vx.clearRect(0, 0, W, H); vx.fillStyle = "#000"; vx.fillRect(0, 0, W, H);
+  vx.globalAlpha = 0.06; vx.fillStyle = A; for (let y = 0; y < H; y += 6) vx.fillRect(0, y, W, 1); vx.globalAlpha = 1;
+  vx.fillStyle = A; vx.strokeStyle = A;
+  if (mode === 0 || mode === 4) { // eyes that look at the cursor
+    const ex = lookX * 60, ey = -lookY * 26, h = 58 * blink * (1 + p * 0.15);
+    glowStroke(() => { for (const cx of [W / 2 - 150, W / 2 + 150]) { rr(cx - 82 + ex, H / 2 - h / 2 + ey, 164, Math.max(4, h), 20); vx.fill(); } }, 30 + p * 20);
+  } else if (mode === 2) { // scan: sweep + readout
+    const sx = (t * 380) % (W + 200) - 100;
+    const g = vx.createLinearGradient(sx - 160, 0, sx, 0); g.addColorStop(0, "rgba(240,176,74,0)"); g.addColorStop(1, "rgba(240,176,74,.55)"); vx.fillStyle = g; vx.fillRect(sx - 160, 40, 160, H - 80);
+    glowStroke(() => { vx.fillRect(sx, 40, 4, H - 80); }, 18);
+    vx.fillStyle = A; vx.font = "500 30px JetBrains Mono, monospace"; vx.textAlign = "left";
+    glowStroke(() => { vx.fillText("SCAN 0x61e1…d6f5", 230, 120); vx.fillText("FLAGS  HIGH 1 · WATCH 1", 230, 175); }, 10);
+    const prog = (t * 0.25) % 1; vx.globalAlpha = .35; vx.fillRect(230, 205, 560, 6); vx.globalAlpha = 1; glowStroke(() => vx.fillRect(230, 205, 560 * prog, 6), 10);
+  } else if (mode === 1) { // network: nodes pulsing along a line
+    const ys = H / 2, xs = [250, 390, 512, 634, 774];
+    vx.globalAlpha = .4; vx.fillRect(250, ys - 1, 524, 2); vx.globalAlpha = 1;
+    xs.forEach((x, i) => { const on = (Math.floor(t * 2.2) % xs.length) === i; glowStroke(() => { vx.beginPath(); vx.arc(x, ys, on ? 22 : 11, 0, Math.PI * 2); vx.fill(); }, on ? 34 : 12); });
+  } else if (mode === 3) { // lock
+    glowStroke(() => { vx.lineWidth = 10; vx.beginPath(); vx.arc(W / 2 - 170, 128, 34, Math.PI, 0); vx.stroke(); rr(W / 2 - 222, 128, 104, 82, 14); vx.fill(); }, 26);
+    vx.fillStyle = A; vx.font = "800 46px Inter Tight, sans-serif"; vx.textAlign = "left";
+    glowStroke(() => { vx.fillText("KEYS HELD: 0", W / 2 - 90, 150); }, 12);
+    vx.font = "500 24px JetBrains Mono, monospace"; vx.globalAlpha = .7; vx.fillText("AI LIMITS · CLAMPED", W / 2 - 90, 196); vx.globalAlpha = 1;
+  }
+  vtex.needsUpdate = true;
+}
+
+// ---------- scroll keyframes ----------
+const secs = [...document.querySelectorAll("[data-k]")].map(el => ({ el, k: JSON.parse(el.dataset.k) }));
+let target = secs[0].k;
+const st = { x: 0, y: 0, sc: 1, op: 1, ry: 0 };
+function pick() {
+  const mid = innerHeight / 2; let best = secs[0], bd = 1e9;
+  for (const s of secs) { const r = s.el.getBoundingClientRect(); const d = r.top <= mid && r.bottom >= mid ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); if (d < bd) { bd = d; best = s; } }
+  if (best.k.s !== target.s) uni.uPulse.value = 1;
+  target = best.k; mode = target.s;
+}
+addEventListener("scroll", pick, { passive: true });
+let mx = 0, my = 0, smx = 0, smy = 0;
+addEventListener("pointermove", e => { mx = e.clientX / innerWidth * 2 - 1; my = -(e.clientY / innerHeight * 2 - 1); });
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener("resize", () => { resize(); pick(); }); resize(); pick();
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.1), t = clock.elapsedTime;
+  uni.uPulse.value += (0 - uni.uPulse.value) * 0.05;
+  const mobile = innerWidth < 900, halfH = Math.tan(17.5 * Math.PI / 180) * 7, halfW = halfH * camera.aspect;
+  const tx = mobile ? (target.mx || 0) * halfW : target.x * halfW, ty = mobile ? (target.my || 0) * halfH : target.y * halfH;
+  const tsc = mobile ? (target.msc || 0.8) : target.sc, top = mobile && target.s !== 0 ? Math.min(target.op, 0.25) : target.op;
+  const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2);
+  st.x += (tx - st.x) * k; st.y += (ty - st.y) * k; st.sc += (tsc - st.sc) * k; st.op += (top - st.op) * k; st.ry += ((mobile ? 0 : target.ry || 0) - st.ry) * k;
+  bust.position.set(st.x, st.y, 0); bust.scale.setScalar(st.sc * bust.userData.base); canvas.style.opacity = st.op.toFixed(3);
+
+  const km = 1 - Math.exp(-dt * 4); smx += (mx - smx) * km; smy += (my - smy) * km;
+  // head looks at the cursor, the body follows a little; a slow idle sway on top
+  const idle = reduce ? 0 : Math.sin(t * 0.6) * 0.04;
+  head.rotation.y = st.ry + smx * 0.45 + idle; head.rotation.x = -smy * 0.22 + Math.sin(t * 0.8) * 0.015;
+  bust.rotation.y = (st.ry + smx * 0.45) * 0.25; head.position.y = 0.42 + Math.sin(t * 1.2) * 0.012;
+  lookX = smx; lookY = smy;
+  if (t > blinkAt) { const b = t - blinkAt; blink = b < 0.08 ? 1 - b / 0.08 : b < 0.16 ? (b - 0.08) / 0.08 : 1; if (b > 0.16) { blink = 1; blinkAt = t + 2.2 + Math.random() * 3.5; } }
+  const pulse = uni.uPulse.value;
+  visorMat.emissiveIntensity = 1.15 + pulse * 0.6; visorLight.intensity = 0.7 + pulse * 1.2;
+  core.scale.setScalar(1 + Math.sin(t * 2.4) * 0.08 + pulse * 0.3); coreRing.material.opacity = 0.35 + Math.sin(t * 2.4) * 0.15;
+  drawVisor(t);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+
+// ---------- NOVA thinking (typed, pulses the core) ----------
+const lines = [
+  "scanning 0x61e1…d6f5 · HOLDUSA",
+  "deployer moved 1.59% of supply out of the wallet.",
+  "10 wallets bought 10.3% in the first minute.",
+  "5 of those early wallets already sold.",
+  "3 holders left. one wallet can move the price.",
+  "flags: 1 high · 1 watch. report ready.",
+];
+const typed = document.getElementById("typed");
+let li = 0;
+async function typeLoop() {
+  while (true) {
+    const s = lines[li++ % lines.length]; typed.textContent = "";
+    for (const ch of s) { typed.textContent += ch; if (ch !== " ") uni.uPulse.value = Math.min(1, uni.uPulse.value + 0.05); await new Promise(r => setTimeout(r, 26 + Math.random() * 30)); }
+    await new Promise(r => setTimeout(r, 2200));
+  }
+}
+typeLoop();
+
+
+// ---------- reveals, report typing, card spotlight ----------
+const aiText = "The deployer has moved 1.59% of supply out of their wallet. Ten wallets bought 10.3% in the first minute and half of them have already sold. Only three holders are left, so one wallet can move the price.";
+let reportDone = false;
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add("in"); io.unobserve(e.target);
+  if (e.target.id === "report" && !reportDone) {
+    reportDone = true; const p = document.getElementById("aiText"); let i = 0;
+    const tick = setInterval(() => { p.textContent = aiText.slice(0, ++i); uni.uPulse.value = Math.min(1, uni.uPulse.value + 0.03); if (i >= aiText.length) { clearInterval(tick); document.querySelectorAll(".report .row").forEach((r, k) => setTimeout(() => r.classList.add("in"), 250 * k)); } }, 14);
+  }
+}), { threshold: 0.15 });
+document.querySelectorAll(".rv").forEach(el => io.observe(el));
+document.querySelectorAll(".svc").forEach(c => c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px"); }));
+</script>
+</body>
+</html>

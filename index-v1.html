@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA Labs</title>
+<meta name="description" content="AI tools and launch services for Pons on Robinhood Chain.">
+<link rel="icon" href="nova-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#f0b04a;--acc2:rgba(240,176,74,.35);--bg:#0a0a0a;--bg2:#111;--bg3:#161616;--line:#232323;--line2:#2e2e2e;--text:#f2f1ee;--mid:#a3a3a0;--dim:#6b6b68;--ok:#3fb950;--watch:#f2b84b}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.ey{font:500 11px "JetBrains Mono";letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+
+nav{position:sticky;top:0;z-index:5;background:rgba(10,10,10,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{font:800 16px "Inter Tight";letter-spacing:-.01em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo span{color:var(--dim)}
+.links{display:flex;gap:26px;font-size:14px;color:var(--mid)}
+.links a{text-decoration:none}.links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px Inter;padding:12px 20px;border-radius:999px;border:1px solid var(--text);background:var(--text);color:var(--bg);text-decoration:none;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--text)}
+.btn.sm{padding:9px 16px;font-size:13px}
+
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:64px 0 56px}
+.badge{display:inline-flex;align-items:center;gap:8px;font:800 11px "Inter Tight";letter-spacing:.16em;border:1px solid var(--line2);border-radius:999px;padding:7px 12px}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+h1{font:800 clamp(40px,5.6vw,76px)/.92 "Inter Tight",sans-serif;letter-spacing:-.045em;text-transform:uppercase;margin:18px 0 18px}
+h1 em{font-style:normal;color:var(--dim)}
+h1 b{color:var(--acc);font-weight:inherit}
+.lead{color:var(--mid);max-width:540px;margin:0 0 26px;font-size:17px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.portrait{position:relative;aspect-ratio:4/5;border:1px solid #3a2f1f;border-radius:20px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(240,176,74,.08),0 30px 120px -30px rgba(240,176,74,.28)}
+.portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.portrait .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--dim);text-align:center;padding:24px}
+.portrait .ph b{font:800 84px "Inter Tight";letter-spacing:-.05em;color:#262626}
+.portrait .tag{position:absolute;left:16px;bottom:16px;font:800 11px "Inter Tight";letter-spacing:.16em;background:var(--text);color:var(--bg);padding:7px 12px;border-radius:999px}
+.portrait .say{position:absolute;left:16px;right:16px;bottom:58px;font:500 12px/1.45 "JetBrains Mono";color:var(--mid);background:rgba(10,10,10,.75);border:1px solid var(--line2);border-radius:12px;padding:10px 12px}
+
+.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{padding:22px 20px;border-left:1px solid var(--line)}
+.stat:first-child{border-left:0;padding-left:0}
+.stat b{display:block;font:800 26px "Inter Tight";letter-spacing:-.03em}
+.stat span{font-size:13px;color:var(--dim)}
+
+section{padding:84px 0 0}
+h2{font:800 clamp(30px,3.6vw,46px)/.98 "Inter Tight";letter-spacing:-.04em;text-transform:uppercase;margin:10px 0 12px}
+.sub{color:var(--mid);max-width:620px;margin:0 0 30px}
+
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.svc{grid-column:span 2;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:border-color .2s,transform .2s}
+.svc:hover{border-color:var(--acc2);transform:translateY(-2px)}
+.svc.wide{grid-column:span 3}
+.svc .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.num{font:500 12px "JetBrains Mono";color:var(--dim)}
+.st{font:800 10px "Inter Tight";letter-spacing:.16em;border-radius:999px;padding:5px 10px;border:1px solid var(--line2);color:var(--mid)}
+.st.live{border-color:rgba(63,185,80,.4);color:var(--ok)}
+.st.ready{border-color:var(--acc2);color:var(--acc)}
+.svc h3{margin:0;font:800 24px/1.05 "Inter Tight";letter-spacing:-.03em;text-transform:uppercase}
+.svc p{margin:0;color:var(--mid);font-size:14px}
+.svc ul{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:14px}
+.svc li{display:flex;gap:10px}
+.svc li:before{content:"";flex:0 0 5px;height:5px;margin-top:9px;background:var(--acc);border-radius:50%}
+.svc .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+.svc .foot b{color:var(--text);font-weight:600}
+
+.demo{margin-top:14px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;grid-template-columns:1fr 1.2fr;gap:28px;align-items:center}
+.report{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:18px;font-size:13px}
+.report .row{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.report .row:first-of-type{border-top:0}
+.lv{font:800 10px "Inter Tight";letter-spacing:.12em;border-radius:999px;padding:4px 0;text-align:center;height:fit-content}
+.lv.h{background:#e5484d;color:#fff}.lv.w{background:var(--watch);color:#111}.lv.o{background:var(--ok);color:#06140a}
+.report .ai{font:600 15px/1.5 "Inter Tight";margin:0 0 12px}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{border-top:1px solid var(--acc);padding-top:16px}
+.step b{display:block;font:800 18px "Inter Tight";text-transform:uppercase;letter-spacing:-.01em;margin:8px 0 6px}
+.step p{margin:0;color:var(--mid);font-size:14px}
+
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.rule{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px}
+.rule b{display:block;font:800 20px/1.1 "Inter Tight";text-transform:uppercase;letter-spacing:-.02em;margin-bottom:8px}
+.rule p{margin:0;color:var(--mid);font-size:14px}
+
+.cta{margin:84px 0 0;border:1px solid var(--line);border-radius:22px;padding:48px;text-align:center;background:radial-gradient(circle at 50% 0%,rgba(240,176,74,.12),#0a0a0a 65%)}
+.cta h2{margin:0 0 12px}
+.cta p{color:var(--mid);margin:0 auto 24px;max-width:520px}
+.cta .ctas{justify-content:center}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding:40px 0;gap:32px}
+  .portrait{max-width:420px;width:100%}
+  .links{display:none}
+  .strip .wrap{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(3){border-left:0;padding-left:0}
+  .stat{border-top:1px solid var(--line)}.stat:nth-child(-n+2){border-top:0}
+  .svc,.svc.wide{grid-column:span 6}
+  .demo{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .rules{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  .steps{grid-template-columns:1fr}
+  .cta{padding:32px 20px}
+  nav .btn{display:none}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#"><img src="nova-icon.jpg" alt="" width="30" height="30" style="border-radius:50%;border:1px solid var(--acc2)">NOVA <span>LABS</span></a>
+    <div class="links"><a href="#services">Services</a><a href="#scanner">Scanner</a><a href="#how">How it works</a><a href="#rules">Rules</a></div>
+    <a class="btn sm" href="#contact">Order a service</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <span class="badge"><i></i>NOVA ONLINE</span>
+        <h1>AI agents <b>for Pons.</b> <em>Built on&#8209;chain.</em></h1>
+        <p class="lead">NOVA Labs builds the tools traders use before they ape and the agents creators launch with. Every number comes from Robinhood Chain. No key ever leaves your wallet.</p>
+        <div class="ctas">
+          <a class="btn" href="#scanner">Scan a token free</a>
+          <a class="btn ghost" href="#services">See services</a>
+        </div>
+      </div>
+      <div class="portrait" id="portrait">
+        <img src="nova.jpg" alt="NOVA, the armored cat agent">
+        <div class="say">&gt; deployer moved 1.59% of supply. 10 wallets bought in the first minute.</div>
+        <span class="tag">NOVA ONLINE</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="strip rv">
+    <div class="wrap">
+      <div class="stat"><b>5</b><span>services live or ready</span></div>
+      <div class="stat"><b>~10s</b><span>per full token report</span></div>
+      <div class="stat"><b>100%</b><span>on-chain facts, no guesses</span></div>
+      <div class="stat"><b>0</b><span>client keys we hold</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="services">
+      <div class="ey rv">Services</div>
+      <h2 class="rv">What we run for you</h2>
+      <p class="sub rv">Pick one tool or the whole stack. Each one already runs on mainnet.</p>
+
+      <div class="grid">
+        <article class="svc wide rv">
+          <div class="top"><span class="num">01</span><span class="st ready">READY</span></div>
+          <h3>NOVA Token Scanner</h3>
+          <p>Paste a Pons CA. Get a full report in seconds, with a plain-English read from NOVA.</p>
+          <ul>
+            <li>Deployer sold or moved tokens, even through a router</li>
+            <li>Holder concentration and top 10 wallets</li>
+            <li>First-minute buyers and whether they still hold</li>
+            <li>Deployer history: serial launcher or not</li>
+          </ul>
+          <div class="foot"><span>For traders</span><b>Free · 20 scans/hour</b></div>
+        </article>
+
+        <article class="svc wide rv">
+          <div class="top"><span class="num">02</span><span class="st live">LIVE · $UNIT</span></div>
+          <h3>AI Agent Token</h3>
+          <p>Launch a token with its own AI agent. It talks to holders and splits creator fees on-chain.</p>
+          <ul>
+            <li>3D site, agent chat room and live thought log</li>
+            <li>Fee engine: AI picks the split inside fixed limits</li>
+            <li>Every round signed with a public receipt hash</li>
+            <li>Admin panel, lore and X content kit included</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Setup fee + small fee share</b></div>
+        </article>
+
+        <article class="svc rv">
+          <div class="top"><span class="num">03</span><span class="st ready">READY</span></div>
+          <h3>Pons Sniper</h3>
+          <p>Self-hosted sniper with NOVA filters. It only buys launches that pass the checks.</p>
+          <ul>
+            <li>Waits for the anti-snipe tax to drop</li>
+            <li>Skips serial launchers and tokens with no socials</li>
+            <li>Take profit, stop loss, max hold</li>
+          </ul>
+          <div class="foot"><span>Runs on your machine</span><b>License</b></div>
+        </article>
+
+        <article class="svc rv">
+          <div class="top"><span class="num">04</span><span class="st ready">READY</span></div>
+          <h3>Launch Kit</h3>
+          <p>Everything around the launch, done in one go.</p>
+          <ul>
+            <li>Narrative and lore</li>
+            <li>Logo, banner and hosted logo link</li>
+            <li>Landing page and X content bank</li>
+          </ul>
+          <div class="foot"><span>For creators</span><b>Per package</b></div>
+        </article>
+
+        <article class="svc rv">
+          <div class="top"><span class="num">05</span><span class="st ready">READY</span></div>
+          <h3>Fee Claimer</h3>
+          <p>One dashboard to claim creator fees across many tokens and wallets.</p>
+          <ul>
+            <li>Sweeps curves and claims the escrow</li>
+            <li>Many wallets from one seed</li>
+            <li>Installed on your machine only</li>
+          </ul>
+          <div class="foot"><span>For serial creators</span><b>License</b></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="scanner">
+      <div class="ey rv">Live sample</div>
+      <h2 class="rv">What a scan looks like</h2>
+      <div class="demo rv">
+        <div>
+          <p class="sub" style="margin-bottom:18px">A real report on a Pons token, cut short. The flags come from code. NOVA only writes the summary and never says buy, sell or safe.</p>
+          <a class="btn" href="http://127.0.0.1:3040" target="_blank" rel="noopener">Open the scanner</a>
+        </div>
+        <div class="report">
+          <div class="ey" style="margin-bottom:8px">NOVA's read</div>
+          <p class="ai">The deployer has moved 1.59% of supply out of their wallet. Ten wallets bought 10.3% in the first minute and half of them have already sold. Only three holders are left, so one wallet can move the price.</p>
+          <div class="row"><span class="lv h">HIGH</span><span>Deployer sold or moved tokens: 1.59% of supply left the deployer wallet.</span></div>
+          <div class="row"><span class="lv w">WATCH</span><span>Heavy early buying: 10 wallets took 10.3% in the first minute.</span></div>
+          <div class="row"><span class="lv o">INFO</span><span>Trading so far: 22 buys, 17 sells, 3 holders.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="ey rv">How it works</div>
+      <h2 class="rv">From DM to launch</h2>
+      <div class="steps">
+        <div class="step rv"><span class="num">01</span><b>DM</b><p>Tell us which service and your launch date.</p></div>
+        <div class="step rv"><span class="num">02</span><b>Brief</b><p>Name, ticker, lore and look. We send a preview first.</p></div>
+        <div class="step rv"><span class="num">03</span><b>Build</b><p>Site, agent and engine tested on mainnet before you launch.</p></div>
+        <div class="step rv"><span class="num">04</span><b>Hand over</b><p>You run it from one admin panel. We stay on call.</p></div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="ey rv">House rules</div>
+      <h2 class="rv">What we never do</h2>
+      <div class="rules">
+        <div class="rule rv"><b>Hold your keys</b><p>Your keys stay in your wallet or on your own server. We never ask for them in chat.</p></div>
+        <div class="rule rv"><b>Let AI touch money freely</b><p>The AI only picks inside limits set in code. Anything outside the limits is clamped.</p></div>
+        <div class="rule rv"><b>Make up numbers</b><p>Every figure links back to a transaction or contract call anyone can check.</p></div>
+      </div>
+    </section>
+
+    <div class="cta rv" id="contact">
+      <h2>Launching on Pons?</h2>
+      <p>Send a DM with the service you want. You get a preview before you pay.</p>
+      <div class="ctas">
+        <a class="btn" href="#" aria-label="DM on X">DM on X</a>
+        <a class="btn ghost" href="#">Telegram</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><span>NOVA Labs · AI tools for Pons on Robinhood Chain</span><span>Not financial advice. Reports describe on-chain data only.</span></div>
+</footer>
+
+<script>
+  // reveal on scroll
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
+  document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+</script>
+</body>
+</html>
