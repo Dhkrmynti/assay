@@ -135,13 +135,19 @@ export function createTools(provider) {
 
   // Traction: unique buyers and recent buys on the curve, read incrementally from CurveBuy logs (every 12 s at most).
   const CURVE_BUY = ethers.id("CurveBuy(address,address,uint256,uint256,uint256,uint256)");
+  // the public RPC rate-limits us: refresh young launches often and old ones rarely, and back off for a minute after a 429
+  let coolUntil = 0;
+  const limited = (e) => { if (/429|rate|retry limit|too many/i.test(String(e?.shortMessage || e?.message || "") + JSON.stringify(e?.info?.error || ""))) coolUntil = Date.now() + 60_000; };
+  const ttlOf = (l) => { const ageS = ((indexedTo || l.block) - l.block) / blocksPerSec; return ageS < 900 ? 20_000 : ageS < 3600 ? 60_000 : 300_000; };
+  const fresh = (c, l) => Date.now() - c.at < ttlOf(l) || (Date.now() < coolUntil && c.at > 0);
   const flow = new Map();
   async function traction(l) {
     const c = flow.get(l.curve) || { to: l.block - 1, buyers: new Map(), blocks: [], at: 0 };
-    if (Date.now() - c.at < 12_000) return c;
+    if (fresh(c, l)) return c;
+    if (Date.now() < coolUntil) throw new Error("rpc cooling down");
     const head = indexedTo || (await provider.getBlockNumber());
     if (head > c.to) {
-      const found = await provider.getLogs({ address: l.curve, topics: [CURVE_BUY], fromBlock: c.to + 1, toBlock: head });
+      let found; try { found = await provider.getLogs({ address: l.curve, topics: [CURVE_BUY], fromBlock: c.to + 1, toBlock: head }); } catch (e) { limited(e); throw e; }
       for (const x of found) { if (!c.buyers.has(x.topics[2])) c.buyers.set(x.topics[2], x.blockNumber); c.blocks.push(x.blockNumber); }
       c.to = head;
     }
@@ -158,10 +164,11 @@ export function createTools(provider) {
   const devOut = new Map();
   async function devSold(l) {
     const c = devOut.get(l.token) || { to: l.block - 1, out: 0n, supply: 0n, at: 0 };
-    if (Date.now() - c.at < 12_000) return c;
+    if (fresh(c, l)) return c;
+    if (Date.now() < coolUntil) throw new Error("rpc cooling down");
     const head = indexedTo || (await provider.getBlockNumber());
     if (head > c.to) {
-      const found = await provider.getLogs({ address: l.token, topics: [TRANSFER, ethers.zeroPadValue(l.deployer, 32)], fromBlock: c.to + 1, toBlock: head });
+      let found; try { found = await provider.getLogs({ address: l.token, topics: [TRANSFER, ethers.zeroPadValue(l.deployer, 32)], fromBlock: c.to + 1, toBlock: head }); } catch (e) { limited(e); throw e; }
       for (const x of found) c.out += BigInt(x.data);
       c.to = head;
     }

@@ -82,11 +82,12 @@ async function scanCached(ca) {
 // ---------- radar (shared by everyone, refreshed at most every 8s) ----------
 let radarCache = null, radarJob = null, radarWanted = 0;
 // while someone watched the radar in the last 2 minutes, keep it warm so every viewer gets it instantly
-setInterval(() => { if (Date.now() - radarWanted < 120_000) radar().catch(() => {}); }, 3000);
+setInterval(() => { if (Date.now() - radarWanted < 120_000) radar().catch(() => {}); }, 8000);
 async function radar() {
-  if (radarCache && Date.now() - radarCache.at < (radarJob ? 60_000 : 3000)) return radarCache.data;
+  if (radarCache && Date.now() - radarCache.at < (radarJob ? 60_000 : 8000)) return radarCache.data;
   radarJob ||= tools.radar().then((data) => { radarCache = { at: Date.now(), data }; return data; }).finally(() => { radarJob = null; });
-  return radarJob;
+  // when the RPC is rate-limiting us, keep showing the last good radar instead of an error
+  return radarCache ? radarJob.catch(() => radarCache.data) : radarJob;
 }
 
 // ---------- launch kit + agent studio ----------
@@ -269,7 +270,7 @@ Return JSON: {"scores":[{"ca":"0x…","score":0,"reason":"…"}]}.`;
   } catch (e) { picksErr = e instanceof AiOffline ? "Ocula's AI core is offline right now." : "Ocula could not score launches this round."; console.error("picks:", e.shortMessage || e.message); }
 }
 let picksCache = [];
-setInterval(scorePicks, 15_000);
+setInterval(scorePicks, 45_000);
 
 // ---------- Ocula chat: the home page's assistant, answering from the live radar ----------
 const CHAT_TOOLS = ["scan", "radar", "snipe", "fees", "launch", "kit", "agent"];
