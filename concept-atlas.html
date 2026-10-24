@@ -1,0 +1,91 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signal Agent · Atlas (concept)</title><meta name="robots" content="noindex"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>:root{--bg:#F5F3EC;--fg:#161514}
+:root{--paper:#F5F3EC;--ink:#161514;--dim:#6B675F;--faint:#9A958B;--line:rgba(22,21,20,.12);--sans:"Inter Tight",-apple-system,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.nav{position:fixed;inset:0 0 auto;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:22px 34px}
+.brand{display:flex;align-items:center;gap:10px;font:600 17px var(--sans);letter-spacing:-.03em;color:var(--fg);text-decoration:none}
+.brand svg{width:22px;height:auto}.brand span{font-weight:400}
+.nav .tag{font:400 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.copy{position:fixed;z-index:4;pointer-events:none}
+.copy *{pointer-events:auto}
+.kick{font:400 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin:0 0 18px}
+h1{margin:0;font:400 clamp(40px,5.4vw,80px)/1 var(--sans);letter-spacing:-.05em}
+h1 em{font-style:normal;opacity:.4}
+.lead{margin:20px 0 0;max-width:40ch;font-size:16.5px;opacity:.72}
+.ask{display:flex;align-items:center;gap:12px;margin-top:30px;width:min(420px,86vw);border-bottom:1px solid currentColor;padding:8px 0;opacity:.9}
+.ask input{flex:1;border:0;background:transparent;color:inherit;font:300 17px var(--sans);outline:0}
+.ask input::placeholder{color:inherit;opacity:.45}
+.ask a{font:500 13px var(--sans);color:inherit;text-decoration:none}
+.legend{position:fixed;z-index:4;right:34px;bottom:28px;display:flex;gap:22px;font:400 11px var(--mono);letter-spacing:.08em;opacity:.7}
+.legend b{font-weight:600}
+.switch{position:fixed;z-index:6;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(127,127,127,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.switch a{padding:7px 14px;border-radius:999px;font:500 12.5px var(--sans);color:var(--fg);text-decoration:none;opacity:.6}
+.switch a.on{background:var(--fg);color:var(--bg);opacity:1}
+@media (max-width:800px){.nav{padding:16px 18px}.nav .tag{display:none}.legend{display:none}}
+#labels{position:fixed;inset:0;z-index:3;pointer-events:none}
+.lb{position:absolute;transform:translate(10px,-50%);font:500 12px var(--mono);letter-spacing:.04em;white-space:nowrap;transition:opacity .3s}
+.lb.sig{font:600 13px var(--sans);letter-spacing:-.01em}.lb.sig::before{content:"";position:absolute;left:-14px;top:50%;width:10px;height:1px;background:currentColor}
+.lb.no{opacity:.45}</style></head><body>
+<canvas id="c"></canvas>
+<header class="nav"><a class="brand" href="/"><svg viewBox="20 30 216 196" aria-hidden="true"><path d="M226 50H128a39 39 0 0 0 0 78a39 39 0 0 1 0 78H30" fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><b>signal</b><span>agent</span></a><span class="tag">Concept Atlas</span></header>
+<div class="copy" style="left:6vw;bottom:13vh"><p class="kick">Signal Agent · The Atlas</p><h1>Map the noise.<br><em>Mark the signal.</em></h1>
+<p class="lead">Every launch is a new star on the map of Pons. Signal Agent charts them all and only names the ones that truly shine.</p>
+<div class="ask"><input placeholder="Ask Signal, or paste a token CA"><a href="/">Open →</a></div></div>
+<div class="legend"><span>Drag to turn the globe</span><span><b>Named</b> = signal</span></div><div id="labels"></div>
+<nav class="switch"><a href="/concept/lens" class="">1 · Lens</a><a href="/concept/monolith" class="">2 · Monolith</a><a href="/concept/atlas" class="on">3 · Atlas</a><a href="/concept/instrument" class="">4 · Instrument</a></nav>
+<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.min.js","three/addons/":"/vendor/three/examples/jsm/"}}</script>
+<script type="module">
+// live launches from the site (the public radar shows the six newest)
+async function launches(){ try { const j = await (await fetch("/api/radar")).json(); return j.rows || []; } catch { return []; } }
+const DEMO = ["MBULL","KABU","PUPKINU","FREE","LOBSTERC","GLWA","AVON","WORM","ZETA","NOAN","CAPY","HUSH","TRACER","ORBIX","GILET","PRDX","NIMBUFF","SCOTIA"];
+
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+const cv = document.getElementById("c"), renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setClearColor(0xf5f3ec);
+const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(34, 1, 0.1, 100); cam.position.set(0, 1.2, 9.5);
+const globe = new THREE.Group(); scene.add(globe);
+const R = 2.25;
+// dust: every other launch of the day, a faint point on the sphere
+const N = 2600, p = new Float32Array(N * 3);
+for (let i = 0; i < N; i++) { const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), a = i * 2.399963; p.set([Math.cos(a) * r * R, y * R, Math.sin(a) * r * R], i * 3); }
+const dg = new THREE.BufferGeometry(); dg.setAttribute("position", new THREE.BufferAttribute(p, 3));
+globe.add(new THREE.Points(dg, new THREE.PointsMaterial({ color: 0x161514, size: 0.026, transparent: true, opacity: 0.5 })));
+// meridians and the equator, like an atlas
+const lm = new THREE.LineBasicMaterial({ color: 0x161514, transparent: true, opacity: 0.12 });
+for (let k = 0; k < 6; k++) { const c = new THREE.EllipseCurve(0, 0, R, R).getPoints(160).map((q) => new THREE.Vector3(q.x, q.y, 0)); const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(c), lm); l.rotation.y = (k / 6) * Math.PI; globe.add(l); }
+{ const c = new THREE.EllipseCurve(0, 0, R, R).getPoints(160).map((q) => new THREE.Vector3(q.x, 0, q.y)); globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(c), new THREE.LineBasicMaterial({ color: 0x161514, transparent: true, opacity: 0.3 }))); }
+// stars: the newest launches, placed by their address; signal ones are bright and named
+const stars = [], box = document.getElementById("labels");
+function place(rows) {
+  stars.forEach((s) => { globe.remove(s.m); s.el.remove(); }); stars.length = 0;
+  const list = rows.length >= 8 ? rows : [...rows, ...DEMO.slice(0, 14 - rows.length).map((s, i) => ({ symbol: s, token: "0x" + ((i + 7) * 2654435761 >>> 0).toString(16).padStart(8, "0"), pass: i % 5 === 1 }))]; const _x = DEMO.slice(0, 10).map((s, i) => ({ symbol: s, token: "0x" + (i * 2654435761 >>> 0).toString(16).padStart(8, "0"), pass: i % 4 === 0 }));
+  list.forEach((r) => {
+    const h = parseInt(r.token.slice(2, 10), 16), u = (h % 1000) / 1000, v = ((h >>> 10) % 1000) / 1000;
+    const th = u * Math.PI * 2, ph = Math.acos(2 * v - 1) * 0.8 + 0.3, pos = new THREE.Vector3(Math.sin(ph) * Math.cos(th), Math.cos(ph), Math.sin(ph) * Math.sin(th)).multiplyScalar(R * 1.01);
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r.pass ? 0.075 : 0.035, 16, 16), new THREE.MeshBasicMaterial({ color: r.pass ? 0x161514 : 0x8a857b }));
+    m.position.copy(pos); globe.add(m);
+    const el = document.createElement("div"); el.className = "lb " + (r.pass ? "sig" : "no"); el.textContent = (r.pass ? "$" : "") + r.symbol + (r.pass ? "  · signal" : ""); box.appendChild(el);
+    stars.push({ m, el, r });
+  });
+}
+place([]); launches().then((rows) => rows.length && place(rows));
+const ctl = new OrbitControls(cam, cv); ctl.enableZoom = false; ctl.enablePan = false; ctl.autoRotate = true; ctl.autoRotateSpeed = 0.6; ctl.enableDamping = true;
+function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); globe.position.x = w < 800 ? 0 : 2.5; ctl.target.set(globe.position.x * 0.55, 0, 0); }
+addEventListener("resize", size); size();
+const v = new THREE.Vector3(), n = new THREE.Vector3(), toCam = new THREE.Vector3();
+renderer.setAnimationLoop(() => {
+  ctl.update();
+  stars.forEach((s) => {
+    s.m.getWorldPosition(v); n.copy(v).sub(globe.position).normalize(); toCam.copy(cam.position).sub(v).normalize();
+    const front = n.dot(toCam) > 0.05; v.project(cam);
+    s.el.style.left = (v.x * 0.5 + 0.5) * innerWidth + "px"; s.el.style.top = (-v.y * 0.5 + 0.5) * innerHeight + "px";
+    s.el.style.opacity = front ? (s.r.pass ? 1 : 0.45) : 0;
+  });
+  renderer.render(scene, cam);
+});
+</script></body></html>
