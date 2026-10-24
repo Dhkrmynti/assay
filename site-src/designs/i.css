@@ -213,3 +213,4 @@ body.holder .ws .lock{display:none}
 
 /* nav over the black tools section */
 body.scrolled .nav{box-shadow:0 1px 0 var(--line)}
+.sc.bl.hot{color:#F5F3EC}.sc.bl.hot b{font-weight:600}

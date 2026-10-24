@@ -162,6 +162,9 @@ const _paintBand = paintBand;
 paintBand = function (rows) {
   _paintBand(rows);
   const sig = rows.filter((r) => r.pass).length; el("scSig").textContent = sig; el("scNoise").textContent = rows.length - sig;
+  const top = rows.find((r) => r.pass), cap = document.querySelector(".sc.bl");
+  cap.innerHTML = top ? `Signal · <b>$${hesc(top.symbol)}</b> · ${ageOf(top.ageSec)}` : "One line per launch";
+  cap.classList.toggle("hot", !!top);
   const items = rows.slice(0, 16).map((r) => `<span><b>$${hesc(r.symbol)}</b> ${ageOf(r.ageSec)}${r.pass ? "<em>SIGNAL</em>" : r.devRugged ? "<i>INTERFERENCE</i>" : ""}</span>`).join("");
   if (items) el("tape").innerHTML = items + items;
 };

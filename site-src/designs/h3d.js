@@ -34,7 +34,7 @@ import * as THREE from "three";
   };
   const look = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
   addEventListener("pointermove", (e) => { look.x = e.clientX / innerWidth - 0.5; look.y = e.clientY / innerHeight - 0.5; }, { passive: true });
-  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 7.5, 10.5); cam.lookAt(0, -0.6, 0); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
+  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 8.2, 17); cam.lookAt(0, -0.4, 0.6); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
   new ResizeObserver(size).observe(cv); size();
   let visible = true; new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(cv);
   const clock = new THREE.Clock();
@@ -50,7 +50,7 @@ import * as THREE from "three";
         const u = i / (P - 1);
         const base = Math.sin(u * 9 + t * 0.35 + o.seed) * 0.05 + Math.sin(u * 23 - t * 0.6 + o.seed * 2) * 0.03;
         const bump = Math.exp(-Math.pow((u - o.peak) * 7, 2)) * (Math.sin(u * 60 - t * 1.4) * 0.35 + 0.65);
-        a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * 1.5 + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
+        a[i * 3 + 1] = base * (1 + o.amp) + bump * o.amp * (inScope ? 2.4 : 1.5) + (o.kind === "int" ? Math.sin(u * 140 + t * 3 + o.seed) * 0.06 : 0);
       }
       o.g.attributes.position.needsUpdate = true;
     }
