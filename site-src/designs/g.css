@@ -219,3 +219,9 @@ footer{margin-top:130px;border-top:1px solid var(--line)}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 .ws .lock .pill{height:38px;padding:0 20px;border-radius:999px;font:500 14px var(--sans);background:var(--text);color:#09090A;border:1px solid var(--text)}
+
+/* the 3D eye */
+.eye3d{position:relative;width:min(380px,70vw);aspect-ratio:1;margin:-30px 0 6px}
+.eye3d::before{content:"";position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,rgba(143,227,192,.16),transparent 65%);filter:blur(20px)}
+.eye3d canvas{position:relative;width:100%;height:100%;display:block}
+@media (max-width:1000px){.eye3d{width:min(300px,72vw);margin-top:-10px}}

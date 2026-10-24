@@ -193,7 +193,7 @@ async function think(r) {
   ev.insertAdjacentHTML("beforeend", r.pass ? `<div class="v ok">→ cleared. filed under findings</div>` : `<div class="v no">→ held: ${hesc(bad ? bad.text.replace(/(\d+\.\d{2})\d+/g, "$1") : "failed a check")}</div>`);
   if (follow) stream.scrollTop = stream.scrollHeight;
   fileCard(r);
-  if (r.pass) { const o = document.querySelector(".orb"); o?.classList.remove("ping"); void o?.offsetWidth; o?.classList.add("ping"); }
+  window.eye?.ping(r.pass ? "ok" : "no");
   while (stream.querySelectorAll(".ev").length > 40) stream.querySelector(".ev").remove();
 }
 (async function run() {

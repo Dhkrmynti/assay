@@ -69,6 +69,7 @@ def build(v, title, wm_fill):
              else "family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500")
     if v in ("d", "e", "f", "g"):   # no 3D stage: GSAP drives the page
         SCRIPTS = '<script src="/vendor/gsap.min.js"></script>\n<script src="/vendor/ScrollTrigger.min.js"></script>\n<script type="module">\n' + rd(H + "common.js") + (rd(H + "e.js") + rd(H + "f.js") if v == "f" else rd(H + v + ".js"))
+        if v == "g": SCRIPTS = '<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.min.js"}}</script>\n<script type="module">\n' + rd(H + "common.js") + rd(H + "g.js") + rd(H + "g3d.js")
     else:
         SCRIPTS = rd(H + "scene_head.js") + rd(H + "common.js") + rd(H + v + ".js") + rd(H + "scene_run.js")
     page = f"""<!doctype html>
