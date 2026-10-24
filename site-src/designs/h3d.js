@@ -4,7 +4,7 @@ import * as THREE from "three";
 (() => {
   const cv = document.getElementById("field"); if (!cv) return;
   let renderer; try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); } catch { cv.remove(); return; }
-  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches, inScope = !!cv.closest(".scope");
   renderer.setPixelRatio(Math.min(2, devicePixelRatio));
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   const field = new THREE.Group(); scene.add(field);
@@ -34,7 +34,7 @@ import * as THREE from "three";
   };
   const look = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
   addEventListener("pointermove", (e) => { look.x = e.clientX / innerWidth - 0.5; look.y = e.clientY / innerHeight - 0.5; }, { passive: true });
-  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
+  function size() { const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); const narrow = w < 800; if (inScope) { cam.position.set(0, 7.5, 10.5); cam.lookAt(0, -0.6, 0); field.position.x = 0; return; } cam.position.set(narrow ? 0 : -2.2, 5.2, 13.5); cam.lookAt(narrow ? 0 : -2.2, 0, 0); field.position.x = narrow ? 0 : 3.6; }
   new ResizeObserver(size).observe(cv); size();
   let visible = true; new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(cv);
   const clock = new THREE.Clock();
@@ -45,7 +45,7 @@ import * as THREE from "three";
     for (const o of lines) {
       o.amp += (o.ampTo - o.amp) * Math.min(1, dt * 1.5 || 1);
       const a = o.g.attributes.position.array, col = o.kind === "sig" ? SIG : o.kind === "int" ? INT : NOISE;
-      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.38 : 0.16) - o.m.opacity) * 0.05;
+      o.m.color.lerp(col, 0.05); o.m.opacity += ((o.kind === "sig" ? 1 : o.kind === "int" ? 0.5 : inScope ? 0.3 : 0.16) - o.m.opacity) * 0.05;
       for (let i = 0; i < P; i++) {
         const u = i / (P - 1);
         const base = Math.sin(u * 9 + t * 0.35 + o.seed) * 0.05 + Math.sin(u * 23 - t * 0.6 + o.seed * 2) * 0.03;
