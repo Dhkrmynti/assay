@@ -518,7 +518,7 @@ const SECURITY_HEADERS = {
   "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
   "x-content-type-options": "nosniff", "referrer-policy": "no-referrer",
 };
-const STATIC = { "/": ["index.html", "text/html; charset=utf-8"], "/index.html": ["index.html", "text/html; charset=utf-8"], "/nova": ["nova.html", "text/html; charset=utf-8"], "/studio": ["nova.html", "text/html; charset=utf-8"], "/preview": ["preview.html", "text/html; charset=utf-8"], "/concept/lens": ["concept-lens.html", "text/html; charset=utf-8"], "/concept/monolith": ["concept-monolith.html", "text/html; charset=utf-8"], "/concept/atlas": ["concept-atlas.html", "text/html; charset=utf-8"], "/concept/instrument": ["concept-instrument.html", "text/html; charset=utf-8"],
+const STATIC = { "/": ["index.html", "text/html; charset=utf-8"], "/index.html": ["index.html", "text/html; charset=utf-8"], "/nova": ["nova.html", "text/html; charset=utf-8"], "/studio": ["nova.html", "text/html; charset=utf-8"], "/preview": ["preview.html", "text/html; charset=utf-8"], "/ledger": ["index-v16-ledger.html", "text/html; charset=utf-8"], "/logo": ["brand/assay-logo/options.html", "text/html; charset=utf-8"], "/concept/lens": ["concept-lens.html", "text/html; charset=utf-8"], "/concept/monolith": ["concept-monolith.html", "text/html; charset=utf-8"], "/concept/atlas": ["concept-atlas.html", "text/html; charset=utf-8"], "/concept/instrument": ["concept-instrument.html", "text/html; charset=utf-8"],
   "/favicon.svg": ["brand/signal-logo/kit/favicon.svg", "image/svg+xml"], "/favicon.ico": ["brand/signal-logo/kit/favicon.ico", "image/x-icon"], "/apple-touch-icon.png": ["brand/signal-logo/kit/apple-touch-icon.png", "image/png"], "/icon-192.png": ["brand/signal-logo/kit/icon-192.png", "image/png"], "/icon-512.png": ["brand/signal-logo/kit/icon-512.png", "image/png"], "/maskable-512.png": ["brand/signal-logo/kit/maskable-512.png", "image/png"], "/site.webmanifest": ["brand/signal-logo/kit/site.webmanifest", "application/manifest+json"],
   "/og.png": ["brand/signal-logo/kit/png/signal-og-1200x630.png", "image/png"], "/logo.png": ["brand/signal-logo/kit/png/signal-symbol.png", "image/png"] };
 
@@ -542,7 +542,8 @@ http.createServer(async (req, res) => {
         const left = trial(req);
         if (left < 0) return json(res, 402, { ...LOCKED, error: "You've used today's 3 free reads. Hold the token to keep reading with Signal.", trial: true });
       } else if (!cache.has(ca.toLowerCase()) && !allow(req, "scan", 60)) return json(res, 429, { error: "Limit reached (60 scans an hour). Try again later." });
-      return json(res, 200, await scanCached(ca));
+      try { return json(res, 200, await scanCached(ca)); }
+      catch (e) { if (/not launched on Pons/.test(e.message)) return json(res, 400, { error: e.message }); throw e; }
     }
     if (url.pathname === "/rpc" && req.method === "POST") return relay(req, res);
     if (url.pathname.startsWith("/api/studio/")) {

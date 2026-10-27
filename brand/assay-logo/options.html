@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assay — pilihan logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* logo options for Assay: each mark on dark, on paper, and at favicon sizes */
+:root{
+  --paper:#161514;--night:#0F0E0C;--panel:#201F1C;--ink:#F5F3EC;--dim:#A39E94;--soft:#8E8A80;--red:#E05A42;--cream:#F5F3EC;
+  --sans:"Inter Tight",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --m:48px;--ease:cubic-bezier(.16,1,.3,1);
+}
+@media (max-width:760px){:root{--m:16px}}
+*{box-sizing:border-box}
+html{background:var(--paper);color-scheme:dark}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,p{margin:0}
+header{padding:56px var(--m) 40px;display:flex;justify-content:space-between;align-items:end;gap:20px 48px;flex-wrap:wrap}
+header h1{font-size:clamp(34px,4.4vw,60px);font-weight:500;letter-spacing:-.035em;line-height:1.02;max-width:14ch}
+header p{max-width:46ch;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:0 var(--m) 80px}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.opt{background:var(--panel);display:flex;flex-direction:column}
+.opt .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:20px 22px 0}
+.opt h2{font-size:20px;font-weight:500;letter-spacing:-.015em}
+.opt .no{font:400 13px var(--mono);color:var(--soft)}
+.opt .now{font:500 12px var(--mono);color:var(--red)}
+.opt .why{padding:6px 22px 18px;font-size:15px;color:var(--dim);min-height:4.6em}
+.stage{height:220px;display:grid;place-items:center;background:var(--night);color:var(--ink)}
+.stage svg{width:132px;height:132px}
+.stage .word{font-size:72px}
+.lock{display:grid;grid-template-columns:1fr 1fr}
+.lock>div{height:92px;display:grid;place-items:center}
+.lock .dark{background:var(--paper);color:var(--ink)}
+.lock .light{background:var(--cream);color:#161514}
+.mark-word{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:22px;letter-spacing:-.03em}
+.mark-word svg{width:28px;height:28px;flex:none}
+.word{font-weight:600;letter-spacing:-.045em;line-height:1}
+.word i{font-style:normal;color:var(--red)}
+.favs{display:flex;align-items:end;gap:16px;padding:18px 22px 22px}
+.favs span{display:grid;place-items:center;background:var(--paper);border-radius:22%;box-shadow:0 0 0 1px rgba(245,243,236,.14);color:var(--ink)}
+.favs span svg{width:72%;height:72%}
+.favs small{margin-left:auto;font:400 12px var(--mono);color:var(--soft)}
+footer{padding:0 var(--m) 56px;color:var(--soft);font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Assay, sembilan arah logo.</h1>
+  <p>Setiap logo ditampilkan besar, sebagai lockup di latar gelap dan terang, lalu di ukuran favicon 48, 32 dan 16 px. Merah selalu menandai satu hal: yang lolos uji. Pilih nomornya, nanti aku pasang dan bikinkan kit lengkapnya.</p>
+</header>
+<main class="grid" id="grid"></main>
+<footer>Semua logo memakai warna halaman: ink #F5F3EC, kertas #161514, merah #E05A42.</footer>
+<script>
+(() => {
+  const R = '#E05A42';
+  // each mark is drawn on a 24-unit square in currentColor, with the red reserved for what passed
+  const O = [
+    { name: 'Butiran dalam "a"', why: 'Huruf a dengan butiran murni di tengahnya: yang tersisa setelah logam dilebur.',
+      svg: `<circle cx="10.3" cy="12" r="6.3" stroke="currentColor" stroke-width="2.4"/><path d="M16.6 5.7v12.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="10.3" cy="12" r="2.2" fill="${R}"/>` },
+    { name: 'Corong', why: 'Tiga garis makin pendek seperti saringan, satu butiran jatuh di bawah. Semua masuk, hampir semua tertahan.',
+      svg: `<path d="M3.5 5.5h17M6.5 10h11M9.5 14.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="19.5" r="2.3" fill="${R}"/>` },
+    { name: 'Satu dari sembilan', now: true, why: 'Grid titik dengan satu yang menyala, gema dari ladang 1000 titik di halaman. Tenang dan sistematis. Logo yang terpasang sekarang.',
+      svg: [0, 1, 2].flatMap(r => [0, 1, 2].map(c => `<circle cx="${5.5 + c * 6.5}" cy="${5.5 + r * 6.5}" r="2.2" fill="${r === 2 && c === 2 ? R : 'currentColor'}"${r === 2 && c === 2 ? '' : ' fill-opacity=".9"'}/>`)).join('') },
+    { name: 'Cawan lebur', why: 'Siluet crucible, wadah untuk melebur logam saat assay, dengan butiran merah di dalamnya. Paling harfiah.',
+      svg: `<path d="M4.5 6.5h15l-1.7 10.4a2.6 2.6 0 0 1-2.6 2.2H8.8a2.6 2.6 0 0 1-2.6-2.2Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="13.6" r="2.3" fill="${R}"/>` },
+    { name: 'Batu uji', why: 'Touchstone: batu hitam tempat emas digoreskan untuk diuji. Satu goresan merah di atas batu.',
+      svg: `<rect x="3" y="3" width="18" height="18" rx="5.5" fill="currentColor"/><path d="M8 15.8 16 8.2" stroke="${R}" stroke-width="2.8" stroke-linecap="round"/>` },
+    { name: 'A dengan butiran', why: 'Huruf A kapital dari dua garis, palang tengahnya diganti butiran merah. Tegas, mudah dikenali.',
+      svg: `<path d="M4.5 19.5 12 4.5l7.5 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="14.6" r="2.2" fill="${R}"/>` },
+    { name: 'Tetesan', why: 'Tetes logam cair yang sedang diuji, butiran murni mengendap di dasarnya.',
+      svg: `<path d="M12 3.6c-2.4 3-6.4 7.6-6.4 11.2a6.4 6.4 0 0 0 12.8 0C18.4 11.2 14.4 6.6 12 3.6Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="15.2" r="2.3" fill="${R}"/>` },
+    { name: 'Cap hallmark', why: 'Bentuk cap pada perhiasan yang lolos uji kemurnian: segi delapan dengan butiran di tengah.',
+      svg: `<path d="M8.4 3.5h7.2l4.9 4.9v7.2l-4.9 4.9H8.4l-4.9-4.9V8.4Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.6" fill="${R}"/>` },
+    { name: 'Wordmark saja', word: true, why: 'Tanpa simbol. Kata assay dengan titik merah sebagai penutup, seperti vonis yang sudah final. Favicon cukup "a."',
+      svg: `<text x="3.2" y="17.6" font-family="Inter Tight, sans-serif" font-weight="600" font-size="17" letter-spacing="-.8" fill="currentColor">a</text><circle cx="17.6" cy="16.2" r="2.3" fill="${R}"/>` },
+  ];
+  const svg = b => `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">${b}</svg>`;
+  const lock = o => o.word ? `<span class="word" style="font-size:30px">assay<i>.</i></span>` : `<span class="mark-word">${svg(o.svg)}assay</span>`;
+  document.getElementById('grid').innerHTML = O.map((o, k) => `
+    <article class="opt" aria-label="Pilihan ${k + 1}: ${o.name}">
+      <div class="top"><h2>${o.name}</h2><span class="${o.now ? 'now' : 'no'}">${o.now ? 'terpasang · ' : ''}${String(k + 1).padStart(2, '0')}</span></div>
+      <p class="why">${o.why}</p>
+      <div class="stage">${o.word ? '<span class="word" style="font-size:76px">assay<i>.</i></span>' : svg(o.svg)}</div>
+      <div class="lock"><div class="dark">${lock(o)}</div><div class="light">${lock(o)}</div></div>
+      <div class="favs">${[48, 32, 16].map(s => `<span style="width:${s}px;height:${s}px">${svg(o.svg)}</span>`).join('')}<small>48 · 32 · 16</small></div>
+    </article>`).join('');
+})();
+</script>
+</body>
+</html>
