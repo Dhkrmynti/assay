@@ -54,9 +54,9 @@ const clip = (v, n) => String(v ?? "").replace(/[ \t]+/g, " ").trim().slice(0, n
 // ---------- scanner ----------
 const cache = new Map(), inflight = new Map();
 async function summarize(facts, flags) {
-  const system = `You are Signal Agent, an on-chain analyst AI for Robinhood Chain. You read a Pons token's on-chain facts and the flags computed from them.
+  const system = `You are Assay, an on-chain analyst AI for Robinhood Chain. You read a Pons token's on-chain facts and the flags computed from them.
 Write a short plain-English read for a trader: 2 to 4 sentences, then nothing else. Mention the rug risk score and the strongest reasons behind it, and say whether wallets look bundled and whether the X account looks organic, when the data covers it.
-Rules: only use the facts given; never invent numbers; never say buy, sell, safe, scam, rug, or give price predictions; describe what the data shows and what is worth watching. No emoji.`;
+Rules: only use the facts given; never invent numbers; never say buy, sell, safe, scam, rug, or give price predictions; describe what the data shows and what is worth watching. No emoji. Plain text only: no markdown, no bold, no bullet points.`;
   const user = JSON.stringify({ facts: { ...facts, holders: { ...facts.holders, top: undefined }, deployer: { ...facts.deployer, recent: undefined }, token: { ...facts.token, logo: undefined } }, flags });
   return ask(system, [{ role: "user", content: user }], { maxTokens: 300, temperature: 0.2 });
 }
@@ -69,7 +69,7 @@ async function scanCached(ca) {
     const t0 = Date.now();
     const r = await scan(provider, ca);
     let summary = "", summaryError = "";
-    try { summary = await summarize({ ...r.facts, bundle: { ...r.facts.bundle, wallets: r.facts.bundle.wallets.slice(0, 5) }, rugRisk: r.risk }, r.flags); } catch (e) { if (!(e instanceof AiOffline)) console.error("summary:", e.message); summaryError = "Signal's AI core is offline right now. The facts and flags below are complete."; }
+    try { summary = await summarize({ ...r.facts, bundle: { ...r.facts.bundle, wallets: r.facts.bundle.wallets.slice(0, 5) }, rugRisk: r.risk }, r.flags); } catch (e) { if (!(e instanceof AiOffline)) console.error("summary:", e.message); summaryError = "Assay's AI core is offline right now. The facts and checks above are complete."; }
     const result = { ...r, summary, summaryError, ms: Date.now() - t0, at: Date.now() };
     cache.set(key, { at: Date.now(), result });
     if (cache.size > 500) cache.delete(cache.keys().next().value);
@@ -518,9 +518,9 @@ const SECURITY_HEADERS = {
   "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
   "x-content-type-options": "nosniff", "referrer-policy": "no-referrer",
 };
-const STATIC = { "/": ["index.html", "text/html; charset=utf-8"], "/index.html": ["index.html", "text/html; charset=utf-8"], "/nova": ["nova.html", "text/html; charset=utf-8"], "/studio": ["nova.html", "text/html; charset=utf-8"], "/preview": ["preview.html", "text/html; charset=utf-8"], "/ledger": ["index-v16-ledger.html", "text/html; charset=utf-8"], "/logo": ["brand/assay-logo/options.html", "text/html; charset=utf-8"], "/concept/lens": ["concept-lens.html", "text/html; charset=utf-8"], "/concept/monolith": ["concept-monolith.html", "text/html; charset=utf-8"], "/concept/atlas": ["concept-atlas.html", "text/html; charset=utf-8"], "/concept/instrument": ["concept-instrument.html", "text/html; charset=utf-8"],
-  "/favicon.svg": ["brand/signal-logo/kit/favicon.svg", "image/svg+xml"], "/favicon.ico": ["brand/signal-logo/kit/favicon.ico", "image/x-icon"], "/apple-touch-icon.png": ["brand/signal-logo/kit/apple-touch-icon.png", "image/png"], "/icon-192.png": ["brand/signal-logo/kit/icon-192.png", "image/png"], "/icon-512.png": ["brand/signal-logo/kit/icon-512.png", "image/png"], "/maskable-512.png": ["brand/signal-logo/kit/maskable-512.png", "image/png"], "/site.webmanifest": ["brand/signal-logo/kit/site.webmanifest", "application/manifest+json"],
-  "/og.png": ["brand/signal-logo/kit/png/signal-og-1200x630.png", "image/png"], "/logo.png": ["brand/signal-logo/kit/png/signal-symbol.png", "image/png"] };
+const STATIC = { "/": ["index-v16-ledger.html", "text/html; charset=utf-8"], "/index.html": ["index-v16-ledger.html", "text/html; charset=utf-8"], "/classic": ["index.html", "text/html; charset=utf-8"], "/nova": ["nova.html", "text/html; charset=utf-8"], "/studio": ["nova.html", "text/html; charset=utf-8"], "/preview": ["preview.html", "text/html; charset=utf-8"], "/ledger": ["index-v16-ledger.html", "text/html; charset=utf-8"], "/logo": ["brand/assay-logo/options.html", "text/html; charset=utf-8"], "/concept/lens": ["concept-lens.html", "text/html; charset=utf-8"], "/concept/monolith": ["concept-monolith.html", "text/html; charset=utf-8"], "/concept/atlas": ["concept-atlas.html", "text/html; charset=utf-8"], "/concept/instrument": ["concept-instrument.html", "text/html; charset=utf-8"],
+  "/favicon.svg": ["brand/assay-logo/kit/favicon.svg", "image/svg+xml"], "/favicon.ico": ["brand/assay-logo/kit/favicon.ico", "image/x-icon"], "/apple-touch-icon.png": ["brand/assay-logo/kit/png/apple-touch-icon.png", "image/png"], "/icon-192.png": ["brand/assay-logo/kit/png/icon-192.png", "image/png"], "/icon-512.png": ["brand/assay-logo/kit/png/icon-512.png", "image/png"], "/maskable-512.png": ["brand/assay-logo/kit/png/maskable-512.png", "image/png"], "/site.webmanifest": ["brand/assay-logo/kit/site.webmanifest", "application/manifest+json"],
+  "/og.png": ["brand/assay-logo/kit/png/assay-og-1200x630.png", "image/png"], "/logo.png": ["brand/assay-logo/kit/png/assay-mark-light-512.png", "image/png"] };
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
@@ -540,7 +540,7 @@ http.createServer(async (req, res) => {
       if (!ethers.isAddress(ca)) return json(res, 400, { error: "Paste a token contract address (0x… 42 characters)." });
       if (!(await isHolder(req))) {
         const left = trial(req);
-        if (left < 0) return json(res, 402, { ...LOCKED, error: "You've used today's 3 free reads. Hold the token to keep reading with Signal.", trial: true });
+        if (left < 0) return json(res, 402, { ...LOCKED, error: "You've used today's 3 free reads. Hold the token to keep reading with Assay.", trial: true });
       } else if (!cache.has(ca.toLowerCase()) && !allow(req, "scan", 60)) return json(res, 429, { error: "Limit reached (60 scans an hour). Try again later." });
       try { return json(res, 200, await scanCached(ca)); }
       catch (e) { if (/not launched on Pons/.test(e.message)) return json(res, 400, { error: e.message }); throw e; }
@@ -662,4 +662,4 @@ http.createServer(async (req, res) => {
     console.error(url.pathname, e.shortMessage || e.message);
     json(res, 500, { error: "Something went wrong reading the chain. Try again." });
   }
-}).listen(PORT, "127.0.0.1", () => console.log(`Signal on http://127.0.0.1:${PORT} · AI: ${aiLabel}`));
+}).listen(PORT, "127.0.0.1", () => console.log(`Assay on http://127.0.0.1:${PORT} · AI: ${aiLabel}`));

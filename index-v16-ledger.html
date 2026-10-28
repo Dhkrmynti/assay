@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Assay — every launch, assayed</title>
 <meta name="description" content="Assay reads every Pons launch on Robinhood Chain the block it lands and puts it through four checks. The few that pass every one get a hallmark and a file.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23161514%22/%3E%3Cg fill=%22%23F5F3EC%22%3E%3Ccircle cx=%229%22 cy=%229%22 r=%222.9%22/%3E%3Ccircle cx=%2216%22 cy=%229%22 r=%222.9%22/%3E%3Ccircle cx=%2223%22 cy=%229%22 r=%222.9%22/%3E%3Ccircle cx=%229%22 cy=%2216%22 r=%222.9%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%222.9%22/%3E%3Ccircle cx=%2223%22 cy=%2216%22 r=%222.9%22/%3E%3Ccircle cx=%229%22 cy=%2223%22 r=%222.9%22/%3E%3Ccircle cx=%2216%22 cy=%2223%22 r=%222.9%22/%3E%3C/g%3E%3Ccircle cx=%2223%22 cy=%2223%22 r=%222.9%22 fill=%22%23E05A42%22/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://oculaagent.com/">
+<meta property="og:title" content="Assay — every launch, assayed">
+<meta property="og:description" content="Most launches are noise. Assay reads every Pons launch on Robinhood Chain through four checks; the few that pass get a hallmark.">
+<meta property="og:image" content="https://oculaagent.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@oculaagent">
+<meta name="twitter:image" content="https://oculaagent.com/og.png">
+<meta name="theme-color" content="#161514">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,8 +31,8 @@
 }
 @media (max-width:760px){:root{--m:20px}}
 *{box-sizing:border-box}
-html{background:var(--paper);color-scheme:light;scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{background:#0C0B0A;color-scheme:light;scroll-behavior:smooth}
+body{margin:0;background:transparent;color:var(--ink);font:17px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::selection{background:var(--red);color:#F5F3EC}
 a{color:inherit;text-decoration:none}
 a:hover{color:var(--redl)}
@@ -37,8 +49,10 @@ h1,h2,h3,p{margin:0}
 .link:hover svg{transform:translateX(3px)}
 
 /* the night: every launch today is a star, the cursor is the lens */
-.night{position:relative;background:#0F0E0C;color:var(--ink);overflow:hidden;isolation:isolate;min-height:100svh;display:flex;flex-direction:column}
-.night canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.night{position:relative;background:transparent;cursor:none;color:var(--ink);overflow:hidden;isolation:isolate;min-height:100svh;display:flex;flex-direction:column}
+/* one sky behind the whole page: every launch today is a star, and the sky changes shape with the section you read */
+.cosmos{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:-1;pointer-events:none}
+.night a,.night button{cursor:pointer}
 .night>*:not(canvas):not(.tip){position:relative;z-index:1}
 .night a:hover{color:#E8927F}
 .night .brand:hover{color:var(--ink)}
@@ -46,7 +60,7 @@ h1,h2,h3,p{margin:0}
 .night .btn:hover{background:#E8927F;color:#161514}
 .night .hero .lede{color:#D9D5CA}
 .night .hero h1 .two{color:#8F8A80}
-.tip{position:absolute;top:0;left:0;z-index:2;pointer-events:none;opacity:0;transform:translate(-50%,calc(-100% - 18px));transition:opacity .25s var(--ease);font-size:14px;line-height:1.35;color:#F5F3EC;background:rgba(15,14,12,.9);padding:8px 10px;max-width:260px;white-space:nowrap}
+.tip{position:fixed;top:0;left:0;z-index:2;pointer-events:none;opacity:0;transform:translate(-50%,calc(-100% - 18px));transition:opacity .25s var(--ease);font-size:14px;line-height:1.35;color:#F5F3EC;background:rgba(15,14,12,.9);padding:8px 10px;max-width:260px;white-space:nowrap}
 .tip.on{opacity:1}
 .tip b{display:block;font-weight:500;font-size:15px}
 .tip.sig b{color:#E8927F}
@@ -356,7 +370,7 @@ h1,h2,h3,p{margin:0}
 @media (max-width:900px){.tools h2,.tools .pick,.tools .out{grid-column:1/13}.tools .out{padding:24px 20px;min-height:0}}
 
 /* access: one full field in the accent; a thousand points and one of them lit */
-.access{margin-top:150px;background:var(--red);color:#F5F3EC;padding:120px var(--m);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:center;position:relative;overflow:hidden}
+.access{margin-top:40px;background:var(--red);color:#F5F3EC;padding:120px var(--m);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:center;position:relative;overflow:hidden}
 .access .big{grid-column:1/6;position:relative;font-size:clamp(96px,14vw,220px);font-weight:500;letter-spacing:-.06em;line-height:.85;color:#F5F3EC}
 .thousand{position:absolute;inset:-12% -6%;display:grid;grid-template-columns:repeat(40,1fr);grid-auto-rows:1fr;gap:0;pointer-events:none;z-index:0}
 .thousand i{display:block;width:3px;height:3px;border-radius:50%;background:rgba(245,243,236,.28);margin:auto;transition:transform .4s var(--ease),background .4s var(--ease)}
@@ -387,6 +401,84 @@ h1,h2,h3,p{margin:0}
 .access .link:hover{color:#161514}
 @media (max-width:900px){.access .big{grid-column:1/13}.access .text{grid-column:1/13}}
 
+/* the lab: every section below the night gets a quiet working background, a numbered kicker that draws in,
+   a headline that rises word by word, and a red line along the top that fills as you read */
+.progress{position:fixed;left:0;right:0;top:0;height:2px;z-index:60;pointer-events:none}
+.progress i{position:absolute;inset:0;background:var(--red);transform-origin:left;transform:scaleX(0)}
+.progress b{position:absolute;top:0;width:1px;height:6px;background:rgba(245,243,236,.35)}
+.ledger,.file,.argue,.tools{position:relative;isolation:isolate;overflow:clip}
+.kick{display:flex;align-items:center;gap:12px;font:400 13px var(--mono);color:var(--soft);margin-bottom:22px}
+.kick .num{color:var(--redl)}
+.kick::after{content:"";flex:0 0 72px;height:1px;background:currentColor;opacity:.6;transform:scaleX(0);transform-origin:left;transition:transform 1.1s var(--ease) .15s}
+.kick.in::after{transform:none}
+.file>.kick,.argue>.kick,.tools>.kick{grid-column:1/13;margin-bottom:0}
+.access .kick{color:#F7E7E1;margin-bottom:6px}.access .kick .num{color:#161514}
+h2.split .w{display:inline-block;opacity:0;transform:translateY(.4em);filter:blur(4px);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease)}
+h2.split.in .w{opacity:1;transform:none;filter:none}
+/* lines: the thresholds themselves, outlined and drifting behind the sliders */
+.ghost{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.ghost span{position:absolute;font:500 clamp(150px,21vw,340px)/1 var(--sans);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(245,243,236,.075);white-space:nowrap;will-change:transform}
+.ghost span:nth-child(1){left:-3%;top:2%}.ghost span:nth-child(2){right:-4%;top:30%}.ghost span:nth-child(3){left:18%;top:62%}.ghost span:nth-child(4){right:6%;top:84%;-webkit-text-stroke-color:rgba(224,90,66,.16)}
+@media (prefers-reduced-motion:reduce){
+  h2.split .w{opacity:1;transform:none;filter:none;transition:none}.kick::after{transform:none;transition:none}
+}
+@media (max-width:900px){.ghost span{font-size:120px}.argue>.kick,.argue>.say{order:-2}}
+
+/* the sections float in the sky: no fills of their own; panels are dark glass with a faint rim */
+.ledger,.file,.argue,.tools{position:relative;isolation:isolate}
+.ledger{padding-top:110px;padding-bottom:120px}
+.file{padding-top:130px;padding-bottom:150px}
+.argue{padding-bottom:150px}
+.tools{padding-top:130px;padding-bottom:110px}
+.access{padding-top:130px;isolation:isolate}
+.glass,.tally,.tools .out,.recv{background:rgba(14,13,12,.5);-webkit-backdrop-filter:blur(6px) saturate(120%);backdrop-filter:blur(6px) saturate(120%);box-shadow:inset 0 0 0 1px rgba(245,243,236,.07),0 40px 90px -40px rgba(0,0,0,.8)}
+.tools .demo{background:rgba(0,0,0,.35)}
+.tools .pick button[aria-pressed=true]{background:rgba(245,243,236,.06)}
+.dossier{box-shadow:0 0 0 1px rgba(245,243,236,.2),0 50px 120px -30px rgba(224,90,66,.28),0 40px 90px -40px rgba(0,0,0,.9)}
+
+/* giant numbers, quiet, in each section's corner */
+.bignum{position:absolute;right:calc(var(--m) - .04em);top:80px;z-index:-1;pointer-events:none;font:600 clamp(150px,23vw,380px)/.8 var(--sans);letter-spacing:-.07em;color:rgba(245,243,236,.045);user-select:none}
+.access .bignum{color:rgba(22,21,20,.16);top:auto;bottom:-.06em}
+@media (min-width:901px){.file .bignum{right:auto;left:calc(var(--m) - .06em);top:auto;bottom:-.06em}}
+
+/* tickers: launches, instruments and the offer running across the top of a section */
+.ticker{position:absolute;left:0;right:0;top:0;z-index:2;overflow:hidden;padding:15px 0;background:rgba(12,11,10,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F5F3EC;box-shadow:inset 0 1px 0 rgba(245,243,236,.08),inset 0 -1px 0 rgba(245,243,236,.08)}
+.ticker .track{display:flex;width:max-content;animation:tick 70s linear infinite}
+.ticker.rev .track{animation-direction:reverse}
+.ticker span{display:inline-flex;align-items:center;gap:14px;padding-right:14px;font:500 19px/1 var(--mono);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.ticker span i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.45;font-style:normal}
+.ticker span i.sig{background:#E05A42;opacity:1}
+.ticker span em{font-style:normal;opacity:.55}
+.tools .ticker{background:#B5432E;box-shadow:none}
+.tools .ticker span i.sig{background:#161514}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker .track{animation:none}}
+@media (max-width:760px){.ticker span{font-size:15px}.ticker{padding:12px 0}}
+
+/* recently read, under the form */
+.recent{margin-top:34px;display:flex;flex-direction:column;gap:2px}
+.recent .rh{display:flex;justify-content:space-between;font:400 13px var(--mono);color:var(--soft);margin-bottom:8px}
+.recent button{display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;text-align:left;padding:12px 14px;margin:0 -14px;border:0;border-radius:6px;background:none;color:var(--ink);cursor:pointer;transition:background .2s var(--ease)}
+.recent button:hover{background:rgba(245,243,236,.06)}
+.recent b{font-weight:500;font-size:17px;letter-spacing:-.01em}
+.recent .sc{font:500 14px var(--mono);align-self:center}
+.recent .sc.sig{color:var(--redl)}
+.recent small{grid-column:1/3;font-size:14px;color:var(--dim)}
+
+/* 03, the lines: the thresholds stand big and readable behind the sliders */
+.ghost span{color:rgba(245,243,236,.05);-webkit-text-stroke:1px rgba(245,243,236,.12)}
+.ghost span:nth-child(4){color:rgba(224,90,66,.09);-webkit-text-stroke-color:rgba(224,90,66,.3)}
+
+/* the receiver's live status, under the list */
+.recv{margin-top:30px;padding:18px 20px;border-radius:8px;display:grid;grid-template-columns:1fr auto;gap:10px 16px;font-size:15px;color:var(--dim)}
+.recv .rh{grid-column:1/3;display:flex;align-items:center;gap:10px;font:400 13px var(--mono);color:var(--soft)}
+.recv .rh i{width:8px;height:8px;border-radius:50%;background:#7BC48F;box-shadow:0 0 0 0 rgba(123,196,143,.6);animation:live 2s infinite}
+@keyframes live{70%{box-shadow:0 0 0 8px rgba(123,196,143,0)}100%{box-shadow:0 0 0 0 rgba(123,196,143,0)}}
+.recv b{font:500 15px var(--mono);color:var(--ink);text-align:right}
+.recv b.sig{color:#E8927F}
+@media (prefers-reduced-motion:reduce){.recv .rh i{animation:none}}
+@media (max-width:900px){.recv{display:none}.recent{margin-top:24px}}
+
 /* footer: one line, still receiving */
 /* the footer keeps receiving: a pulse runs the line each block, a red one when a launch passes */
 .pulse{position:relative;height:28px;margin:0 var(--m);overflow:hidden}
@@ -405,11 +497,12 @@ footer .right b{font-weight:500;color:var(--ink)}
 </head>
 <body>
 
+<canvas id="sky" class="cosmos" aria-hidden="true"></canvas>
+<div class="progress" id="progress" aria-hidden="true"><i></i></div>
 <div class="night" id="night">
-<canvas id="sky" aria-hidden="true"></canvas>
 <div class="tip" id="tip" aria-hidden="true"><b></b><span></span></div>
 <div class="top">
-  <a class="brand" href="#" aria-label="Assay, home">
+  <a class="brand" href="/" aria-label="Assay, home">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="5.5" r="2.2" fill="currentColor"/><circle cx="12" cy="5.5" r="2.2" fill="currentColor"/><circle cx="18.5" cy="5.5" r="2.2" fill="currentColor"/><circle cx="5.5" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="18.5" cy="12" r="2.2" fill="currentColor"/><circle cx="5.5" cy="18.5" r="2.2" fill="currentColor"/><circle cx="12" cy="18.5" r="2.2" fill="currentColor"/><circle cx="18.5" cy="18.5" r="2.2" fill="#E05A42"/></svg>
     assay
   </a>
@@ -423,13 +516,13 @@ footer .right b{font-weight:500;color:var(--ink)}
 
 <section class="hero">
   <h1>Most launches are noise.<span class="two">Assay reads every one.</span></h1>
-  <p class="lede rise" style="transition-delay:.12s">Every Pons launch on Robinhood Chain, read from the chain the block it lands. One line each. The few that pass every check get a file. On-chain data only, never your keys.</p>
+  <p class="lede rise" style="transition-delay:.12s">Every Pons launch on Robinhood Chain, read the block it lands. The few that pass get a file.</p>
   <div class="cta rise" style="transition-delay:.2s">
     <button class="btn" type="button">Open the scanner</button>
     <a class="link" href="#file">Read a file <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
 </section>
-<div class="sky-cap"><span>Every point is a launch received today. <b class="sig">Red</b> ones passed every check. Move the lens to read them.</span><span style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span><b class="num" id="skyN">143</b> in the sky · <b class="num sig" id="skyS">9</b> hallmarked</span><button type="button" id="spectrum" aria-pressed="false">Sort by score</button></span></div>
+<div class="sky-cap"><span>Each point is a launch today. <b class="sig">Red</b> passed every check.</span><span style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span><b class="num" id="skyN">143</b> in the sky · <b class="num sig" id="skyS">9</b> hallmarked</span><button type="button" id="spectrum" aria-pressed="false">Sort by score</button></span></div>
 </div>
 
 <section class="ledger" id="ledger" aria-label="Every Pons launch through four gates">
@@ -440,53 +533,54 @@ footer .right b{font-weight:500;color:var(--ink)}
   <div class="sv" id="sieve">
     <div class="sv-col in">
       <h3>Received</h3>
-      <p class="rule">Every Pons launch, the block it lands.</p>
+      <p class="rule">Every launch, the block it lands.</p>
       <div class="lane"><span class="pt"></span></div>
       <ol class="queue" id="svQueue" aria-label="Next launches"></ol>
     </div>
     <div class="sv-col gate" data-g="0">
-      <h3>Dev <span class="num">01</span></h3>
-      <p class="rule">Holds under 15%. Not a serial launcher.</p>
+      <h3>Dev</h3>
+      <p class="rule">Holds under 15%.</p>
       <div class="lane"><span class="slot"></span></div>
       <div class="pile"><div class="dots" aria-hidden="true"></div><p class="cnt"><b class="num">48</b> stopped here</p><p class="last"><b>Lantern</b> · Holds 31%, over the 15% line.</p></div>
     </div>
     <div class="sv-col gate" data-g="1">
-      <h3>Wallets <span class="num">02</span></h3>
-      <p class="rule">Top ten under 40%. No exempt wallets loading block one.</p>
+      <h3>Wallets</h3>
+      <p class="rule">Top ten under 40%.</p>
       <div class="lane"><span class="slot"></span></div>
       <div class="pile"><div class="dots" aria-hidden="true"></div><p class="cnt"><b class="num">41</b> stopped here</p><p class="last"><b>Quill</b> · Top ten hold 70%.</p></div>
     </div>
     <div class="sv-col gate" data-g="2">
-      <h3>Socials <span class="num">03</span></h3>
-      <p class="rule">X or a website set on-chain, and older than the launch.</p>
+      <h3>Socials</h3>
+      <p class="rule">Set on-chain, older than the launch.</p>
       <div class="lane"><span class="slot"></span></div>
       <div class="pile"><div class="dots" aria-hidden="true"></div><p class="cnt"><b class="num">27</b> stopped here</p><p class="last"><b>Thimble</b> · X created after the launch.</p></div>
     </div>
     <div class="sv-col gate" data-g="3">
-      <h3>Buyers <span class="num">04</span></h3>
-      <p class="rule">Holders rising. Creator tax at most 3%.</p>
+      <h3>Buyers</h3>
+      <p class="rule">Holders rising. Tax under 3%.</p>
       <div class="lane"><span class="slot"></span></div>
       <div class="pile"><div class="dots" aria-hidden="true"></div><p class="cnt"><b class="num">18</b> stopped here</p><p class="last"><b>Saltbox</b> · Creator tax 8%, over the 3% line.</p></div>
     </div>
     <div class="sv-col out">
       <h3>Hallmark <span class="num" id="svSigN">9</span></h3>
-      <p class="rule">Passed all four. Each one gets a hallmark and a file.</p>
+      <p class="rule">Passed all four.</p>
       <div class="lane"><span class="pt"></span></div>
       <ol class="sigs" id="svSigs" aria-label="Launches that passed"></ol>
     </div>
   </div>
-  <p><b>Every launch walks the same four gates, in order, and stops at the first one it fails.</b> The dots under each gate are today's launches that stopped there. Open any hallmark for its file. Launches shown here are illustrative; the live page reads the chain. Not advice.</p>
+  <p>Each launch stops at the first gate it fails. Illustrative today; the live page reads the chain.</p>
 </section>
 
 <section class="file" id="file">
   <div class="say">
-    <h2>A file is the whole reason, in plain words.</h2>
-    <p>Every number is computed from the chain by code. The agent only writes the sentence on top. When a check fails you see which one, and the number that failed it.</p>
+    <h2 class="split">The file, in plain words.</h2>
+    <p>Every number comes from the chain. The agent writes only the sentence on top.</p>
     <form class="scan" id="scan">
       <label for="ca">Read any Pons contract</label>
       <div><input id="ca" name="ca" placeholder="0x…" spellcheck="false" autocomplete="off" inputmode="text"><button class="btn" type="submit">Read</button></div>
-      <small id="scanNote" aria-live="polite">Reads live from Robinhood Chain. Three free reads a day; holders read without limit.</small>
+      <small id="scanNote" aria-live="polite">Three free reads a day. Holders read without limit.</small>
     </form>
+    <div class="recent" id="recent"><p class="rh"><span>Recently read</span><span id="recentTag"></span></p><div id="recentList"></div></div>
   </div>
   <article class="dossier" aria-label="The file" data-ui id="dossier" aria-live="polite">
     <svg class="wire" id="dWire" aria-hidden="true"><path id="dPath" d=""/></svg>
@@ -505,38 +599,33 @@ footer .right b{font-weight:500;color:var(--ink)}
       <li><span>Buyers</span><span class="txt">Holders up every five minutes for the first hour.</span><span class="st">Passed</span></li>
     </ol>
     <p class="verdict"><i></i><span class="t" id="dVerdict">Hallmark. Watch the top ten.</span></p>
-    <div class="aread" id="dRead" hidden><small>Assay's read · written by Claude from the facts above</small><p id="dReadT"></p></div>
-    <div class="ev"><small>From the chain</small><div id="dEv"><span class="hint in">Hover any figure or check for where it came from.</span></div></div>
+    <div class="aread" id="dRead" hidden><small>Assay's read</small><p id="dReadT"></p></div>
+    <div class="ev"><small>From the chain</small><div id="dEv"><span class="hint in">Hover a figure for its source.</span></div></div>
   </article>
 </section>
 
 <section class="argue" id="argue" aria-label="Argue with the lines">
   <div class="say">
-    <h2>The lines are public. Move them.</h2>
-    <p>Assay reads every launch against the same five lines. Drag any of them and see what today's 143 launches would have done with yours. The red mark is where Assay draws it.</p>
+    <h2 class="split">The lines are public. Move them.</h2>
+    <p>Drag a line and see what today's 143 launches would have done.</p>
   </div>
   <ol class="knobs" id="knobs">
     <li class="knob" data-k="dev">
-      <p class="q">Did the dev dump?</p>
       <label class="ln" for="kdev"><span>Dev holds at most <b class="num" id="vdev">15%</b></span><small>Assay: 15%</small></label>
       <div class="rail"><input type="range" id="kdev" min="2" max="60" step="1" value="15" data-unit="%" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
     </li>
     <li class="knob" data-k="top">
-      <p class="q">Bundled wallets?</p>
       <label class="ln" for="ktop"><span>Top ten hold at most <b class="num" id="vtop">40%</b></span><small>Assay: 40%</small></label>
       <div class="rail"><input type="range" id="ktop" min="10" max="90" step="1" value="40" data-unit="%" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
     </li>
     <li class="knob" data-k="soc">
-      <p class="q">A fake X?</p>
-      <button type="button" class="sw" id="kSoc" aria-pressed="true"><i></i><span>Require socials set on-chain, older than the launch</span></button>
+      <button type="button" class="sw" id="kSoc" aria-pressed="true"><i></i><span>Socials set on-chain, older than the launch</span></button>
     </li>
     <li class="knob" data-k="tax">
-      <p class="q">Fair tax?</p>
       <label class="ln" for="ktax"><span>Creator tax at most <b class="num" id="vtax">3%</b></span><small>Assay: 3%</small></label>
       <div class="rail"><input type="range" id="ktax" min="0" max="10" step="0.5" value="3" data-unit="%" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
     </li>
     <li class="knob" data-k="win">
-      <p class="q">Are buyers still arriving?</p>
       <label class="ln" for="kwin"><span>A new holder at least every <b class="num" id="vwin">5 min</b></span><small>Assay: 5 min</small></label>
       <div class="rail"><input type="range" id="kwin" min="1" max="30" step="1" value="5" data-unit=" min" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
     </li>
@@ -548,11 +637,10 @@ footer .right b{font-weight:500;color:var(--ink)}
     <p class="read" id="tallyRead" aria-live="polite"></p>
     <button type="button" class="reset" id="tallyReset" hidden>Back to Assay's lines</button>
   </aside>
-  <p class="fine">Today's launches here are illustrative; the live page replays the real day against your lines.</p>
 </section>
 
 <section class="tools" id="tools">
-  <h2>One receiver.<br>Seven instruments.</h2>
+  <h2 class="split">One receiver.<br>Seven instruments.</h2>
   <div class="pick" id="pick" role="tablist" aria-label="Instruments">
     <span class="kind">Read</span>
     <button type="button" role="tab" data-t="0" aria-pressed="true">Scanner <i></i></button>
@@ -577,14 +665,14 @@ footer .right b{font-weight:500;color:var(--ink)}
 <section class="access" id="access">
   <div class="big"><div class="thousand" id="thousand" aria-hidden="true"></div><span>0.1%</span></div>
   <div class="text">
-    <h2>Hold $ASSAY. Sign once.</h2>
-    <p>One in a thousand. Hold 0.1% of the token supply and sign one message with your wallet: every instrument opens. Signing is free and sends nothing. The Pons Launchpad stays free for everyone.</p>
+    <h2 class="split">Hold $ASSAY. Sign once.</h2>
+    <p>Hold 0.1% of supply, sign one message, every instrument opens. Signing sends nothing. The launchpad stays free.</p>
     <form class="calc" id="calc" autocomplete="off">
       <label for="hold">Tokens you would hold</label>
       <div class="in2"><input id="hold" inputmode="numeric" placeholder="1,000,000" spellcheck="false"><span class="of">of 1,000,000,000</span></div>
       <div class="quick"><button type="button" data-v="250000">250K</button><button type="button" data-v="1000000">1M</button><button type="button" data-v="2500000">2.5M</button><button type="button" data-v="10000000">10M</button></div>
-      <output id="calcOut" for="hold">Each point in the field is 0.1% of supply: 1,000,000 tokens. One lit point and every instrument opens.</output>
-      <small>Supply is illustrative until the token launches.</small>
+      <output id="calcOut" for="hold">One point is 0.1% of supply: 1,000,000 tokens.</output>
+      <small>Supply illustrative until launch.</small>
     </form>
     <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:6px">
       <button class="btn" type="button" id="connect">Connect wallet</button>
@@ -597,7 +685,7 @@ footer .right b{font-weight:500;color:var(--ink)}
 <footer>
   <span>Assay reads Pons on Robinhood Chain</span>
   <div class="links"><a href="#">X</a><a href="#tools">Tools</a><a href="#access">Token</a><a href="#">Contract</a></div>
-  <span class="right">Receiving · block <b class="num" id="blk2">18,402,117</b> · 2026 · Not financial advice</span>
+  <span class="right">Block <b class="num" id="blk2">18,402,117</b> · Not financial advice</span>
 </footer>
 
 <script>
@@ -637,8 +725,11 @@ footer .right b{font-weight:500;color:var(--ink)}
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // the sky: every launch received today is a star, nine of them red. The cursor is the lens.
-  // Stars from the same deployer form a constellation under the lens. "Sort by score" lines them up on a scale.
+  // the sky: one sky behind the whole page. Every launch received today is a star, nine of them red.
+  // In the hero the cursor is a lens and stars from one deployer form a constellation. Further down the sky takes the
+  // section's shape: it rains through the sieve, lines up by score beside the lines (the reader's own line drawn in),
+  // and orbits the receiver. Far behind, a painted band of faint stars drifts with the scroll.
+  let passN = 9; // set by the lines section: how many of today's launches pass the reader's lines
   const sky = (() => {
     const night = document.getElementById('night'), c = document.getElementById('sky'), ctx = c.getContext('2d');
     const tip = document.getElementById('tip'), tipB = tip.querySelector('b'), tipS = tip.querySelector('span');
@@ -655,40 +746,116 @@ footer .right b{font-weight:500;color:var(--ink)}
     // a few serial launchers own many of today's launches; most devs own one
     const pickDev = () => { const r = Math.random(); return r < .35 ? Math.floor(rnd(0, 6)) : Math.floor(rnd(6, DEVS)); };
     const star = sig => ({ x: rnd(0, 1), y: rnd(0, 1), z: rnd(.3, 1), r: sig ? rnd(1.8, 2.6) : rnd(.6, 1.7), a: sig ? 1 : rnd(.22, .7), ph: rnd(0, 6.28), sp: rnd(.004, .012), sig,
-      score: sig ? Math.round(rnd(68, 96)) : Math.round(rnd(3, 58)), dev: sig ? Math.floor(rnd(6, DEVS)) : pickDev(), jit: rnd(-1, 1),
+      score: sig ? Math.round(rnd(68, 96)) : Math.round(rnd(3, 58)), dev: sig ? Math.floor(rnd(6, DEVS)) : pickDev(), jit: rnd(-1, 1), ring: Math.floor(rnd(0, 4)),
       name: names[Math.floor(rnd(0, names.length))], why: sig ? good[Math.floor(rnd(0, good.length))] : noise[Math.floor(rnd(0, noise.length))], born: -1e4, cx: null, cy: null });
-    const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = c.clientWidth; h = c.clientHeight; c.width = w * dpr; c.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
     for (let i = 0; i < N; i++) stars.push(star(i < S));
+
+    // the far layer: a slanted band of faint stars and two quiet glows, painted once, taller than the screen
+    const far = document.createElement('canvas'), fx = far.getContext('2d');
+    let FH = 0;
+    const paintFar = () => {
+      FH = Math.round(h * 1.8); far.width = Math.round(w * dpr); far.height = Math.round(FH * dpr); fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const glow = (x, y, r, col) => { const g = fx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); fx.fillStyle = g; fx.fillRect(0, 0, w, FH); };
+      glow(w * .82, FH * .18, Math.max(w, h) * .55, 'rgba(181,67,46,.13)');
+      glow(w * .12, FH * .62, Math.max(w, h) * .6, 'rgba(110,104,150,.09)');
+      glow(w * .5, FH * .42, Math.max(w, h) * .4, 'rgba(245,243,236,.035)');
+      const band = Math.round(w * 2.2);
+      for (let i = 0; i < band; i++) {
+        const u = Math.random(), spread = (Math.random() + Math.random() + Math.random() - 1.5) * FH * .06;
+        const y = FH * (.12 + .7 * u) + Math.sin(u * 5.5) * FH * .05 + spread;
+        fx.fillStyle = Math.random() < .14 ? `rgba(232,170,150,${.06 + Math.random() * .3})` : `rgba(236,233,226,${.05 + Math.random() * .28})`;
+        const z = Math.random() < .93 ? 1 : 1.7; fx.fillRect(u * w, y, z, z);
+      }
+      for (let i = 0; i < w * .5; i++) { fx.fillStyle = `rgba(245,243,236,${.06 + Math.random() * .32})`; const z = Math.random() < .9 ? 1 : 1.6; fx.fillRect(Math.random() * w, Math.random() * FH, z, z); }
+    };
+    const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = innerWidth; h = innerHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); paintFar(); };
+
+    // which section is in front: the scene blends from the previous section's shape over the first part of the next
+    const secs = ['night', 'ledger', 'file', 'argue', 'tools', 'access'].map(id => document.getElementById(id));
+    const SCENE = ['sky', 'rain', 'sky', 'spectrum', 'orbit', 'orbit'];
+    let A = 'sky', B = 'sky', mix = 1, idx = 0;
+    const where = () => {
+      const cy = scrollY + h * .55; idx = 0;
+      secs.forEach((el, k) => { if (el.offsetTop <= cy) idx = k; });
+      const el = secs[idx], p = (cy - el.offsetTop) / Math.max(1, Math.min(el.offsetHeight, h * 1.4));
+      const e = Math.max(0, Math.min(1, p / .45));
+      A = SCENE[Math.max(0, idx - 1)]; B = SCENE[idx]; mix = idx === 0 ? 1 : e * e * (3 - 2 * e);
+    };
     const m = () => Math.max(48, w * .06);
-    const bandY = () => h * (w < 760 ? .30 : .36);
-    const target = s => spectrum
-      ? { x: m() + s.score / 100 * (w - 2 * m()), y: bandY() + s.jit * (w < 760 ? 28 : 44) }
-      : { x: s.x * w + Math.sin(t * .0012 + s.ph) * 8 * s.z, y: s.y * h + Math.cos(t * .0010 + s.ph) * 6 * s.z };
+    const scaleY = () => h * (w < 760 ? .9 : .86);
+    const SHAPE = {
+      sky: s => (spectrum && idx === 0)
+        ? { x: m() + s.score / 100 * (w - 2 * m()), y: h * (w < 760 ? .30 : .36) + s.jit * (w < 760 ? 28 : 44) }
+        : { x: s.x * w + Math.sin(t * .0012 + s.ph) * 8 * s.z, y: s.y * h + Math.cos(t * .0010 + s.ph) * 6 * s.z },
+      // sifted: everything falls; the few that pass fall slower and stay bright
+      rain: s => ({ x: s.x * w + Math.sin(t * .002 + s.ph) * 10 * s.z, y: ((((s.y + t * .0011 * (.35 + s.z) * (s.sig ? .4 : 1)) % 1.1) + 1.1) % 1.1 - .05) * h, wrap: true }),
+      // the score line along the bottom: x is the score
+      spectrum: s => ({ x: m() + s.score / 100 * (w - 2 * m()), y: scaleY() - 46 + s.jit * (w < 760 ? 22 : 34) }),
+      // the receiver: four rings around a point on the right, inner rings faster
+      orbit: s => { const ox = w * (w < 760 ? .5 : .64), oy = h * .52, ring = s.sig ? 0 : 1 + s.ring % 3, rad = Math.min(w, h) * (.14 + ring * .14), a = s.ph + t * .004 / (ring + 1); return { x: ox + Math.cos(a) * rad, y: oy + Math.sin(a) * rad * .58 }; },
+    };
+    const target = s => {
+      const b = SHAPE[B](s); if (mix >= 1 || A === B) return b;
+      const a = SHAPE[A](s); return { x: a.x + (b.x - a.x) * mix, y: a.y + (b.y - a.y) * mix, wrap: b.wrap && mix > .9 };
+    };
+    // a falling star now and then
+    let streak = null, nextStreak = 240;
     const draw = () => {
-      t++;
+      t++; where();
       lens.x += (mouse.x - lens.x) * .09; lens.y += (mouse.y - lens.y) * .09;
       ctx.clearRect(0, 0, w, h);
-      if (spectrum) {
-        // the scale: a quiet line, the 60 mark where a hallmark begins, the ends named
-        const y = bandY() + (w < 760 ? 44 : 70), x0 = m(), x1 = w - m(), xs = x0 + .6 * (x1 - x0);
-        ctx.strokeStyle = 'rgba(245,243,236,.22)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
-        ctx.strokeStyle = '#B5432E'; ctx.beginPath(); ctx.moveTo(xs, y - 10); ctx.lineTo(xs, y + 10); ctx.stroke();
-        ctx.fillStyle = 'rgba(245,243,236,.55)'; ctx.font = '14px "Inter Tight", sans-serif'; ctx.textBaseline = 'top';
-        ctx.textAlign = 'left'; ctx.fillText('0 · rejected', x0, y + 14);
-        ctx.textAlign = 'center'; ctx.fillStyle = '#E8927F'; ctx.fillText('60 · hallmark', xs, y + 14);
-        ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,243,236,.55)'; ctx.fillText('100', x1, y + 14);
+      const H = document.documentElement.scrollHeight - h, f = H > 0 ? scrollY / H : 0;
+      ctx.drawImage(far, 0, -f * (FH - h), w, FH);
+      if (!still && --nextStreak <= 0) { streak = { x: rnd(.1, .9) * w, y: rnd(0, .4) * h, vx: rnd(6, 10) * (Math.random() < .5 ? -1 : 1), vy: rnd(2.5, 4.5), life: 1 }; nextStreak = Math.round(rnd(300, 620)); }
+      if (streak) {
+        const { x, y, vx, vy } = streak, g = ctx.createLinearGradient(x, y, x - vx * 14, y - vy * 14);
+        g.addColorStop(0, `rgba(245,243,236,${.8 * streak.life})`); g.addColorStop(1, 'rgba(245,243,236,0)');
+        ctx.strokeStyle = g; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - vx * 14, y - vy * 14); ctx.stroke();
+        streak.x += vx; streak.y += vy; streak.life -= .02; if (streak.life <= 0) streak = null;
+      }
+      const lineOn = (A === 'spectrum' ? 1 - mix : 0) + (B === 'spectrum' ? mix : 0);
+      // the lines: the reader's line sits where exactly passN of today's stars score at or above it
+      let thr = 101;
+      if (lineOn > 0) {
+        const sc = stars.map(s => s.score).sort((a, b) => b - a); thr = passN > 0 ? sc[Math.min(passN, sc.length) - 1] : 101;
+        const y = scaleY(), x0 = m(), x1 = w - m(), X = v => x0 + Math.min(100, v) / 100 * (x1 - x0);
+        ctx.globalAlpha = lineOn;
+        ctx.strokeStyle = 'rgba(245,243,236,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+        ctx.strokeStyle = '#B5432E'; ctx.beginPath(); ctx.moveTo(X(60), y - 8); ctx.lineTo(X(60), y + 8); ctx.stroke();
+        ctx.font = '13px "JetBrains Mono", monospace'; ctx.textBaseline = 'top';
+        ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(245,243,236,.5)'; ctx.fillText('0', x0, y + 12);
+        ctx.textAlign = 'right'; ctx.fillText('100', x1, y + 12);
+        ctx.textAlign = 'center'; ctx.fillStyle = '#E8927F'; ctx.fillText('60 · Assay', X(60), y + 12);
+        if (thr <= 100) {
+          const xt = X(thr); ctx.strokeStyle = 'rgba(245,243,236,.85)'; ctx.setLineDash([4, 5]); ctx.beginPath(); ctx.moveTo(xt, y - 120); ctx.lineTo(xt, y + 6); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(245,243,236,.85)'; ctx.textBaseline = 'bottom'; ctx.fillText(`your line · ${passN} pass`, Math.max(x0 + 70, Math.min(x1 - 70, xt)), y - 126);
+        }
+        ctx.globalAlpha = 1;
+      }
+      // stars are the picture in the hero and in the shaped scenes; behind reading text they step back
+      // the step between two scenes is blended with the same mix as the positions, so nothing pops at a section line
+      const fadeOf = (sc, k) => (sc === 'sky' && k > 0) ? .6 : 1;
+      const fade = fadeOf(A, idx - 1) * (1 - mix) + fadeOf(B, idx) * mix;
+      if (B === 'orbit' || A === 'orbit') {
+        const on = Math.min(1, (A === 'orbit' ? 1 - mix : 0) + (B === 'orbit' ? mix : 0)), ox = w * (w < 760 ? .5 : .64), oy = h * .52;
+        ctx.globalAlpha = on; ctx.strokeStyle = 'rgba(245,243,236,.16)'; ctx.lineWidth = 1;
+        for (let r = 0; r < 4; r++) { const rad = Math.min(w, h) * (.14 + r * .14); ctx.beginPath(); ctx.ellipse(ox, oy, rad, rad * .58, 0, 0, 6.29); ctx.stroke(); }
+        const sweep = (t * .02) % 6.283, R2 = Math.min(w, h) * .58;
+        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, R2); g.addColorStop(0, 'rgba(224,90,66,.32)'); g.addColorStop(1, 'rgba(224,90,66,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.ellipse(ox, oy, R2, R2 * .58, 0, sweep - .5, sweep); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 1;
       }
       let near = null, nd = 1e9;
-      const pos = [];
+      const pos = [], lensOn = inside && idx === 0;
       for (const s of stars) {
         const tg = target(s);
-        if (s.cx === null) { s.cx = tg.x; s.cy = tg.y; }
+        if (s.cx === null || (tg.wrap && Math.abs(tg.y - s.cy) > h * .5)) { s.cx = tg.x; s.cy = tg.y; }
         s.cx += (tg.x - s.cx) * .07; s.cy += (tg.y - s.cy) * .07;
-        // a touch of parallax: deeper stars move less
         let px = s.cx + (lens.x - w / 2) * -.012 * s.z, py = s.cy + (lens.y - h / 2) * -.012 * s.z;
+        if (!lensOn) { px = s.cx; py = s.cy; }
         const dx = px - lens.x, dy = py - lens.y, d = Math.hypot(dx, dy);
         let k = 1;
-        if (inside && d < R) { k = 1 + (1 - d / R) * .9; px = lens.x + dx * (1 + (1 - d / R) * .22); py = lens.y + dy * (1 + (1 - d / R) * .22); if (d < nd) { nd = d; near = { s, px, py }; } }
+        if (lensOn && d < R) { k = 1 + (1 - d / R) * .9; px = lens.x + dx * (1 + (1 - d / R) * .22); py = lens.y + dy * (1 + (1 - d / R) * .22); if (d < nd) { nd = d; near = { s, px, py }; } }
         pos.push({ s, px, py, k });
       }
       // the constellation: lines from the star under the lens to every launch by the same deployer
@@ -702,17 +869,21 @@ footer .right b{font-weight:500;color:var(--ink)}
         near.kin = kin.length;
       }
       for (const { s, px, py, k } of pos) {
-        const tw = s.a * (.7 + .3 * Math.sin(t * s.sp + s.ph));
+        if (py < -20 || py > h + 20) continue;
+        const tw = s.a * (.7 + .3 * Math.sin(t * s.sp + s.ph)) * fade;
         const age = t - s.born;
+        // beside the lines, a star the reader's line lets through lights up
+        const lit = lineOn > 0 && s.score >= thr && !s.sig;
         if (s.sig) {
           const per = age < 90 ? 90 : 160, k2 = ((t + s.ph * 50) % per) / per;
-          ctx.beginPath(); ctx.arc(px, py, 4 + k2 * (age < 90 ? 60 : 26), 0, 6.28); ctx.strokeStyle = `rgba(181,67,46,${(1 - k2) * (age < 90 ? .9 : .45)})`; ctx.lineWidth = 1; ctx.stroke();
+          ctx.beginPath(); ctx.arc(px, py, 4 + k2 * (age < 90 ? 60 : 26), 0, 6.28); ctx.strokeStyle = `rgba(181,67,46,${(1 - k2) * (age < 90 ? .9 : .45) * fade})`; ctx.lineWidth = 1; ctx.stroke();
           ctx.beginPath(); ctx.arc(px, py, s.r * k, 0, 6.28); ctx.fillStyle = '#E05A42'; ctx.fill();
         } else {
-          ctx.beginPath(); ctx.arc(px, py, s.r * k, 0, 6.28); ctx.fillStyle = `rgba(245,243,236,${Math.min(1, tw * k)})`; ctx.fill();
+          ctx.beginPath(); ctx.arc(px, py, (lit ? s.r + .8 * lineOn : s.r) * k, 0, 6.28);
+          ctx.fillStyle = lit ? `rgba(245,243,236,${Math.min(1, .55 + .45 * lineOn)})` : `rgba(245,243,236,${Math.min(1, lineOn ? Math.max(.28, tw * .8) : tw * k)})`; ctx.fill();
         }
       }
-      if (inside) {
+      if (lensOn) {
         ctx.beginPath(); ctx.arc(lens.x, lens.y, R, 0, 6.28); ctx.strokeStyle = 'rgba(245,243,236,.28)'; ctx.lineWidth = 1; ctx.stroke();
         ctx.beginPath(); ctx.moveTo(lens.x - 6, lens.y); ctx.lineTo(lens.x + 6, lens.y); ctx.moveTo(lens.x, lens.y - 6); ctx.lineTo(lens.x, lens.y + 6); ctx.strokeStyle = 'rgba(245,243,236,.5)'; ctx.stroke();
       }
@@ -728,14 +899,14 @@ footer .right b{font-weight:500;color:var(--ink)}
     };
     const step = () => { if (!document.hidden) draw(); requestAnimationFrame(step); };
     size(); addEventListener('resize', size);
-    const at = e => { const b = night.getBoundingClientRect(); mouse.x = e.clientX - b.left; mouse.y = e.clientY - b.top; inside = true; };
+    const at = e => { mouse.x = e.clientX; mouse.y = e.clientY; inside = true; };
     night.addEventListener('pointermove', at);
     night.addEventListener('pointerleave', () => { inside = false; mouse.x = -1e4; mouse.y = -1e4; });
-    night.addEventListener('click', e => { if (hot && hot.s.sig && e.target === c) document.getElementById('file').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); });
-    c.style.cursor = 'none';
+    night.addEventListener('click', e => { if (hot && hot.s.sig && !e.target.closest('a, button')) document.getElementById('file').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); });
     const btn = document.getElementById('spectrum');
     btn.addEventListener('click', () => { spectrum = !spectrum; btn.setAttribute('aria-pressed', spectrum); btn.textContent = spectrum ? 'Back to the sky' : 'Sort by score'; if (still) draw(); });
-    if (still) { draw(); } else requestAnimationFrame(step);
+    // with reduced motion the sky holds still and only redraws when the page moves
+    if (still) { draw(); addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true }); } else requestAnimationFrame(step);
     const count = () => { document.getElementById('skyN').textContent = stars.length; document.getElementById('skyS').textContent = stars.filter(x => x.sig).length; };
     // a new launch lands: a star appears where it would sit; a hallmark gets a bright burst
     const add = sig => { const s = star(sig); if (sig) s.y = rnd(.05, .45); s.born = sig ? t : -1e4; const tg = target(s); s.cx = tg.x; s.cy = tg.y; stars.push(s); count(); };
@@ -883,7 +1054,7 @@ footer .right b{font-weight:500;color:var(--ink)}
   let srcEl = null;
   const unsource = () => {
     if (srcEl) srcEl.classList.remove('src'); srcEl = null; wire.classList.remove('on');
-    evBox.innerHTML = '<span class="hint in">Hover any figure or check for where it came from.</span>';
+    evBox.innerHTML = '<span class="hint in">Hover a figure for its source.</span>';
   };
   const source = el => {
     if (srcEl === el) return; if (srcEl) srcEl.classList.remove('src');
@@ -960,7 +1131,7 @@ footer .right b{font-weight:500;color:var(--ink)}
       dev: p1(d.holdsPct), tax: pons.creatorTaxPct + '%', curve: Math.round(pons.progressPct) + '%', sig, score,
       why: [devW + ' ' + devS + '.', walW + ' ' + walS + '.', socW + ' ' + socS + '.', buyW + ' ' + buyS + '.'],
       verdict: sig ? 'Hallmark. Every check passed.' : fail >= 0 ? `Rejected at ${gate}.` : young ? 'Too early to hallmark. Nothing has failed yet.' : `Rejected. Rug risk ${risk.score} of 100.`,
-      read: summary || summaryError || '',
+      read: (summary || summaryError || '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/(^|\s)[*_](\S.*?\S)[*_](?=\s|[.,;]|$)/g, '$1$2'),
       ev: {
         holders: [`Transfer logs since launch, read at block ${blkN}`, `${h.count} wallets holding, top ten ${p1(h.top10Pct)}, largest ${p1(h.largestPct)}`],
         dev: [`Deployer ${abbr(d.address)} from the Pons factory record`, `bought ${p1(d.boughtPct)} · holds ${p1(d.holdsPct)} · sent out ${p1(d.soldPct)}`],
@@ -991,7 +1162,7 @@ footer .right b{font-weight:500;color:var(--ink)}
       const j = await res.json().catch(() => ({}));
       if (me !== reading) return;
       if (!res.ok) throw new Error(j.error || 'The chain did not answer. Try again.');
-      showFile(fromScan(j), false);
+      const rec = fromScan(j); showFile(rec, false); keepRecent(rec);
       note(`Read at block ${j.facts.scannedAtBlock.toLocaleString('en-US')} in ${(j.ms / 1000).toFixed(1)}s${j.cached ? ', from the last minute' : ''}.`);
     } catch (err) {
       if (me !== reading) return;
@@ -1035,11 +1206,11 @@ footer .right b{font-weight:500;color:var(--ink)}
     let n = 0, rug = 0, miss = 0;
     const now = day.map(l => { const p = passes(l); if (p) { n++; if (l.rug) rug++; } else if (l.ran) miss++; return p ? (l.rug ? 'r' : 'p') : (l.ran ? 'm' : ''); });
     [...field.children].forEach((d, k) => { if (d.className.replace(' bump', '') !== now[k]) { d.className = now[k]; if (prev && !still) { d.classList.add('bump'); setTimeout(() => d.classList.remove('bump'), 350); } } });
-    prev = now;
+    prev = now; passN = n;
     D('tallyN').textContent = n;
     const home = Object.keys(HOME).every(k => lines[k] === HOME[k]);
-    const rugs = rug === 0 ? 'none of them rugged within the hour' : rug === 1 ? 'one of them rugged within the hour' : `${rug} of them rugged within the hour`;
-    D('tallyRead').innerHTML = `${n} of 143 pass and ${rugs}. ${miss ? `${miss} that ${home ? 'Assay' : 'you'} stopped ran anyway.` : ''}` + (home ? ' <em>These are Assay\'s lines.</em>' : ` <em>Assay's lines: 9 pass, none rugged.</em>`);
+    const rugs = rug === 0 ? 'none rugged' : rug === 1 ? 'one rugged' : `${rug} rugged`;
+    D('tallyRead').innerHTML = `${n} of 143 pass, ${rugs}.${miss ? ` ${miss} stopped ran anyway.` : ''}` + (home ? '' : ` <em>Assay's lines: 9 pass, none rugged.</em>`);
     D('tallyReset').hidden = home;
     document.querySelectorAll('.knob').forEach(el => el.classList.toggle('moved', lines[el.dataset.k] !== HOME[el.dataset.k]));
   };
@@ -1057,11 +1228,11 @@ footer .right b{font-weight:500;color:var(--ink)}
 
   // the instruments: pick one, read what it says
   const T = [
-    ['Scanner', 'Free for everyone', 'A full report on any token: rug risk, bundles, X check.', ['Reading 0x7eD5…EC7e from block 18,401,902', 'Dev holds 6.0% · top ten 22% · creator tax 1.0%', 'Two snipe-exempt wallets bought 9% in block one', '!Hallmark, 82. Watch the top ten.']],
+    ['Scanner', 'Free', 'A full report on any token: rug risk, bundles, X check.', ['Reading 0x7eD5…EC7e from block 18,401,902', 'Dev holds 6.0% · top ten 22% · creator tax 1.0%', 'Two snipe-exempt wallets bought 9% in block one', '!Hallmark, 82. Watch the top ten.']],
     ['Launch Radar', 'Holders', 'Every new launch, filtered live.', ['Block 18,402,118 · three new launches', 'Kiln filtered: two exempt wallets hold 40%', 'Pebble filtered: six launches by the same dev today', '!Tidewater passed every check in four minutes']],
     ['Sniper', 'Holders', 'Manual, or let the agent buy the hallmarks.', ['Dry run · 0.05 ETH per token · budget 0.5 ETH', 'Agent floor 75: buys only picks at or above it', 'Bought Mortar at block 18,401,977, after the snipe tax dropped', '!Sold at +38% after 22 minutes. Take profit, not a promise.']],
     ['Fee Claimer', 'Holders', 'Creator fees from one wallet or 200 accounts.', ['Three tokens launched from this wallet', '0.42 ETH in creator fees waiting across them', 'Signed in your browser, the key never leaves it', '!Claimed in one transaction']],
-    ['Pons Launchpad', 'Free for everyone', 'Launch from your own wallet. Always free.', ['Name, ticker, logo, description, socials', 'Creator tax you choose, 0 to 10%', 'Snipe-tax-exempt wallets, if you want your own sniper in', '!No cut taken. Ever.']],
+    ['Pons Launchpad', 'Free', 'Launch from your own wallet. Always free.', ['Name, ticker, logo, description, socials', 'Creator tax you choose, 0 to 10%', 'Snipe-tax-exempt wallets, if you want your own sniper in', '!No cut taken. Ever.']],
     ['Launch Kit', 'Holders', 'Lore, bio, thread and launch post, written for you.', ['Lore in your voice, three paragraphs', 'A bio for X in 160 characters', 'A launch thread of six posts', '!Written from your token’s on-chain facts, not invented ones']],
     ['Agent Studio', 'Holders', 'Design the AI agent of your own token.', ['A name, a tone, and what it may never say', 'Reads your token’s chain data live', 'Answers holders in your Telegram', '!Same receiver underneath. Same rules.']],
   ];
@@ -1188,10 +1359,10 @@ footer .right b{font-weight:500;color:var(--ink)}
     lit.classList.remove('lit');
     order.forEach((i, k) => { const d = dots[i]; d.classList.toggle('on', k < full); d.classList.toggle('part', k === full && part > 0 && full < 1000); d.style.transform = k === full && part > 0 ? `scale(${1 + part})` : ''; d.style.transitionDelay = still ? '0ms' : Math.min(k, 60) * 12 + 'ms'; });
     const pct = (v / SUPPLY * 100), out = D('calcOut'), btn = D('connect');
-    if (!v) { out.innerHTML = 'Each point in the field is 0.1% of supply: 1,000,000 tokens. One lit point and every instrument opens.'; btn.textContent = 'Connect wallet'; D('access').classList.remove('in2'); lit.classList.add('lit'); return; }
+    if (!v) { out.innerHTML = 'One point is 0.1% of supply: 1,000,000 tokens.'; btn.textContent = 'Connect wallet'; D('access').classList.remove('in2'); lit.classList.add('lit'); return; }
     const p = pct < .01 ? pct.toFixed(4) : pct < 1 ? pct.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') : pct.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-    if (n >= 1) { out.innerHTML = `<b>You're in.</b> ${p}% of supply, ${full === 1000 ? 'the whole field' : full === 1 ? 'one point' : fmt(full) + ' points'}. Every instrument opens after one signature.`; btn.textContent = 'Connect and sign'; D('access').classList.add('in2'); }
-    else { out.innerHTML = `${p}% of supply, ${Math.round(part * 100)}% of the way to one point. <b>${fmt(Math.ceil(POINT - v))} more</b> and every instrument opens.`; btn.textContent = 'Connect wallet'; D('access').classList.remove('in2'); }
+    if (n >= 1) { out.innerHTML = `<b>You're in.</b> ${p}% of supply, ${full === 1000 ? 'the whole field' : full === 1 ? 'one point' : fmt(full) + ' points'}. Sign once and every instrument opens.`; btn.textContent = 'Connect and sign'; D('access').classList.add('in2'); }
+    else { out.innerHTML = `${p}% of supply, ${Math.round(part * 100)}% of the way to one point. <b>${fmt(Math.ceil(POINT - v))} more</b> to one point.`; btn.textContent = 'Connect wallet'; D('access').classList.remove('in2'); }
   };
   D('hold').addEventListener('input', e => { const raw = e.target.value.replace(/[^\d]/g, ''); const v = Math.min(SUPPLY, +raw || 0); e.target.value = raw ? fmt(v) : ''; lightUp(v); });
   D('calc').addEventListener('submit', e => e.preventDefault());
@@ -1214,6 +1385,68 @@ footer .right b{font-weight:500;color:var(--ink)}
   document.addEventListener('assay:block', () => blip(false));
   document.addEventListener('assay:land', () => blip(true));
 
+  // the lab: headlines rise word by word and kickers draw in as their section arrives
+  document.querySelectorAll('h2.split').forEach(h => {
+    split(h); h.querySelectorAll('.w').forEach((w, k) => w.style.transitionDelay = (k * 60) + 'ms');
+  });
+  const arrive = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add('in'); arrive.unobserve(e.target); }), { threshold: 0.4 });
+  document.querySelectorAll('h2.split, .kick').forEach(el => arrive.observe(el));
+
+  // the red line along the top fills as you read; a tick marks where each section starts
+  const bar = D('progress'), fill = bar.querySelector('i'), secs = [...document.querySelectorAll('.ledger, .file, .argue, .tools, .access')];
+  const ticks = secs.map(() => bar.appendChild(document.createElement('b')));
+  const place = () => { const H = document.documentElement.scrollHeight - innerHeight; secs.forEach((sec, k) => { ticks[k].style.left = Math.min(100, (sec.offsetTop / H) * 100) + '%'; }); };
+  // lines: the outlined thresholds drift at their own pace behind the sliders
+  const ghosts = D('ghost') ? [...D('ghost').children] : [], drift = [.18, -.12, .26, -.2];
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const H = document.documentElement.scrollHeight - innerHeight;
+      fill.style.transform = `scaleX(${H > 0 ? Math.min(1, scrollY / H) : 0})`;
+      if (!still) { const r = D('argue').getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) { const c = r.top + r.height / 2 - innerHeight / 2; ghosts.forEach((g, k) => g.style.transform = `translate3d(0,${(c * drift[k]).toFixed(1)}px,0)`); } }
+    });
+  };
+  addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', () => { place(); onScroll(); });
+  place(); onScroll(); setTimeout(place, 1500);
+
+
+  // tickers: the day's launches, the instruments, and the offer, each run twice so the loop has no seam
+  const feeds = {
+    launches: () => all().map(r => `<span>${r.name.toUpperCase()} <em>${r.score}</em> ${r.sig ? 'HALLMARK' : 'REJECTED'} <i class="${r.sig ? 'sig' : ''}"></i></span>`).join(''),
+    tools: () => T.map(([n, acc, , lines]) => `<span>${n} <em>${acc === 'Holders' ? 'HOLDERS' : 'FREE'}</em> ${lines[lines.length - 1].replace(/^!/, '').replace(/\.$/, '')} <i class="sig"></i></span>`).join(''),
+    offer: () => ['HOLD 0.1%', 'SIGN ONCE', 'EVERY INSTRUMENT OPENS', 'SIGNING SENDS NOTHING', 'THE LAUNCHPAD STAYS FREE', '$ASSAY'].map(t => `<span>${t} <i class="sig"></i></span>`).join(''),
+  };
+  const tracks = [...document.querySelectorAll('.ticker')].map(t => { const tr = t.querySelector('.track'), html = feeds[t.dataset.feed](); tr.innerHTML = html + html; return tr; });
+  // they run faster while you scroll, then settle back
+  let vel = 0, lastY = scrollY;
+  addEventListener('scroll', () => { vel = Math.min(8, vel + Math.abs(scrollY - lastY) / 40); lastY = scrollY; }, { passive: true });
+  (function spin() { vel *= .92; const rate = 1 + vel; tracks.forEach(tr => tr.getAnimations().forEach(a => { a.playbackRate = rate; })); requestAnimationFrame(spin); })();
+
+  // the receiver's status follows the sieve
+  const rvSet = (id, v) => { const el = D(id); if (el && el.textContent !== v) { el.textContent = v; el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); } };
+  document.addEventListener('assay:block', e => { rvSet('rvBlk', fmt(e.detail)); rvSet('rvRecv', fmt(recv)); rvSet('rvSig', fmt(sig)); });
+  document.addEventListener('assay:land', () => { const h = sigList.querySelector('.nm'); if (h) rvSet('rvLast', h.textContent); });
+
+  // recently read: the last files this browser opened, kept on this device only
+  const RKEY = 'assay.recent';
+  const loadRecent = () => { try { return JSON.parse(localStorage.getItem(RKEY) || '[]'); } catch { return []; } };
+  const drawRecent = () => {
+    const mine = loadRecent(), list = mine.length ? mine : seed.slice(0, 4);
+    D('recentTag').textContent = mine.length ? 'on this device' : 'samples';
+    D('recentList').innerHTML = '';
+    list.slice(0, 4).forEach(r => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.innerHTML = `<b></b><span class="sc ${r.sig ? 'sig' : ''}">${r.score}</span><small></small>`;
+      b.querySelector('b').textContent = r.name; b.querySelector('small').textContent = r.verdict;
+      b.addEventListener('click', () => { dossier.disconnect(); showFile(r, true); D('dossier').scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' }); });
+      D('recentList').appendChild(b);
+    });
+  };
+  const keepRecent = r => { try { const l = loadRecent().filter(x => x.name !== r.name); l.unshift(r); localStorage.setItem(RKEY, JSON.stringify(l.slice(0, 6))); } catch {} drawRecent(); };
+  drawRecent();
+
   // the rest of the page: each section's parts rise as they arrive, staggered, once
   const parts = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;
@@ -1221,7 +1454,7 @@ footer .right b{font-weight:500;color:var(--ink)}
     parts.unobserve(e.target);
   }), { threshold: 0.15 });
   document.querySelectorAll('.file, .argue .say').forEach(s => {
-    [...s.children].forEach(c => c.classList.add('rise'));
+    [...s.children].filter(c => !c.matches('.ticker, .bignum, .veil')).forEach(c => c.classList.add('rise'));
     parts.observe(s);
   });
 })();
