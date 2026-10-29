@@ -20,18 +20,18 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,700..800&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Assay v16 — the ledger. Paper, ink, one red. Structure from space and tone; no hairlines, no labels, no cards. */
 :root{
   --paper:#161514;--panel:#201F1C;--ink:#F5F3EC;--dim:#A39E94;--soft:#8E8A80;--red:#B5432E;--redl:#E8927F;
   --sans:"Inter Tight",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --m:48px;--ease:cubic-bezier(.16,1,.3,1);
+  --violet:#5B3FE0;--violetl:#7058F0;--m:48px;--ease:cubic-bezier(.16,1,.3,1);
 }
 @media (max-width:760px){:root{--m:20px}}
 *{box-sizing:border-box}
-html{background:#0C0B0A;color-scheme:light;scroll-behavior:smooth}
+html{background:#07080F;color-scheme:light;scroll-behavior:smooth}
 body{margin:0;background:transparent;color:var(--ink);font:17px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::selection{background:var(--red);color:#F5F3EC}
 a{color:inherit;text-decoration:none}
@@ -56,38 +56,54 @@ h1,h2,h3,p{margin:0}
 .night>*:not(canvas):not(.tip){position:relative;z-index:1}
 .night a:hover{color:#E8927F}
 .night .brand:hover{color:var(--ink)}
-.night .btn{background:#F5F3EC;color:#161514}
-.night .btn:hover{background:#E8927F;color:#161514}
-.night .hero .lede{color:#D9D5CA}
-.night .hero h1 .two{color:#8F8A80}
 .tip{position:fixed;top:0;left:0;z-index:2;pointer-events:none;opacity:0;transform:translate(-50%,calc(-100% - 18px));transition:opacity .25s var(--ease);font-size:14px;line-height:1.35;color:#F5F3EC;background:rgba(15,14,12,.9);padding:8px 10px;max-width:260px;white-space:nowrap}
 .tip.on{opacity:1}
 .tip b{display:block;font-weight:500;font-size:15px}
 .tip.sig b{color:#E8927F}
 .tip i{display:block;font-style:normal;color:#7C786F;margin-top:4px}
 .tip span{color:#A39E94}
-.sky-cap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0 var(--m) 28px;font-size:14px;color:#8F8A80}
+.sky-cap{display:flex;justify-content:center;align-items:center;gap:20px 56px;flex-wrap:wrap;padding:8px var(--m) 40px;font-size:14px;color:#9EA1B8;text-align:center}
+@media (max-width:600px){.sky-cap{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 16px;padding-bottom:32px}.sky-cap button{grid-column:1/3;justify-self:center}}
+.sky-cap .fig{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sky-cap .fig b{font:600 clamp(26px,2.6vw,38px)/1 "Archivo",var(--sans);font-stretch:118%;font-variation-settings:"wdth" 118;letter-spacing:-.02em;color:#fff}
+.sky-cap .fig b.sig{color:#E8927F}
 .sky-cap b{font-weight:500;color:#F5F3EC}
-.sky-cap button{height:36px;padding:0 14px;border:1px solid rgba(245,243,236,.3);border-radius:4px;background:transparent;color:#F5F3EC;font:500 14px var(--sans);cursor:pointer;transition:border-color .25s var(--ease),background .25s var(--ease)}
+.sky-cap button{height:40px;padding:0 18px;border:1px solid rgba(214,220,255,.25);border-radius:999px;background:transparent;color:#F5F3EC;font:500 14px var(--sans);cursor:pointer;transition:border-color .25s var(--ease),background .25s var(--ease)}
 .sky-cap button:hover{border-color:#F5F3EC}
 .sky-cap button[aria-pressed=true]{background:#F5F3EC;color:#161514;border-color:#F5F3EC}
 .sky-cap .sig{color:#E8927F}
 
-/* top row: no bar, no border, just the margins */
-.top{display:flex;justify-content:space-between;align-items:center;padding:14px var(--m) 0;gap:24px;flex-wrap:wrap;min-height:48px}
-.brand{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:19px;letter-spacing:-.03em}
+/* top row: the mark, the sections in one pill, the scanner as the way in */
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:22px var(--m) 0;gap:24px;min-height:64px}
+.brand{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:21px;letter-spacing:-.03em;justify-self:start}
 .brand:hover{color:var(--ink)}
-.brand svg{width:22px;height:22px}
-.top nav{display:flex;gap:28px;font-size:15px;flex-wrap:wrap}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:2px;padding:5px;border-radius:999px;border:1px solid rgba(214,220,255,.14);background:rgba(10,11,22,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:15px}
+.top nav a{padding:8px 16px;border-radius:999px;color:#DCDDEA;transition:background .25s var(--ease),color .25s var(--ease)}
+.night .top nav a:hover{color:#fff;background:rgba(214,220,255,.08)}
+.top nav a.on{background:var(--violet);color:#fff}
+.night .top nav a.on:hover{background:var(--violet)}
+.go{display:inline-flex;align-items:center;gap:0;justify-self:end;border:0;padding:0;background:none;cursor:pointer;font:500 16px var(--sans);color:#fff}
+.go b{display:inline-flex;align-items:center;height:52px;padding:0 28px;border-radius:999px;background:var(--violet);font-weight:500;transition:background .3s var(--ease)}
+.go i{display:grid;place-items:center;width:52px;height:52px;margin-left:-4px;border-radius:50%;background:var(--violet);box-shadow:0 0 0 3px #0B0C16;transition:transform .35s var(--ease),background .3s var(--ease)}
+.go i svg{width:18px;height:18px}
+.go:hover b,.go:hover i{background:var(--violetl)}
+.go:hover i{transform:rotate(45deg)}
+.go:active{transform:translateY(1px)}
+@media (max-width:980px){.top{grid-template-columns:1fr auto}.top nav{display:none}}
+@media (max-width:480px){.top .go b{height:44px;padding:0 18px;font-size:15px}.top .go i{width:44px;height:44px}}
 
-/* hero: a statement on the grid, then the ledger as the picture */
-.hero{flex:1;padding:40px var(--m) 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:end;align-content:center}
-.hero h1{grid-column:1/11;font-size:clamp(46px,7.4vw,118px);font-weight:500;letter-spacing:-.035em;line-height:.96;text-wrap:balance}
-.hero h1 .two{display:block;color:var(--dim)}
-.hero .lede{grid-column:1/6;font-size:18px;color:var(--ink);max-width:34ch;margin-top:20px}
-.hero .cta{grid-column:8/13;display:flex;gap:24px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:20px}
-@media (max-width:900px){.hero h1{grid-column:1/13}.hero .lede{grid-column:1/13}.hero .cta{grid-column:1/13;justify-content:flex-start}}
-@media (max-width:480px){.hero h1{font-size:40px;letter-spacing:-.03em}}
+/* hero: centred, wide display type, a portal opening underneath */
+.night{background:radial-gradient(60% 55% at 0% 42%,rgba(72,96,230,.38),transparent 70%),radial-gradient(55% 55% at 100% 40%,rgba(82,90,220,.32),transparent 70%),radial-gradient(70% 45% at 50% 82%,rgba(70,80,200,.22),transparent 75%),linear-gradient(#07080F,#0A0B16 60%,#07080F)}
+.night #portal{position:absolute;left:0;right:0;bottom:0;width:100%;height:82%;z-index:0;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 80%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 80%,transparent)}
+.hero{flex:1;padding:56px var(--m) 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hero .eyebrow{display:inline-block;padding:11px 22px;border-radius:999px;background:rgba(20,21,34,.72);border:1px solid rgba(214,220,255,.08);font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:#DCDDEA;margin-bottom:28px}
+.hero h1{font-family:"Archivo",var(--sans);font-stretch:125%;font-variation-settings:"wdth" 125;font-weight:800;font-size:clamp(34px,4.7vw,80px);letter-spacing:-.03em;line-height:1.08;text-wrap:balance}
+.hero h1 .two{display:block;color:#fff}
+.hero .lede{font-size:clamp(17px,1.6vw,21px);line-height:1.6;color:#D6D8E6;text-shadow:0 1px 14px rgba(6,7,16,.9);max-width:50ch;margin-top:28px;text-wrap:balance}
+.hero .cta{display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:40px}
+.night .hero .link{color:#DCDDEA}
+@media (max-width:480px){.hero h1{font-size:34px;letter-spacing:-.03em}.hero .eyebrow{font-size:12px;padding:9px 16px}}
 
 .hero h1 .w{display:inline-block;opacity:0;transform:translateY(.35em);filter:blur(5px);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease)}
 .hero h1.in .w{opacity:1;transform:none;filter:none}
@@ -493,6 +509,141 @@ footer .right{text-align:right}
 footer .right b{font-weight:500;color:var(--ink)}
 @media (max-width:760px){footer{grid-template-columns:1fr;gap:8px}footer .links{justify-content:flex-start}footer .right{text-align:left}}
 
+/* in tune with the hero: cool night, violet for every action, wide display type for every headline,
+   pills for every control, rounded glass for every panel. Red keeps one meaning: passed every check. */
+:root{--paper:#0B0C16;--panel:rgba(20,22,40,.6);--ink:#F2F3FA;--dim:#A6A9C0;--soft:#7E8199;--rim:rgba(214,220,255,.1);--display:"Archivo",var(--sans)}
+::selection{background:var(--violet);color:#fff}
+:focus-visible{outline-color:var(--violetl)}
+a:hover,.night a:hover{color:#B9ACFF}
+.tip{background:rgba(10,11,22,.92);border-radius:10px;box-shadow:inset 0 0 0 1px var(--rim)}
+.progress i{background:linear-gradient(90deg,#4860E6,var(--violetl))}
+
+/* headlines */
+.ledger-head h2,.file h2,.argue h2,.tools h2,.access h2{font-family:var(--display);font-stretch:118%;font-variation-settings:"wdth" 118;font-weight:700;letter-spacing:-.025em}
+.argue h2{font-weight:800;line-height:1.04;max-width:15ch}
+.ledger-head h2{font-size:clamp(24px,2.4vw,34px)}
+.ledger-head{border-bottom:1px solid var(--rim);padding-bottom:20px}
+.bignum{font-family:var(--display);font-stretch:125%;font-variation-settings:"wdth" 125;font-weight:800;color:rgba(160,170,255,.045)}
+.access .big{font-family:var(--display);font-stretch:118%;font-variation-settings:"wdth" 118;font-weight:800;letter-spacing:-.04em}
+.tally .n b{font-family:var(--display);font-stretch:118%;font-variation-settings:"wdth" 118;font-weight:800;letter-spacing:-.03em}
+
+/* kickers become the hero's eyebrow pill */
+.kick{display:inline-flex;align-self:flex-start;justify-self:start;width:max-content;gap:10px;padding:9px 18px;border-radius:999px;background:rgba(20,21,34,.72);box-shadow:inset 0 0 0 1px rgba(214,220,255,.08);font:400 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#DCDDEA}
+.kick .num{font-family:var(--mono);color:#B9ACFF}
+.kick::after{display:none}
+.access .kick{background:rgba(10,8,40,.35);color:#E6E1FF}.access .kick .num{color:#fff}
+
+/* actions: violet pills */
+.btn{height:52px;padding:0 28px;border-radius:999px;background:var(--violet);color:#fff;font-size:16px}
+.btn:hover{background:var(--violetl);color:#fff}
+.link:hover{color:#B9ACFF}
+.sky-cap button[aria-pressed=true]{background:var(--violet);border-color:var(--violet);color:#fff}
+
+/* fields: rounded, dark, a violet ring when in use */
+.scan input,.calc input{height:52px;padding:0 20px;border-radius:999px;border:1px solid rgba(214,220,255,.16);background:rgba(10,11,22,.55);caret-color:var(--violetl)}
+.scan input:hover{border-color:rgba(214,220,255,.32)}
+.scan input:focus,.calc input:focus{border-color:var(--violetl);box-shadow:0 0 0 4px rgba(112,88,240,.22)}
+
+/* panels: rounded glass with a cool rim */
+.glass,.tally,.tools .out,.recv{border-radius:24px;background:rgba(12,13,26,.55);box-shadow:inset 0 0 0 1px var(--rim),0 40px 90px -40px rgba(0,0,0,.85)}
+.recv{border-radius:18px}
+.tools .demo{border-radius:16px;background:rgba(4,5,14,.5)}
+.demo .chat .bot{background:var(--violet);color:#fff}
+.sigs button,.recent button,.tools .pick button{border-radius:14px}
+.sigs button:hover,.recent button:hover{background:rgba(214,220,255,.06)}
+.tools .pick button[aria-pressed=true]{background:rgba(91,63,224,.18);box-shadow:inset 0 0 0 1px rgba(112,88,240,.35)}
+.tools .pick button[aria-pressed=true] i{background:var(--violetl)}
+.knob{border-top-color:var(--rim)}
+.knob.moved .ln b{color:#B9ACFF}
+.knob input[type=range]::-webkit-slider-thumb{background:#fff;box-shadow:0 0 0 5px rgba(112,88,240,.35)}
+.knob input[type=range]::-moz-range-thumb{background:#fff;box-shadow:0 0 0 5px rgba(112,88,240,.35)}
+.sw[aria-pressed=true] i{background:var(--violet)}
+
+/* the file stays the one bright object, now on cool paper with a violet glow */
+.dossier{border-radius:24px;background:#F3F4FA;box-shadow:0 0 0 1px rgba(214,220,255,.25),0 50px 120px -30px rgba(91,63,224,.45),0 40px 90px -40px rgba(0,0,0,.9)}
+
+/* tickers: dark glass, the instruments band in violet */
+.ticker{background:rgba(8,9,18,.72);box-shadow:inset 0 1px 0 var(--rim),inset 0 -1px 0 var(--rim)}
+.tools .ticker{background:var(--violet)}
+.tools .ticker span i.sig{background:#E05A42}
+
+/* access: the portal's colour as one full field; the thousand points glow, the lit ones in red */
+.access{background:radial-gradient(70% 90% at 15% 45%,rgba(112,88,240,.9),transparent 70%),radial-gradient(60% 80% at 100% 100%,rgba(72,96,230,.7),transparent 70%),linear-gradient(135deg,#2A1E8C,#131337);border-radius:32px;margin:40px var(--m) 0;padding-left:clamp(20px,5vw,72px);padding-right:clamp(20px,5vw,72px)}
+.thousand i{background:rgba(220,225,255,.22)}
+.thousand i.lit,.thousand i.on,.thousand i.part{background:#E05A42}
+.access p,.calc label,.calc .of,.calc small{color:#DCD8FF}
+.access .btn{background:#fff;color:#2A1E8C}
+.access .btn:hover{background:#E6E1FF;color:#2A1E8C}
+.access .link:hover{color:#fff}
+.calc input{border-color:rgba(230,225,255,.35);background:rgba(10,8,40,.3)}
+.calc .quick button{border-color:rgba(230,225,255,.35)}
+.calc .quick button:hover{background:#fff;color:#2A1E8C}
+.access .bignum{color:rgba(255,255,255,.07)}
+@media (max-width:760px){.access{border-radius:24px;margin:24px 12px 0}}
+
+/* every section opens like the hero: a pill, a centred headline, one line under it, then its own lit object */
+.ledger,.file,.argue,.tools{display:flex;flex-direction:column;align-items:center;padding-left:var(--m);padding-right:var(--m)}
+.intro{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:960px;margin:0 auto}
+.intro .kick{margin:0 0 26px;align-self:center}
+.intro h2{font-family:var(--display);font-stretch:118%;font-variation-settings:"wdth" 118;font-size:clamp(34px,4.8vw,74px)!important;font-weight:800;line-height:1.05;letter-spacing:-.03em;max-width:18ch;text-wrap:balance}
+.intro p:not(.kick){margin-top:22px;font-size:clamp(17px,1.4vw,19px);line-height:1.6;color:#C9CBDB;max-width:52ch}
+.intro .live{margin-top:24px;display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:center;color:var(--dim);font-size:15px}
+.intro .live b{color:#fff;font-weight:500}
+.obj{display:block;width:100%;pointer-events:none}
+
+/* 01 the sieve: four arches of light; the working sieve sits under them in glass */
+#gates{height:clamp(260px,30vw,420px);margin:24px 0 8px;max-width:1400px}
+.sv-card{width:100%;padding:34px 34px 30px}
+.sv{margin-top:0}
+.ledger .foot{margin-top:22px;color:var(--soft);font-size:15px;text-align:center}
+
+/* 02 the file: the form under the headline, the file floating on a ring of light, recent reads in a row */
+.file .scan{width:min(600px,100%);margin-top:40px;align-items:center;text-align:center}
+.file .scan div{width:100%}
+.stage{position:relative;width:100%;max-width:880px;margin-top:64px;display:flex;justify-content:center}
+#ring{position:absolute;left:50%;transform:translateX(-50%);width:min(1700px,180%);height:520px;bottom:-250px;z-index:0}
+.stage .dossier{position:relative;z-index:1;width:100%}
+.file .recent{width:100%;max-width:1100px;margin-top:150px}
+.file .recent .rh{justify-content:center;gap:16px;margin-bottom:16px}
+#recentList{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.file .recent button{margin:0;padding:20px 22px;border-radius:20px;background:rgba(12,13,26,.55);box-shadow:inset 0 0 0 1px var(--rim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-content:start}
+.file .recent button:hover{background:rgba(30,30,60,.6);box-shadow:inset 0 0 0 1px rgba(112,88,240,.45)}
+@media (max-width:900px){#recentList{grid-template-columns:1fr 1fr}.file .recent{margin-top:110px}#ring{height:380px;bottom:-180px}}
+@media (max-width:520px){#recentList{grid-template-columns:1fr}}
+
+/* 03 the lines: today's launches as a lit ring, the count in its eye, the lines in a card below */
+.argue .say{grid-column:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;margin-bottom:0}
+.argue .say p{color:#C9CBDB}
+.argue h2{max-width:16ch}
+.ghost{display:none}
+.dialwrap{position:relative;width:min(1100px,100%);margin:20px 0 56px}
+#dial{position:absolute;inset:0;height:100%}
+.argue .tally{position:relative;top:auto;grid-column:auto;min-height:clamp(420px,44vw,580px);background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.argue .tally .n{flex-direction:column;align-items:center;gap:6px}
+.argue .tally .n b{font-size:clamp(76px,9vw,140px);line-height:.85;text-shadow:0 0 40px rgba(112,88,240,.6)}
+.argue .tally .n span{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#C9CBDB}
+.argue .field{display:none}
+.argue .tally .read{max-width:30ch;min-height:0;font-size:15px;color:#DCDDEA}
+.argue .legend{position:absolute;left:0;right:0;bottom:-44px;display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px}
+.argue .knobs{grid-column:auto;width:min(1100px,100%);display:grid;grid-template-columns:1fr 1fr;column-gap:48px;padding:10px 36px 26px;border-radius:24px}
+.argue .knob:nth-child(-n+2){border-top:0}
+.argue .fine{text-align:center}
+@media (max-width:900px){
+  .argue .knobs{grid-template-columns:1fr;padding:6px 20px 20px}.argue .knob:nth-child(2){border-top:1px solid var(--rim)}
+  .argue .tally{order:0;position:relative;top:auto;z-index:auto;min-height:400px;padding:0;box-shadow:none}
+  .argue .tally .n b{font-size:64px}.argue .tally .read{font-size:13px;max-width:24ch}
+  .argue .legend{display:flex;font-size:12px;gap:6px 14px;bottom:-40px}
+}
+
+/* 04 the instruments: a receiver with its seven instruments in orbit, tabs under it, the panel last */
+#core{height:clamp(280px,30vw,420px);margin:16px 0 0;max-width:1300px}
+.tools .pick{grid-column:auto;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:4px;max-width:960px}
+.tools .kind{display:none}
+.tools .pick button{width:auto;margin:0;padding:11px 20px;border-radius:999px;font-size:16px;box-shadow:inset 0 0 0 1px var(--rim);background:rgba(12,13,26,.5)}
+.tools .pick button i{display:none}
+.tools .pick button[aria-pressed=true]{background:var(--violet);color:#fff;box-shadow:none}
+.tools .out{grid-column:auto;width:min(900px,100%);margin-top:30px}
+
 </style>
 </head>
 <body>
@@ -506,30 +657,35 @@ footer .right b{font-weight:500;color:var(--ink)}
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="5.5" r="2.2" fill="currentColor"/><circle cx="12" cy="5.5" r="2.2" fill="currentColor"/><circle cx="18.5" cy="5.5" r="2.2" fill="currentColor"/><circle cx="5.5" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="18.5" cy="12" r="2.2" fill="currentColor"/><circle cx="5.5" cy="18.5" r="2.2" fill="currentColor"/><circle cx="12" cy="18.5" r="2.2" fill="currentColor"/><circle cx="18.5" cy="18.5" r="2.2" fill="#E05A42"/></svg>
     assay
   </a>
-  <nav>
-    <a href="#ledger">Ledger</a>
+  <nav aria-label="Sections">
+    <a href="#ledger" class="on">Ledger</a>
     <a href="#file">Files</a>
     <a href="#tools">Instruments</a>
     <a href="#access">Holder access</a>
   </nav>
+  <button class="go" type="button" data-scan><b>Open the scanner</b><i><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button>
 </div>
 
+<canvas id="portal" aria-hidden="true"></canvas>
 <section class="hero">
-  <h1>Most launches are noise.<span class="two">Assay reads every one.</span></h1>
-  <p class="lede rise" style="transition-delay:.12s">Every Pons launch on Robinhood Chain, read the block it lands. The few that pass get a file.</p>
+  <p class="eyebrow rise">Read every launch : hallmark the few</p>
+  <h1>Most launches are noise. <span class="two">Assay reads every one.</span></h1>
+  <p class="lede rise" style="transition-delay:.12s">Every Pons launch on Robinhood Chain, read the block it lands. Four gates, one file for the few that pass, written by Claude.</p>
   <div class="cta rise" style="transition-delay:.2s">
-    <button class="btn" type="button">Open the scanner</button>
-    <a class="link" href="#file">Read a file <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <button class="go" type="button" data-scan><b>Read a launch</b><i><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button>
   </div>
 </section>
-<div class="sky-cap"><span>Each point is a launch today. <b class="sig">Red</b> passed every check.</span><span style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span><b class="num" id="skyN">143</b> in the sky · <b class="num sig" id="skyS">9</b> hallmarked</span><button type="button" id="spectrum" aria-pressed="false">Sort by score</button></span></div>
+<div class="sky-cap"><span class="fig"><b id="skyN">143</b>launches today</span><span class="fig"><b class="sig" id="skyS">9</b>hallmarked</span><span class="fig"><b>4</b>gates</span><span class="fig"><b>1</b>block to read</span><button type="button" id="spectrum" aria-pressed="false">Sort by score</button></div>
 </div>
 
 <section class="ledger" id="ledger" aria-label="Every Pons launch through four gates">
-  <div class="ledger-head">
+  <div class="intro">
+    <p class="kick"><span class="num">01</span>The sieve</p>
     <h2>Today, through four gates</h2>
     <div class="live"><span>Block <b class="num" id="blk">18,402,117</b></span><span><b class="num" id="nRecv">143</b> received</span><span><b class="num" id="nSig">9</b> hallmarked</span><span><b class="num" id="nNoise">134</b> rejected</span></div>
   </div>
+  <canvas class="obj" id="gates" aria-hidden="true"></canvas>
+  <div class="glass sv-card">
   <div class="sv" id="sieve">
     <div class="sv-col in">
       <h3>Received</h3>
@@ -568,20 +724,23 @@ footer .right b{font-weight:500;color:var(--ink)}
       <ol class="sigs" id="svSigs" aria-label="Launches that passed"></ol>
     </div>
   </div>
-  <p>Each launch stops at the first gate it fails. Illustrative today; the live page reads the chain.</p>
+  </div>
+  <p class="foot">Each launch stops at the first gate it fails. Illustrative today; the live page reads the chain.</p>
 </section>
 
 <section class="file" id="file">
-  <div class="say">
+  <div class="intro">
+    <p class="kick"><span class="num">02</span>The file</p>
     <h2 class="split">The file, in plain words.</h2>
     <p>Every number comes from the chain. The agent writes only the sentence on top.</p>
-    <form class="scan" id="scan">
+  </div>
+  <form class="scan" id="scan">
       <label for="ca">Read any Pons contract</label>
       <div><input id="ca" name="ca" placeholder="0x…" spellcheck="false" autocomplete="off" inputmode="text"><button class="btn" type="submit">Read</button></div>
       <small id="scanNote" aria-live="polite">Three free reads a day. Holders read without limit.</small>
     </form>
-    <div class="recent" id="recent"><p class="rh"><span>Recently read</span><span id="recentTag"></span></p><div id="recentList"></div></div>
-  </div>
+  <div class="stage">
+  <canvas class="obj" id="ring" aria-hidden="true"></canvas>
   <article class="dossier" aria-label="The file" data-ui id="dossier" aria-live="polite">
     <svg class="wire" id="dWire" aria-hidden="true"><path id="dPath" d=""/></svg>
     <div class="head"><b><span id="dName">Harbor</span><span class="trail" id="dTrail" aria-label="Gates: dev, wallets, socials, buyers"><i></i><i class="watch"></i><i></i><i></i></span></b><span class="num" id="dMeta">0x7eD5…EC7e · launched 4 min ago</span></div>
@@ -602,14 +761,26 @@ footer .right b{font-weight:500;color:var(--ink)}
     <div class="aread" id="dRead" hidden><small>Assay's read</small><p id="dReadT"></p></div>
     <div class="ev"><small>From the chain</small><div id="dEv"><span class="hint in">Hover a figure for its source.</span></div></div>
   </article>
+  </div>
+  <div class="recent" id="recent"><p class="rh"><span>Recently read</span><span id="recentTag"></span></p><div id="recentList"></div></div>
 </section>
 
 <section class="argue" id="argue" aria-label="Argue with the lines">
-  <div class="say">
+  <div class="say intro">
+    <p class="kick"><span class="num">03</span>The lines</p>
     <h2 class="split">The lines are public. Move them.</h2>
     <p>Drag a line and see what today's 143 launches would have done.</p>
   </div>
-  <ol class="knobs" id="knobs">
+  <div class="dialwrap"><canvas class="obj" id="dial" aria-hidden="true"></canvas>
+  <aside class="tally" aria-label="What your lines let through">
+    <p class="n"><b class="num" id="tallyN">9</b><span>of 143 pass</span></p>
+    <div class="field" id="field" aria-hidden="true"></div>
+    <ul class="legend"><li><i class="p"></i>Passed, held up</li><li><i class="r"></i>Passed, rugged within the hour</li><li><i class="s"></i>Stopped</li><li><i class="m"></i>Stopped, ran anyway</li></ul>
+    <p class="read" id="tallyRead" aria-live="polite"></p>
+    <button type="button" class="reset" id="tallyReset" hidden>Back to Assay's lines</button>
+  </aside>
+  </div>
+  <ol class="knobs glass" id="knobs">
     <li class="knob" data-k="dev">
       <label class="ln" for="kdev"><span>Dev holds at most <b class="num" id="vdev">15%</b></span><small>Assay: 15%</small></label>
       <div class="rail"><input type="range" id="kdev" min="2" max="60" step="1" value="15" data-unit="%" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
@@ -630,17 +801,15 @@ footer .right b{font-weight:500;color:var(--ink)}
       <div class="rail"><input type="range" id="kwin" min="1" max="30" step="1" value="5" data-unit=" min" aria-describedby="tallyRead"><span class="home" aria-hidden="true"></span></div>
     </li>
   </ol>
-  <aside class="tally" aria-label="What your lines let through">
-    <p class="n"><b class="num" id="tallyN">9</b><span>of 143 pass</span></p>
-    <div class="field" id="field" aria-hidden="true"></div>
-    <ul class="legend"><li><i class="p"></i>Passed, held up</li><li><i class="r"></i>Passed, rugged within the hour</li><li><i class="s"></i>Stopped</li><li><i class="m"></i>Stopped, ran anyway</li></ul>
-    <p class="read" id="tallyRead" aria-live="polite"></p>
-    <button type="button" class="reset" id="tallyReset" hidden>Back to Assay's lines</button>
-  </aside>
 </section>
 
 <section class="tools" id="tools">
-  <h2 class="split">One receiver.<br>Seven instruments.</h2>
+  <div class="intro">
+    <p class="kick"><span class="num">04</span>The instruments</p>
+    <h2 class="split">One receiver. Seven instruments.</h2>
+    <p>Two read, two act, three launch. Pick one and watch it work.</p>
+  </div>
+  <canvas class="obj" id="core" aria-hidden="true"></canvas>
   <div class="pick" id="pick" role="tablist" aria-label="Instruments">
     <span class="kind">Read</span>
     <button type="button" role="tab" data-t="0" aria-pressed="true">Scanner <i></i></button>
@@ -756,23 +925,23 @@ footer .right b{font-weight:500;color:var(--ink)}
     const paintFar = () => {
       FH = Math.round(h * 1.8); far.width = Math.round(w * dpr); far.height = Math.round(FH * dpr); fx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const glow = (x, y, r, col) => { const g = fx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); fx.fillStyle = g; fx.fillRect(0, 0, w, FH); };
-      glow(w * .82, FH * .18, Math.max(w, h) * .55, 'rgba(181,67,46,.13)');
-      glow(w * .12, FH * .62, Math.max(w, h) * .6, 'rgba(110,104,150,.09)');
-      glow(w * .5, FH * .42, Math.max(w, h) * .4, 'rgba(245,243,236,.035)');
+      glow(w * .82, FH * .18, Math.max(w, h) * .55, 'rgba(91,63,224,.17)');
+      glow(w * .12, FH * .62, Math.max(w, h) * .6, 'rgba(72,96,230,.13)');
+      glow(w * .5, FH * .42, Math.max(w, h) * .4, 'rgba(232,236,255,.035)');
       const band = Math.round(w * 2.2);
       for (let i = 0; i < band; i++) {
         const u = Math.random(), spread = (Math.random() + Math.random() + Math.random() - 1.5) * FH * .06;
         const y = FH * (.12 + .7 * u) + Math.sin(u * 5.5) * FH * .05 + spread;
-        fx.fillStyle = Math.random() < .14 ? `rgba(232,170,150,${.06 + Math.random() * .3})` : `rgba(236,233,226,${.05 + Math.random() * .28})`;
+        fx.fillStyle = Math.random() < .14 ? `rgba(170,160,255,${.06 + Math.random() * .3})` : `rgba(226,230,250,${.05 + Math.random() * .28})`;
         const z = Math.random() < .93 ? 1 : 1.7; fx.fillRect(u * w, y, z, z);
       }
-      for (let i = 0; i < w * .5; i++) { fx.fillStyle = `rgba(245,243,236,${.06 + Math.random() * .32})`; const z = Math.random() < .9 ? 1 : 1.6; fx.fillRect(Math.random() * w, Math.random() * FH, z, z); }
+      for (let i = 0; i < w * .5; i++) { fx.fillStyle = `rgba(232,236,255,${.06 + Math.random() * .32})`; const z = Math.random() < .9 ? 1 : 1.6; fx.fillRect(Math.random() * w, Math.random() * FH, z, z); }
     };
     const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); w = innerWidth; h = innerHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); paintFar(); };
 
     // which section is in front: the scene blends from the previous section's shape over the first part of the next
     const secs = ['night', 'ledger', 'file', 'argue', 'tools', 'access'].map(id => document.getElementById(id));
-    const SCENE = ['sky', 'rain', 'sky', 'spectrum', 'orbit', 'orbit'];
+    const SCENE = ['sky', 'sky', 'sky', 'sky', 'sky', 'sky']; // each section now carries its own lit object
     let A = 'sky', B = 'sky', mix = 1, idx = 0;
     const where = () => {
       const cy = scrollY + h * .55; idx = 0;
@@ -809,7 +978,7 @@ footer .right b{font-weight:500;color:var(--ink)}
       if (!still && --nextStreak <= 0) { streak = { x: rnd(.1, .9) * w, y: rnd(0, .4) * h, vx: rnd(6, 10) * (Math.random() < .5 ? -1 : 1), vy: rnd(2.5, 4.5), life: 1 }; nextStreak = Math.round(rnd(300, 620)); }
       if (streak) {
         const { x, y, vx, vy } = streak, g = ctx.createLinearGradient(x, y, x - vx * 14, y - vy * 14);
-        g.addColorStop(0, `rgba(245,243,236,${.8 * streak.life})`); g.addColorStop(1, 'rgba(245,243,236,0)');
+        g.addColorStop(0, `rgba(232,236,255,${.8 * streak.life})`); g.addColorStop(1, 'rgba(232,236,255,0)');
         ctx.strokeStyle = g; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - vx * 14, y - vy * 14); ctx.stroke();
         streak.x += vx; streak.y += vy; streak.life -= .02; if (streak.life <= 0) streak = null;
       }
@@ -820,28 +989,28 @@ footer .right b{font-weight:500;color:var(--ink)}
         const sc = stars.map(s => s.score).sort((a, b) => b - a); thr = passN > 0 ? sc[Math.min(passN, sc.length) - 1] : 101;
         const y = scaleY(), x0 = m(), x1 = w - m(), X = v => x0 + Math.min(100, v) / 100 * (x1 - x0);
         ctx.globalAlpha = lineOn;
-        ctx.strokeStyle = 'rgba(245,243,236,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+        ctx.strokeStyle = 'rgba(232,236,255,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
         ctx.strokeStyle = '#B5432E'; ctx.beginPath(); ctx.moveTo(X(60), y - 8); ctx.lineTo(X(60), y + 8); ctx.stroke();
         ctx.font = '13px "JetBrains Mono", monospace'; ctx.textBaseline = 'top';
-        ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(245,243,236,.5)'; ctx.fillText('0', x0, y + 12);
+        ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(232,236,255,.5)'; ctx.fillText('0', x0, y + 12);
         ctx.textAlign = 'right'; ctx.fillText('100', x1, y + 12);
         ctx.textAlign = 'center'; ctx.fillStyle = '#E8927F'; ctx.fillText('60 · Assay', X(60), y + 12);
         if (thr <= 100) {
-          const xt = X(thr); ctx.strokeStyle = 'rgba(245,243,236,.85)'; ctx.setLineDash([4, 5]); ctx.beginPath(); ctx.moveTo(xt, y - 120); ctx.lineTo(xt, y + 6); ctx.stroke(); ctx.setLineDash([]);
-          ctx.fillStyle = 'rgba(245,243,236,.85)'; ctx.textBaseline = 'bottom'; ctx.fillText(`your line · ${passN} pass`, Math.max(x0 + 70, Math.min(x1 - 70, xt)), y - 126);
+          const xt = X(thr); ctx.strokeStyle = 'rgba(232,236,255,.85)'; ctx.setLineDash([4, 5]); ctx.beginPath(); ctx.moveTo(xt, y - 120); ctx.lineTo(xt, y + 6); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(232,236,255,.85)'; ctx.textBaseline = 'bottom'; ctx.fillText(`your line · ${passN} pass`, Math.max(x0 + 70, Math.min(x1 - 70, xt)), y - 126);
         }
         ctx.globalAlpha = 1;
       }
       // stars are the picture in the hero and in the shaped scenes; behind reading text they step back
       // the step between two scenes is blended with the same mix as the positions, so nothing pops at a section line
-      const fadeOf = (sc, k) => (sc === 'sky' && k > 0) ? .6 : 1;
+      const fadeOf = (sc, k) => (sc === 'sky' && k > 0) ? .3 : 1;
       const fade = fadeOf(A, idx - 1) * (1 - mix) + fadeOf(B, idx) * mix;
       if (B === 'orbit' || A === 'orbit') {
         const on = Math.min(1, (A === 'orbit' ? 1 - mix : 0) + (B === 'orbit' ? mix : 0)), ox = w * (w < 760 ? .5 : .64), oy = h * .52;
-        ctx.globalAlpha = on; ctx.strokeStyle = 'rgba(245,243,236,.16)'; ctx.lineWidth = 1;
+        ctx.globalAlpha = on; ctx.strokeStyle = 'rgba(232,236,255,.16)'; ctx.lineWidth = 1;
         for (let r = 0; r < 4; r++) { const rad = Math.min(w, h) * (.14 + r * .14); ctx.beginPath(); ctx.ellipse(ox, oy, rad, rad * .58, 0, 0, 6.29); ctx.stroke(); }
         const sweep = (t * .02) % 6.283, R2 = Math.min(w, h) * .58;
-        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, R2); g.addColorStop(0, 'rgba(224,90,66,.32)'); g.addColorStop(1, 'rgba(224,90,66,0)');
+        const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, R2); g.addColorStop(0, 'rgba(112,88,240,.34)'); g.addColorStop(1, 'rgba(112,88,240,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.ellipse(ox, oy, R2, R2 * .58, 0, sweep - .5, sweep); ctx.closePath(); ctx.fill();
         ctx.globalAlpha = 1;
       }
@@ -862,7 +1031,7 @@ footer .right b{font-weight:500;color:var(--ink)}
       if (near) {
         const kin = pos.filter(p => p.s !== near.s && p.s.dev === near.s.dev);
         if (kin.length) {
-          ctx.strokeStyle = near.s.sig ? 'rgba(232,146,127,.55)' : 'rgba(245,243,236,.3)'; ctx.lineWidth = 1; ctx.setLineDash([3, 5]);
+          ctx.strokeStyle = near.s.sig ? 'rgba(232,146,127,.55)' : 'rgba(232,236,255,.3)'; ctx.lineWidth = 1; ctx.setLineDash([3, 5]);
           for (const p of kin) { ctx.beginPath(); ctx.moveTo(near.px, near.py); ctx.lineTo(p.px, p.py); ctx.stroke(); ctx.beginPath(); ctx.arc(p.px, p.py, p.s.r * 1.6 + 3, 0, 6.28); ctx.stroke(); }
           ctx.setLineDash([]);
         }
@@ -880,12 +1049,12 @@ footer .right b{font-weight:500;color:var(--ink)}
           ctx.beginPath(); ctx.arc(px, py, s.r * k, 0, 6.28); ctx.fillStyle = '#E05A42'; ctx.fill();
         } else {
           ctx.beginPath(); ctx.arc(px, py, (lit ? s.r + .8 * lineOn : s.r) * k, 0, 6.28);
-          ctx.fillStyle = lit ? `rgba(245,243,236,${Math.min(1, .55 + .45 * lineOn)})` : `rgba(245,243,236,${Math.min(1, lineOn ? Math.max(.28, tw * .8) : tw * k)})`; ctx.fill();
+          ctx.fillStyle = lit ? `rgba(232,236,255,${Math.min(1, .55 + .45 * lineOn)})` : `rgba(232,236,255,${Math.min(1, lineOn ? Math.max(.28, tw * .8) : tw * k)})`; ctx.fill();
         }
       }
       if (lensOn) {
-        ctx.beginPath(); ctx.arc(lens.x, lens.y, R, 0, 6.28); ctx.strokeStyle = 'rgba(245,243,236,.28)'; ctx.lineWidth = 1; ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(lens.x - 6, lens.y); ctx.lineTo(lens.x + 6, lens.y); ctx.moveTo(lens.x, lens.y - 6); ctx.lineTo(lens.x, lens.y + 6); ctx.strokeStyle = 'rgba(245,243,236,.5)'; ctx.stroke();
+        ctx.beginPath(); ctx.arc(lens.x, lens.y, R, 0, 6.28); ctx.strokeStyle = 'rgba(232,236,255,.28)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(lens.x - 6, lens.y); ctx.lineTo(lens.x + 6, lens.y); ctx.moveTo(lens.x, lens.y - 6); ctx.lineTo(lens.x, lens.y + 6); ctx.strokeStyle = 'rgba(232,236,255,.5)'; ctx.stroke();
       }
       if (near && (!hot || hot.s !== near.s)) {
         hot = near;
@@ -1005,6 +1174,76 @@ footer .right b{font-weight:500;color:var(--ink)}
     if (seen || beat % 3 === 0) { const r = incoming[qi % incoming.length]; qi++; peek(); walk(r); }
     beat++;
   }, 2600);
+
+  // the portal: a flat disk of streaks swirls into a dark opening, its far side bent up into a bright arch.
+  // Streaks are binned by brightness so each frame strokes a handful of paths, not thousands.
+  (() => {
+    const c = document.getElementById('portal'), x = c.getContext('2d');
+    let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, R = 0, disk = [], arch = [], on = true, raf = 0;
+    const BINS = 10, rnd = (a, b) => a + Math.random() * (b - a);
+    const size = () => {
+      dpr = Math.min(devicePixelRatio || 1, 2); w = c.clientWidth; h = c.clientHeight;
+      c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const narrow = w < 700; cx = w / 2; cy = h * (narrow ? .62 : .8); R = Math.min(w * (narrow ? .3 : .115), h * .34);
+      const n = Math.round(Math.min(2200, w * 1.4));
+      // most of the disk crowds the opening; a thin tail reaches the edges of the screen
+      disk = Array.from({ length: n }, () => { const r = R * (1.05 + Math.pow(Math.random(), 2.2) * (w * .62 / R)); return { r, t: rnd(0, 6.283), v: .5 * Math.pow(R / r, 1.5), d: rnd(.06, .3) * Math.min(1, R * 2.2 / r + .25), a: rnd(.25, 1) * Math.min(1, Math.pow(R * 1.6 / r, 1.1)) }; });
+      arch = Array.from({ length: Math.round(n * .3) }, () => { const k = Math.pow(Math.random(), 1.8); return { k, t: rnd(Math.PI, 2 * Math.PI), v: rnd(.25, .55), d: rnd(.08, .35), a: rnd(.35, 1) * (1 - k * .75) }; });
+    };
+    const TILT = .13;
+    const bins = () => Array.from({ length: BINS }, () => []);
+    const put = (B, a, x0, y0, x1, y1, x2, y2) => { const i = Math.max(0, Math.min(BINS - 1, Math.floor(a * BINS))); B[i].push(x0, y0, x1, y1, x2, y2); };
+    const stroke = (B, col, lw) => {
+      x.lineWidth = lw;
+      for (let i = 0; i < BINS; i++) { const P = B[i]; if (!P.length) continue; x.strokeStyle = `rgba(${col},${((i + .5) / BINS).toFixed(2)})`; x.beginPath(); for (let j = 0; j < P.length; j += 6) { x.moveTo(P[j], P[j + 1]); x.quadraticCurveTo(P[j + 2], P[j + 3], P[j + 4], P[j + 5]); } x.stroke(); }
+    };
+    const glow = (gx, gy, rx, ry, col) => { x.save(); x.translate(gx, gy); x.scale(1, ry / rx); const g = x.createRadialGradient(0, 0, 0, 0, 0, rx); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(-rx, -rx, rx * 2, rx * 2); x.restore(); };
+    const frame = dt => {
+      x.clearRect(0, 0, w, h);
+      x.globalCompositeOperation = 'lighter';
+      glow(cx, cy, w * .55, h * .28, 'rgba(70,86,220,.20)');
+      glow(cx, cy - R * .4, R * 2.6, R * 1.9, 'rgba(120,140,255,.16)');
+      const back = bins(), front = bins(), backH = bins(), frontH = bins();
+      for (const p of disk) {
+        p.t += p.v * dt;
+        const t0 = p.t - p.d, tm = p.t - p.d / 2, sn = Math.sin(tm);
+        const X = t => cx + Math.cos(t) * p.r, Y = t => cy + Math.sin(t) * p.r * TILT;
+        // the bright inner streaks also go to a hot bin drawn whiter
+        const hot = p.r < R * 1.7, a = p.a * (sn > 0 ? 1 : .55);
+        const B = sn > 0 ? (hot ? frontH : front) : (hot ? backH : back);
+        put(B, a, X(t0), Y(t0), X(tm) * 2 - (X(t0) + X(p.t)) / 2, Y(tm) * 2 - (Y(t0) + Y(p.t)) / 2, X(p.t), Y(p.t));
+      }
+      stroke(back, '110,130,255', 1); stroke(backH, '190,205,255', 1.2);
+      // the opening: dark, swallowing the far disk
+      x.globalCompositeOperation = 'source-over';
+      x.save(); x.translate(cx, cy); x.scale(1, 1.02);
+      const g = x.createRadialGradient(0, 0, R * .2, 0, 0, R * 1.02); g.addColorStop(0, 'rgba(4,5,12,1)'); g.addColorStop(.85, 'rgba(6,7,18,.97)'); g.addColorStop(1, 'rgba(6,7,18,0)');
+      x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, R * 1.02, R, 0, Math.PI, 0); x.lineTo(R * 1.02, R * TILT * .6); x.lineTo(-R * 1.02, R * TILT * .6); x.fill(); x.restore();
+      x.globalCompositeOperation = 'lighter';
+      // the arch: the far side of the disk bent over the top of the opening
+      const A = bins(), AH = bins();
+      for (const p of arch) {
+        p.t += p.v * dt; if (p.t > 2 * Math.PI) p.t -= Math.PI;
+        const rx = R * (1.04 + p.k * .55), ry = R * (1 + p.k * .5), t0 = Math.max(Math.PI, p.t - p.d), tm = (t0 + p.t) / 2;
+        const X = t => cx + Math.cos(t) * rx, Y = t => cy + Math.sin(t) * ry;
+        put(p.k < .18 ? AH : A, p.a, X(t0), Y(t0), X(tm) * 2 - (X(t0) + X(p.t)) / 2, Y(tm) * 2 - (Y(t0) + Y(p.t)) / 2, X(p.t), Y(p.t));
+      }
+      stroke(A, '120,140,255', 1); stroke(AH, '225,232,255', 1.6);
+      // the rim of the arch and where it meets the disk burn brightest
+      x.lineWidth = 6; x.strokeStyle = 'rgba(150,170,255,.10)'; x.beginPath(); x.ellipse(cx, cy, R * 1.05, R, 0, Math.PI, 0); x.stroke();
+      x.lineWidth = 1.5; x.strokeStyle = 'rgba(235,240,255,.28)'; x.beginPath(); x.ellipse(cx, cy, R * 1.04, R * .99, 0, Math.PI, 0); x.stroke();
+      stroke(front, '120,140,255', 1.1); stroke(frontH, '225,232,255', 1.4);
+      glow(cx, cy + R * .04, R * 1.8, R * .22, 'rgba(200,215,255,.35)');
+      x.globalCompositeOperation = 'source-over';
+    };
+    let last = 0;
+    const loop = now => { const dt = Math.min(.05, (now - (last || now)) / 1000); last = now; frame(dt); raf = on ? requestAnimationFrame(loop) : 0; };
+    size();
+    if (still) frame(0); else raf = requestAnimationFrame(loop);
+    addEventListener('resize', () => { size(); if (still) frame(0); });
+    // stop drawing once the hero is off screen, start again when it comes back
+    new IntersectionObserver(([e]) => { on = e.isIntersecting && !still; if (on && !raf) { last = 0; raf = requestAnimationFrame(loop); } }).observe(c);
+  })();
 
   // the hero: words rise one after another, then the rest
   const h1 = document.querySelector('.hero h1');
@@ -1171,7 +1410,7 @@ footer .right b{font-weight:500;color:var(--ink)}
     } finally { clearInterval(tick); if (me === reading) btn.disabled = false; }
   });
   // the hero's button opens the scanner
-  document.querySelector('.hero .btn').addEventListener('click', () => { D('file').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); setTimeout(() => D('ca').focus({ preventScroll: true }), still ? 0 : 600); });
+  document.querySelectorAll('[data-scan]').forEach(b => b.addEventListener('click', () => { D('file').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); setTimeout(() => D('ca').focus({ preventScroll: true }), still ? 0 : 600); }));
   // a red star in the sky opens its file
   document.getElementById('sky').addEventListener('click', () => { const s = seed.filter(x => x.sig); showFile(s[Math.floor(Math.random() * s.length)], true); });
 
@@ -1446,6 +1685,192 @@ footer .right b{font-weight:500;color:var(--ink)}
   };
   const keepRecent = r => { try { const l = loadRecent().filter(x => x.name !== r.name); l.unshift(r); localStorage.setItem(RKEY, JSON.stringify(l.slice(0, 6))); } catch {} drawRecent(); };
   drawRecent();
+
+
+  // the lit objects: one per section, drawn only while on screen. Streaks are binned by brightness so a frame
+  // strokes a few paths, not thousands.
+  const BIN = 8, bins = () => Array.from({ length: BIN }, () => []);
+  const put = (B, a, x0, y0, x1, y1) => B[Math.max(0, Math.min(BIN - 1, (a * BIN) | 0))].push(x0, y0, x1, y1);
+  const flush = (x, B, col, lw) => { x.lineWidth = lw; for (let i = 0; i < BIN; i++) { const P = B[i]; if (!P.length) continue; x.strokeStyle = `rgba(${col},${((i + .5) / BIN).toFixed(2)})`; x.beginPath(); for (let j = 0; j < P.length; j += 4) { x.moveTo(P[j], P[j + 1]); x.lineTo(P[j + 2], P[j + 3]); } x.stroke(); } };
+  const arcTo = (B, a, cx, cy, rx, ry, t0, t1) => { let px = cx + Math.cos(t0) * rx, py = cy + Math.sin(t0) * ry; for (let k = 1; k <= 3; k++) { const t = t0 + (t1 - t0) * k / 3, nx = cx + Math.cos(t) * rx, ny = cy + Math.sin(t) * ry; put(B, a, px, py, nx, ny); px = nx; py = ny; } };
+  const halo = (x, gx, gy, rx, ry, col) => { x.save(); x.translate(gx, gy); x.scale(1, ry / rx); const g = x.createRadialGradient(0, 0, 0, 0, 0, rx); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(-rx, -rx, rx * 2, rx * 2); x.restore(); };
+  const rr = (a, b) => a + Math.random() * (b - a);
+  const litObj = (id, o) => {
+    const c = D(id); if (!c) return;
+    const x = c.getContext('2d'); let w = 0, h = 0, on = false, raf = 0, last = 0, t = 0;
+    const size = () => { const dpr = Math.min(devicePixelRatio || 1, 2); w = c.clientWidth; h = c.clientHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); x.setTransform(dpr, 0, 0, dpr, 0, 0); o.size(w, h); };
+    const paint = dt => { x.clearRect(0, 0, w, h); x.globalCompositeOperation = 'lighter'; o.frame(x, w, h, dt, t); x.globalCompositeOperation = 'source-over'; };
+    const loop = now => { const dt = Math.min(.05, (now - (last || now)) / 1000); last = now; t += dt; paint(dt); raf = on ? requestAnimationFrame(loop) : 0; };
+    size(); addEventListener('resize', () => { size(); paint(0); });
+    if (still) { if (o.settle) o.settle(); paint(0); return; }
+    paint(0);
+    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on && !raf) { last = 0; raf = requestAnimationFrame(loop); } }, { rootMargin: '120px' }).observe(c);
+  };
+
+  // 01: four arches of light on a lit floor. Launches stream in from the left; each stops at the gate it fails,
+  // drops and fades; the few that clear all four turn red and fall into the hallmark.
+  (() => {
+    let gx = [], fy = 0, rx = 0, ry = 0, x0 = 0, sx = 0, sy = 0, small = false, arch = [], runs = [], hit = [0, 0, 0, 0], sink = 0, spawn = 0;
+    const NAMES = ['Dev', 'Wallets', 'Socials', 'Buyers'], W8 = [48, 41, 27, 18];
+    const fate = () => { if (Math.random() < .1) return 4; let r = Math.random() * 134; for (let g = 0; g < 4; g++) { if ((r -= W8[g]) < 0) return g; } return 3; };
+    const launch = () => ({ x: x0, y: fy - rr(.12, .78) * ry, v: rr(150, 220) * Math.max(.55, w0 / 1300), f: fate(), st: 0, a: 1, vy: 0, ph: rr(0, 6.28) });
+    let w0 = 1300;
+    litObj('gates', {
+      size(w, h) {
+        w0 = w; small = w < 700; fy = h * .82; ry = Math.min(h * .62, 210); rx = Math.min(w * (small ? .07 : .052), 78);
+        gx = small ? [.27, .43, .59, .75].map(k => k * w) : [.26, .41, .56, .71].map(k => k * w);
+        x0 = w * .04; sx = w * (small ? .92 : .89); sy = fy - ry * .42;
+        arch = gx.flatMap((_, g) => Array.from({ length: small ? 70 : 120 }, () => { const k = Math.pow(Math.random(), 1.7); return { g, k, t: rr(Math.PI, 2 * Math.PI), v: rr(.3, .7) * (g % 2 ? -1 : 1), d: rr(.08, .3), a: rr(.35, 1) * (1 - k * .7) }; }));
+        runs = []; if (still) this.settle();
+      },
+      settle() { runs = []; for (let i = 0; i < 26; i++) { const r = launch(); r.x = rr(x0, sx); if (r.f < 4 && r.x > gx[r.f]) r.x = gx[r.f] - rr(4, 60); runs.push(r); } },
+      frame(x, w, h, dt, t) {
+        // the floor and the warm light under each arch
+        halo(x, w / 2, fy, w * .55, 40, 'rgba(80,96,230,.22)');
+        const fl = x.createLinearGradient(0, 0, w, 0); fl.addColorStop(0, 'rgba(140,160,255,0)'); fl.addColorStop(.15, 'rgba(160,175,255,.55)'); fl.addColorStop(.85, 'rgba(160,175,255,.55)'); fl.addColorStop(1, 'rgba(140,160,255,0)');
+        x.fillStyle = fl; x.fillRect(0, fy - .5, w, 1);
+        gx.forEach((g, i) => { hit[i] = Math.max(0, hit[i] - dt * 1.6); halo(x, g, fy, rx * 2.4, 22, `rgba(150,170,255,${.22 + hit[i] * .4})`); halo(x, g, fy - ry * .5, rx * 2.2, ry * .9, `rgba(90,80,230,${.10 + hit[i] * .18})`); });
+        // the arches: streaks running the curve, brightest on the inner edge, flaring when a launch is stopped
+        const A = bins(), AH = bins();
+        for (const p of arch) {
+          p.t += p.v * dt; if (p.t > 2 * Math.PI) p.t -= Math.PI; if (p.t < Math.PI) p.t += Math.PI;
+          const ax = rx * (1 + p.k * .5), ay = ry * (1 + p.k * .12), t0 = Math.max(Math.PI, Math.min(2 * Math.PI, p.t - p.d * Math.sign(p.v))), a = Math.min(1, p.a * (.75 + hit[p.g] * .6));
+          arcTo(p.k < .15 ? AH : A, a, gx[p.g], fy, ax, ay, Math.min(t0, p.t), Math.max(t0, p.t));
+        }
+        flush(x, A, '120,140,255', 1); flush(x, AH, '228,234,255', 1.5);
+        gx.forEach((g, i) => { x.lineWidth = 1.2; x.strokeStyle = `rgba(235,240,255,${.3 + hit[i] * .5})`; x.beginPath(); x.ellipse(g, fy, rx, ry, 0, Math.PI, 0); x.stroke(); });
+        // the hallmark: a red light the passing launches fall into
+        sink = Math.max(0, sink - dt * 1.2);
+        halo(x, sx, sy, 90 + sink * 40, 90 + sink * 40, `rgba(224,90,66,${.22 + sink * .35})`);
+        x.fillStyle = `rgba(255,170,150,${.85})`; x.beginPath(); x.arc(sx, sy, 4 + sink * 2, 0, 6.283); x.fill();
+        x.strokeStyle = `rgba(224,90,66,${.5 * sink})`; x.lineWidth = 1; x.beginPath(); x.arc(sx, sy, 8 + (1 - sink) * 34, 0, 6.283); x.stroke();
+        // the launches
+        spawn -= dt; if (dt && spawn <= 0) { runs.push(launch()); spawn = rr(.07, .16); }
+        const go = bins(), dead = bins(), red = bins();
+        runs = runs.filter(r => {
+          if (r.st === 0) {
+            r.x += r.v * dt; r.y += Math.sin(t * 2 + r.ph) * dt * 6;
+            if (r.f < 4 && r.x >= gx[r.f] - 2) { r.st = 1; hit[r.f] = 1; r.vy = rr(-30, 10); }
+            else if (r.f === 4 && r.x > gx[3] + rx) r.st = 2;
+            put(go, .95, r.x - r.v * .07, r.y, r.x, r.y);
+          } else if (r.st === 1) {
+            r.vy += 420 * dt; r.y = Math.min(fy - 1, r.y + r.vy * dt); r.x += r.v * .05 * dt; r.a -= dt * .8;
+            if (r.a <= 0) return false;
+            put(dead, r.a * .6, r.x - 3, r.y, r.x + 3, r.y);
+          } else {
+            const k = Math.min(1, dt * 3); r.x += r.v * dt; r.y += (sy - r.y) * k;
+            if (r.x >= sx - 4) { sink = 1; return false; }
+            put(red, 1, r.x - r.v * .09, r.y, r.x, r.y);
+          }
+          return true;
+        });
+        flush(x, go, '205,215,255', 1.6); flush(x, dead, '150,155,190', 1.4); flush(x, red, '255,120,95', 2.2);
+        // names under the arches
+        x.globalCompositeOperation = 'source-over';
+        x.font = `500 ${small ? 10 : 12}px "JetBrains Mono", monospace`; x.textAlign = 'center'; x.textBaseline = 'top';
+        x.fillStyle = 'rgba(200,205,235,.7)'; NAMES.forEach((n, i) => x.fillText(n.toUpperCase(), gx[i], fy + 14));
+        x.fillText('RECEIVED', Math.max(x0 + 28, 34), fy + 14);
+        x.fillStyle = 'rgba(232,146,127,.95)'; x.fillText('HALLMARK', sx, fy + 14);
+        x.globalCompositeOperation = 'lighter';
+      },
+    });
+  })();
+
+  // 02: a ring of light the file floats on, a slow disk of streaks swirling under it
+  (() => {
+    let cx = 0, cy = 0, R = 0, disk = [];
+    litObj('ring', {
+      size(w, h) {
+        cx = w / 2; cy = h * .48; R = Math.min(w * .3, 560);
+        disk = Array.from({ length: Math.round(Math.min(1400, w * .9)) }, () => { const r = R * (.55 + Math.pow(Math.random(), 1.6) * 1.1); return { r, t: rr(0, 6.283), v: .22 * Math.pow(R / r, 1.5), d: rr(.04, .18), a: rr(.25, 1) * Math.max(.15, 1 - Math.abs(r - R) / (R * .7)) }; });
+      },
+      frame(x, w, h, dt) {
+        halo(x, cx, cy, R * 1.5, R * .38, 'rgba(70,86,220,.30)');
+        halo(x, cx, cy, R * .9, R * .16, 'rgba(150,130,255,.30)');
+        const B = bins(), BH = bins(), TILT = .2;
+        for (const p of disk) { p.t += p.v * dt; const hot = Math.abs(p.r - R) < R * .08; arcTo(hot ? BH : B, p.a * (Math.sin(p.t) > 0 ? 1 : .6), cx, cy, p.r, p.r * TILT, p.t - p.d, p.t); }
+        flush(x, B, '110,130,255', 1); flush(x, BH, '225,232,255', 1.3);
+        x.lineWidth = 1.5; x.strokeStyle = 'rgba(235,240,255,.35)'; x.beginPath(); x.ellipse(cx, cy, R, R * TILT, 0, 0, 6.283); x.stroke();
+        x.lineWidth = 8; x.strokeStyle = 'rgba(140,150,255,.08)'; x.beginPath(); x.ellipse(cx, cy, R, R * TILT, 0, 0, 6.283); x.stroke();
+      },
+    });
+  })();
+
+  // 03: today's 143 launches as a lit ring around the count. Each point follows its dot in the hidden field,
+  // so moving a line relights the ring: red passed and held, white ring passed and rugged, faint ring stopped but ran.
+  (() => {
+    let cx = 0, cy = 0, rin = 0, rout = 0, tilt = .58, pts = [], dust = [];
+    const kids = () => D('field').children;
+    litObj('dial', {
+      size(w, h) {
+        cx = w / 2; cy = h / 2; const narrow = w < 700; tilt = narrow ? .92 : .56;
+        rin = Math.min(w * (narrow ? .3 : .25), 270); rout = Math.min(w * (narrow ? .48 : .47), 520);
+        pts = Array.from({ length: kids().length }, (_, k) => ({ r: rin * 1.08 + (rout - rin * 1.08) * Math.sqrt((k * 0.618034) % 1), t: k * 2.39996, s: 0 }));
+        dust = Array.from({ length: narrow ? 260 : 520 }, () => { const r = rr(rin * .95, rout * 1.06); return { r, t: rr(0, 6.283), d: rr(.03, .12), a: rr(.15, .6) }; });
+      },
+      frame(x, w, h, dt, t) {
+        halo(x, cx, cy, rout * 1.1, rout * tilt * 1.1, 'rgba(70,80,220,.16)');
+        halo(x, cx, cy, rin * 1.1, rin * tilt * 1.1, 'rgba(112,88,240,.22)');
+        const spin = t * .035, D2 = bins();
+        for (const p of dust) arcTo(D2, p.a, cx, cy, p.r, p.r * tilt, p.t + spin - p.d, p.t + spin);
+        flush(x, D2, '110,130,255', .8);
+        [rin, (rin + rout) / 2, rout].forEach((r, i) => { x.lineWidth = 1; x.strokeStyle = `rgba(170,180,255,${i === 0 ? .32 : .1})`; x.beginPath(); x.ellipse(cx, cy, r, r * tilt, 0, 0, 6.283); x.stroke(); });
+        const K = kids();
+        pts.forEach((p, k) => {
+          const cls = (K[k] && K[k].className.replace(' bump', '')) || '', want = cls === 'p' ? 1 : cls === 'r' ? .7 : cls === 'm' ? .45 : 0;
+          p.s += (want - p.s) * Math.min(1, dt * 6 || 1);
+          const a = p.t + spin, px = cx + Math.cos(a) * p.r, py = cy + Math.sin(a) * p.r * tilt, depth = .6 + .4 * Math.sin(a);
+          if (cls === 'p') {
+            halo(x, px, py, 16, 16, `rgba(224,90,66,${.45 * p.s * depth})`);
+            x.fillStyle = `rgba(255,140,115,${(.5 + .5 * p.s) * depth})`; x.beginPath(); x.arc(px, py, 2.2 + 1.6 * p.s, 0, 6.283); x.fill();
+          } else if (cls === 'r' || cls === 'm') {
+            x.strokeStyle = `rgba(235,238,255,${(cls === 'r' ? .9 : .45) * depth})`; x.lineWidth = cls === 'r' ? 1.6 : 1; x.beginPath(); x.arc(px, py, 3.4, 0, 6.283); x.stroke();
+          } else {
+            x.fillStyle = `rgba(150,165,255,${.42 * depth})`; x.beginPath(); x.arc(px, py, 1.7, 0, 6.283); x.fill();
+          }
+        });
+      },
+    });
+  })();
+
+  // 04: the receiver at the centre, three tilted orbits (read, act, launch) and the seven instruments riding them;
+  // the one picked burns violet and throws a line to the core
+  (() => {
+    let cx = 0, cy = 0, R = 0, small = false, dust = [];
+    const RING = [0, 0, 1, 1, 2, 2, 2], ROT = [-.1, .07, -.03];
+    const btns = () => [...D('pick').querySelectorAll('button')];
+    const nodes = RING.map((ring, k) => ({ ring, t: k * 2.1 + ring, v: [.22, .16, .11][ring] }));
+    litObj('core', {
+      size(w, h) { cx = w / 2; cy = h * .5; small = w < 700; R = Math.min(w * (small ? .37 : .34), 470); dust = Array.from({ length: small ? 240 : 420 }, () => ({ ring: (Math.random() * 3) | 0, t: rr(0, 6.283), d: rr(.04, .16), a: rr(.15, .7), j: rr(-.03, .03) })); },
+      frame(x, w, h, dt, t) {
+        const rad = r => R * (.42 + r * .29), TILT = .26, sel = btns().findIndex(b => b.getAttribute('aria-pressed') === 'true');
+        const at = (ring, a) => { const ax = rad(ring), ay = ax * TILT, ex = Math.cos(a) * ax, ey = Math.sin(a) * ay, c = Math.cos(ROT[ring]), s = Math.sin(ROT[ring]); return [cx + ex * c - ey * s, cy + ex * s + ey * c, Math.sin(a)]; };
+        halo(x, cx, cy, R * 1.3, R * .5, 'rgba(70,86,220,.18)');
+        // orbits and their dust
+        const B = bins();
+        for (const p of dust) { p.t += [.22, .16, .11][p.ring] * dt; const r1 = at(p.ring, p.t - p.d), r2 = at(p.ring, p.t); put(B, p.a, r1[0], r1[1] + p.j * R, r2[0], r2[1] + p.j * R); }
+        flush(x, B, '120,140,255', 1);
+        [0, 1, 2].forEach(r => { x.save(); x.translate(cx, cy); x.rotate(ROT[r]); x.lineWidth = 1; x.strokeStyle = 'rgba(180,190,255,.16)'; x.beginPath(); x.ellipse(0, 0, rad(r), rad(r) * TILT, 0, 0, 6.283); x.stroke(); x.restore(); });
+        const P = nodes.map(n => { n.t += n.v * dt; return at(n.ring, n.t); });
+        const node = (k, back) => {
+          const [px, py, z] = P[k]; if ((z < 0) !== back) return;
+          const on = k === sel, d = .55 + .45 * Math.max(0, z);
+          if (on) { x.strokeStyle = 'rgba(150,130,255,.5)'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx, cy); x.lineTo(px, py); x.stroke(); halo(x, px, py, 40, 40, 'rgba(112,88,240,.6)'); }
+          x.fillStyle = on ? 'rgba(235,230,255,1)' : `rgba(210,218,255,${.75 * d})`; x.beginPath(); x.arc(px, py, on ? 6 : 3.4 * d, 0, 6.283); x.fill();
+          const b = btns()[k]; if (!b) return;
+          x.globalCompositeOperation = 'source-over'; x.font = `${on ? 600 : 500} ${small ? 11 : 13}px "Inter Tight", sans-serif`; x.textAlign = 'center'; x.textBaseline = 'bottom';
+          x.fillStyle = on ? '#fff' : `rgba(200,205,235,${.6 * d})`; x.fillText(b.textContent.trim(), px, py - (on ? 14 : 10)); x.globalCompositeOperation = 'lighter';
+        };
+        for (let k = 0; k < P.length; k++) node(k, true);
+        // the receiver
+        const pulse = .5 + .5 * Math.sin(t * 2);
+        halo(x, cx, cy, R * .42, R * .42, `rgba(112,88,240,${.35 + pulse * .1})`);
+        halo(x, cx, cy, R * .14, R * .14, 'rgba(225,230,255,.75)');
+        x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.arc(cx, cy, small ? 7 : 10, 0, 6.283); x.fill();
+        for (let k = 0; k < P.length; k++) node(k, false);
+      },
+    });
+  })();
 
   // the rest of the page: each section's parts rise as they arrive, staggered, once
   const parts = new IntersectionObserver(es => es.forEach(e => {
